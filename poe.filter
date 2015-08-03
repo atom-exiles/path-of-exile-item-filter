@@ -1,8 +1,24 @@
+##############################
+##          Heading         ##
+##############################
 Show
-  Class Currency
-
+  Filter
   Action
 
-##############################
-##  Heading
-##############################
+Show
+  BaseType type
+  Class class
+  Rarity [operator] rarity
+  ItemLevel [operator] level
+  DropLevel [operator] level
+  Quality [operator] quality
+  Sockets [operator] sockets
+  LinkedSockets [operator] links
+  Height [operator] height
+  Width [operator] width
+  SocketGroup group
+  SetBackgroundColor red green blue [alpha]
+  SetBorderColor red green blue [alpha]
+  SetTextColor red green blue [alpha]
+  PlayAlertSound id [volume]
+  SetFontSize size

@@ -1,5 +1,295 @@
-'scopeName': 'source.poe.filter'
+'scopeName': 'source.poe'
 'name': 'POE Item Filter'
 'fileTypes': [
   'filter'
 ]
+'patterns': [
+  {
+    'comment': 'Match a show block'
+    'begin': 'Show(\r|\n)'
+    'end': '(?=^\\S|^(\r|\n)*$)'
+    'name': 'show.block.poe'
+    'beginCaptures':
+      '0':
+        'name': 'show.block.begin.poe'
+    'patterns': [
+      {
+        'include': '#filters'
+      }
+      {
+        'include': '#actions'
+      }
+    ]
+  }
+  {
+    'comment': 'Match a hide block'
+    'begin': 'Hide(\r|\n)'
+    'end': '(?=^\\S|^(\r|\n)*$)'
+    'name': 'hide.block.poe'
+    'beginCaptures':
+      '0':
+        'name': 'hide.block.begin.poe'
+    'patterns': [
+      {
+        'include': '#filters'
+      }
+    ]
+  }
+  {
+    'comment': 'Section heading'
+    'name': 'comment.header.poe'
+    'begin': '###+'
+    'beginCaptures':
+      '0':
+        'name': 'comment.header.begin.poe'
+    'end': '###+'
+    'endCaptures':
+      '0':
+        'name': 'comment.header.end.poe'
+  }
+]
+'repository':
+  'filters':
+    'patterns': [
+      {
+        'comment': 'Class filter'
+        'begin': '^\\s*(Class)'
+        'name': 'filter.class.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+(\".*\"|\\S+|class)'
+            'captures':
+              '1':
+                'name': 'filter.class.type.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'BaseType filter'
+        'begin': '^\\s*(BaseType)'
+        'name': 'filter.basetype.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+(\".*\"|\\S+|type)'
+            'captures':
+              '1':
+                'name': 'filter.basetype.type.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'ItemLevel filter'
+        'begin': '^\\s*(ItemLevel)(\\s+(([<>=]+|\\[operator\\])\\s))?'
+        'name': 'filter.itemlevel.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.itemlevel.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+(1?\\d{1,2}|level)'
+            'captures':
+              '1':
+                'name': 'filter.itemlevel.level.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'DropLevel filter'
+        'begin': '^\\s*(DropLevel)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.droplevel.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.droplevel.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+(1?\\d{1,2}|level)'
+            'captures':
+              '1':
+                'name': 'filter.droplevel.level.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Quality filter'
+        'begin': '^\\s*(Quality)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.quality.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.quality.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+([12]?\\d|quality)'
+            'captures':
+              '1':
+                'name': 'filter.quality.amount.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Rarity filter'
+        'begin': '^\\s*(Rarity)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.rarity.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.rarity.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+(Normal|Magic|Rare|Unique|rarity)'
+            'captures':
+              '1':
+                'name': 'filter.rarity.tier.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Sockets filter'
+        'begin': '^\\s*(Sockets)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.sockets.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.sockets.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+([0-6]|sockets)'
+            'captures':
+              '1':
+                'name': 'filter.sockets.amount.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Linked Sockets filter'
+        'begin': '^\\s*(LinkedSockets)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.linkedsockets.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.linkedsockets.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+([02-6]|links)'
+            'captures':
+              '1':
+                'name': 'filter.linkedsockets.amount.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Socket Group filter'
+        'begin': '^\\s*(SocketGroup)'
+        'name': 'filter.socketgroup.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+([RGBW]+|group)'
+            'captures':
+              '1':
+                'name': 'filter.socketgroup.group.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Height filter'
+        'begin': '^\\s*(Height)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.height.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.height.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+([1-4]|height)'
+            'captures':
+              '1':
+                'name': 'filter.height.amount.poe'
+          }
+        ]
+      }
+      {
+        'comment': 'Width filter'
+        'begin': '^\\s*(Width)(\\s+([<>=]+|\\[operator\\]))?'
+        'name': 'filter.width.poe'
+        'beginCaptures':
+          '3':
+            'name': 'filter.width.operator.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+(1|2|width)'
+            'captures':
+              '1':
+                'name': 'filter.width.amount.poe'
+          }
+        ]
+      }
+    ]
+  'actions':
+    'patterns': [
+      {
+        'comment': 'Play Alert Sound'
+        'match': '(PlayAlertSound)\\s+(\\d|id)(\\s+(1?\\d{1,2}|\\[volume\\]))?'
+        'name': 'action.alert.poe'
+        'captures':
+          '2':
+            'name': 'action.alert.sound.poe'
+          '4':
+            'name': 'action.alert.volume.poe'
+      }
+      {
+        'comment': 'Set Font Size'
+        'match': '(SetFontSize)\\s+([1-4]\\d|size)'
+        'name': 'action.font.poe'
+        'captures':
+          '2':
+            'name': 'action.font.size.poe'
+      }
+      {
+        'comment': 'Set Background Colour'
+        'match': '(SetBackgroundColor)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|red)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|green)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|blue)(\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|\\[alpha\\]))?'
+        'name': 'action.background.poe'
+        'captures':
+          '2':
+            'name': 'action.background.red.poe'
+          '3':
+            'name': 'action.background.green.poe'
+          '4':
+            'name': 'action.background.blue.poe'
+          '6':
+            'name': 'action.background.alpha.poe'
+      }
+      {
+        'comment': 'Set Border Colour'
+        'match': '(SetBorderColor)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|red)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|green)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|blue)(\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|\\[alpha\\]))?'
+        'name': 'action.border.poe'
+        'captures':
+          '2':
+            'name': 'action.border.red.poe'
+          '3':
+            'name': 'action.border.green.poe'
+          '4':
+            'name': 'action.border.blue.poe'
+          '6':
+            'name': 'action.border.alpha.poe'
+      }
+      {
+        'comment': 'Set Text Colour'
+        'match': '(SetTextColor)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|red)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|green)\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|blue)(\\s+(25[0-5]|2[0-4]\\d|1?\\d{1,2}|\\[alpha\\]))?'
+        'name': 'action.text.poe'
+        'captures':
+          '2':
+            'name': 'action.text.red.poe'
+          '3':
+            'name': 'action.text.green.poe'
+          '4':
+            'name': 'action.text.blue.poe'
+          '6':
+            'name': 'action.text.alpha.poe'
+      }
+    ]
