@@ -1,17 +1,15 @@
 {
   "name": "path-of-exile-item-filter",
   "main": "./lib/path-of-exile-item-filter",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A grammar implementation for Path of Exile item filters",
-  "activationCommands": {
-  },
+  "activationCommands": {},
   "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
