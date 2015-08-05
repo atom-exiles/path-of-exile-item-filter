@@ -2,7 +2,9 @@
   "name": "path-of-exile-item-filter",
   "main": "./lib/path-of-exile-item-filter",
   "version": "0.0.0",
-  "description": "A short description of your package",
+  "description": "A grammar implementation for Path of Exile item filters",
+  "activationCommands": {
+  },
   "repository": "https://github.com/atom/path-of-exile-item-filter",
   "license": "MIT",
   "engines": {
