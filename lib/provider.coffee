@@ -507,6 +507,52 @@ module.exports =
     { snippet: '"Core Map"' }
   ]
 
+  flasks: [
+    #Life flasks
+    { snippet: '"Small Life Flask"' },
+    { snippet: '"Medium Life Flask"' },
+    { snippet: '"Large Life Flask"' },
+    { snippet: '"Greater Life Flask"' },
+    { snippet: '"Grand Life Flask"' },
+    { snippet: '"Giant Life Flask"' },
+    { snippet: '"Colossal Life Flask"' },
+    { snippet: '"Sacred Life Flask"' },
+    { snippet: '"Hallowed Life Flask"' },
+    { snippet: '"Sanctified Life Flask"' },
+    { snippet: '"Divine Life Flask"' },
+    { snippet: '"Eternal Life Flask"' },
+    #Mana flasks
+    { snippet: '"Small Mana Flask"' },
+    { snippet: '"Medium Mana Flask"' },
+    { snippet: '"Large Mana Flask"' },
+    { snippet: '"Greater Mana Flask"' },
+    { snippet: '"Grand Mana Flask"' },
+    { snippet: '"Giant Mana Flask"' },
+    { snippet: '"Colossal Mana Flask"' },
+    { snippet: '"Sacred Mana Flask"' },
+    { snippet: '"Hallowed Mana Flask"' },
+    { snippet: '"Sanctified Mana Flask"' },
+    { snippet: '"Divine Mana Flask"' },
+    { snippet: '"Eternal Mana Flask"' },
+    #Hybrid flasks
+    { snippet: '"Small Hydbrid Flask"' },
+    { snippet: '"Medium Hydbrid Flask"' },
+    { snippet: '"Large Hybrid Flask"' },
+    { snippet: '"Colossal Hydbrid Flask"' },
+    { snippet: '"Sacred Hydbrid Flask"' },
+    { snippet: '"Hallowed Hydbrid Flask"' },
+    #Utility flasks
+    { snippet: '"Quicksilver Flask"' },
+    { snippet: '"Ruby Flask"' },
+    { snippet: '"Sapphire Flask"' },
+    { snippet: '"Topaz Flask"' },
+    { snippet: '"Amethyst Flask"' },
+    { snippet: '"Granity Flask"' },
+    { snippet: '"Diamond Flask"' },
+    { snippet: '"Jade Flask"' },
+    { snippet: '"Quartz Flask"' }
+  ]
+
   bows: [
     { snippet: '"Crude Bow"' },
     { snippet: '"Short Bow"' },
@@ -1258,7 +1304,7 @@ module.exports =
       suggestions = @classes
 
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
-      suggestions = suggestions.concat(@amulets, @belts, @rings, @currency, @skills, @jewels, @maps,
+      suggestions = suggestions.concat(@amulets, @belts, @rings, @currency, @skills, @jewels, @maps, @flasks,
                                        @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
                                        @bodyArmour, @boots, @gloves, @helmets, @shields)
 
