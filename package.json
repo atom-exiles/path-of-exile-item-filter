@@ -5,7 +5,7 @@
   "description": "A grammar implementation for Path of Exile item filters",
   "activationCommands": {
   },
-  "repository": "https://github.com/atom/path-of-exile-item-filter",
+  "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
