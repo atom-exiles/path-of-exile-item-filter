@@ -94,7 +94,52 @@ module.exports =
     { snippet: 'Microtransactions' },
     { snippet: 'Jewel' },
     { snippet: '"Divination Card"' },
-    { snippet: 'Card' } #I think this is wrong
+    { snippet: 'Talisman' },#? Not sure
+    { snippet: '"Labyrinth Item"' },
+    { snippet: '"Labyrinth Trinket"' },
+  ]
+
+  quest: [
+    { snippet: '"Alira\'s Amulet"' },
+    { snippet: '"Allflame"' },
+    { snippet: '"Ammonite Glyph"' },
+    { snippet: '"Baleful Gem"' },
+    { snippet: '"Bust of Gaius Sentari"' },
+    { snippet: '"Bust of Hector Titucius"' },
+    { snippet: '"Bust of Marceus Lioneye"' },
+    { snippet: '"Chitus\' Plum"' },
+    { snippet: '"Decanter Spiritus"' },
+    { snippet: '"Deshret\'s Banner"' },
+    { snippet: '"Golden Hand"' },
+    { snippet: '"Golden Page"' },
+    { snippet: '"Haliotis Glyph"' },
+    { snippet: '"Infernal Talc"' },
+    { snippet: '"Kraityn\'s Amulet"' },
+    { snippet: '"Malachai\'s Entrails"' },
+    { snippet: '"Malachai\'s Heart"' },
+    { snippet: '"Malachai\'s Lungs"' },
+    { snippet: '"Maligaro\'s Spike"' },
+    { snippet: '"Medicine Chest"' },
+    { snippet: '"Oak\'s Amulet"' },
+    { snippet: '"Ribbon Spool"' },
+    { snippet: '"Roseus Glyph"' },
+    { snippet: '"Thaumetic Emblem"' },
+    { snippet: '"The Eye of Desire"' },
+    { snippet: '"The Eye of Fury"' },
+    { snippet: '"Tolman\'s Bracelet"' },
+    { snippet: '"Tower Key"' },
+    #Labyrinth
+    { snippet: '"Silver Key"' },
+    { snippet: '"Golden Key"' },
+    { snippet: '"Treasure Key"' },
+    { snippet: '"Bane of the Loyal"' },
+    { snippet: '"Cogs of Disruption"' },
+    { snippet: '"Cube of Absorption"' },
+    { snippet: '"Heart of the Gargoyle"' },
+    { snippet: '"Orb of Elemental Essence"' },
+    { snippet: '"Portal Shredder"' },
+    { snippet: '"Rod of Detonation"' },
+    { snippet: '"Sand of Eternity"' },
   ]
 
   amulets: [
@@ -175,6 +220,9 @@ module.exports =
   ]
 
   currency: [
+    { snippet: '"Albino Rhoa Feather"' },
+    { snippet: '"Alchemy Shard"' },
+    { snippet: '"Alteration Shard"' },
     { snippet: '"Armourer\'s Scrap"' },
     { snippet: '"Blacksmith\'s Whetstone"' },
     { snippet: '"Blessed Orb"' },
@@ -198,20 +246,28 @@ module.exports =
     { snippet: '"Orb of Transmutation"' },
     { snippet: '"Portal Scroll"' },
     { snippet: '"Regal Orb"' },
+    { snippet: '"Scroll Fragment"' },
     { snippet: '"Scroll of Wisdom"' },
+    { snippet: '"Transmutation Shard"' },
     { snippet: '"Vaal Orb"' }
+    #Perandus
+    { snippet: '"Perandus Coin"' },
+    #Phrophecy
+    { snippet: '"Silver Coin"' },
   ]
 
   skills: [
     #strength/red Active
     { snippet: '"Abyssal Cry"' },
     { snippet: 'Anger' },
+    { snippet: '"Ancestral Protector"' },
     { snippet: '"Animate Guardian"' },
     { snippet: 'Cleave' },
     { snippet: '"Decoy Totem"' },
     { snippet: 'Determination' },
     { snippet: '"Devouring Totem"' },
     { snippet: '"Dominating Blow"' },
+    { snippet: '"Earthquake"' },
     { snippet: '"Enduring Cry"' },
     { snippet: '"Flame Totem"' },
     { snippet: '"Glacial Hammer"' },
@@ -233,6 +289,8 @@ module.exports =
     { snippet: '"Shockwave Totem"' },
     { snippet: '"Static Strike"' },
     { snippet: '"Summon Flame Golem"' },
+    { snippet: '"Summon Stone Golem"' },
+    { snippet: '"Sunder"' },
     { snippet: 'Sweep' },
     { snippet: 'Vengeance' },
     { snippet: '"Vigilant Strike"' },
@@ -303,6 +361,7 @@ module.exports =
     { snippet: 'Hatred' },
     { snippet: '"Herald of Ice"' },
     { snippet: '"Ice Shot"' },
+    { snippet: '"Ice Trap"' },
     { snippet: '"Lightning Arrow"' },
     { snippet: '"Lightning Strike"' },
     { snippet: '"Mirror Arrow"' },
@@ -335,6 +394,7 @@ module.exports =
     { snippet: '"Cast on Death"' },
     { snippet: 'Chain' },
     { snippet: '"Chance to Flee"' },
+    { snippet: '"Cluster Traps"' },
     { snippet: '"Cold Penetration"' },
     { snippet: '"Culling Strike"' },
     { snippet: 'Enhance' },
@@ -355,6 +415,7 @@ module.exports =
     { snippet: '"Slower Projectiles"' },
     { snippet: 'Trap' },
     { snippet: '"Trap and Mine Damage"' },
+    { snippet: '"Trap Cooldown"' },
     { snippet: '"Void Manipulation"' },
     #dexterity/green vaal
     { snippet: '"Vaal Burning Arrow"' },
@@ -393,6 +454,7 @@ module.exports =
     { snippet: '"Flesh Offering"' },
     { snippet: '"Freezing Pulse"' },
     { snippet: 'Frostbite' },
+    { snippet: '"Frost Bomb"' },
     { snippet: '"Frost Wall"' },
     { snippet: '"Glacial Cascade"' },
     { snippet: '"Herald of Thunder"' },
@@ -404,6 +466,7 @@ module.exports =
     { snippet: '"Lightning Trap"' },
     { snippet: '"Lightning warp"' },
     { snippet: '"Magma Orb"' },
+    { snippet: '"Orb of Storms"' },
     { snippet: '"Power Siphon"' },
     { snippet: '"Purity of Elements"' },
     { snippet: '"Purity of Lightning"' },
@@ -429,6 +492,7 @@ module.exports =
     { snippet: '"Concentrated Effect"' },
     { snippet: '"Controlled Destruciton"' },
     { snippet: '"Curse on Hit"' },
+    { snippet: '"Elemental Focus"' },
     { snippet: '"Elemental Proliferation"' },
     { snippet: 'Enlighten' },
     { snippet: '"Faster Casting"' },
@@ -438,6 +502,7 @@ module.exports =
     { snippet: 'Innervate' },
     { snippet: '"Item Rarity"' },
     { snippet: '"Lightning Penetration"' },
+    { snippet: 'Minefield' },
     { snippet: '"Minion and Totem Elemental Resistance"' },
     { snippet: '"Minion Damage"' },
     { snippet: '"Minion Life"' },
@@ -473,6 +538,7 @@ module.exports =
   ]
 
   maps: [
+    #Tier 1
     { snippet: '"Crypt Map"' },
     { snippet: '"Desert Map"' },
     { snippet: '"Dunes Map"' },
@@ -480,6 +546,7 @@ module.exports =
     { snippet: '"Grotto Map"' },
     { snippet: '"Pit Map"' },
     { snippet: '"Tropical Island Map"' },
+    #Tier 2
     { snippet: '"Arcade Map"' },
     { snippet: '"Cemetery Map"' },
     { snippet: '"Channel Map"' },
@@ -487,7 +554,7 @@ module.exports =
     { snippet: '"Sewer Map"' },
     { snippet: '"Thicket Map"' },
     { snippet: '"Wharf Map"' },
-    { snippet: '"The Apex of Sacrifice"' },
+    #Tier 3
     { snippet: '"Ghetto Map"' },
     { snippet: '"Mud Geyser Map"' },
     { snippet: '"Museum Map"' },
@@ -495,6 +562,7 @@ module.exports =
     { snippet: '"Reef Map"' },
     { snippet: '"Spider Lair Map"' },
     { snippet: '"Vaal Pyramid Map"' },
+    #Tier 4
     { snippet: '"Arena Map"' },
     { snippet: '"Overgrown Shrine Map"' },
     { snippet: '"Promenade Map"' },
@@ -502,57 +570,71 @@ module.exports =
     { snippet: '"Shore Map"' },
     { snippet: '"Spider Forest Map"' },
     { snippet: '"Tunnel Map"' },
+    #Tier 5
     { snippet: '"Bog Map"' },
     { snippet: '"Coves Map"' },
     { snippet: '"Graveyard Map"' },
     { snippet: '"Pier Map"' },
     { snippet: '"Underground Sea Map"' },
     { snippet: '"Villa Map"' },
+    #Tier 6
     { snippet: '"Arachnid Nest Map"' },
     { snippet: '"Catacomb Map"' },
     { snippet: '"Colonnade Map"' },
     { snippet: '"Dry Woods Map"' },
     { snippet: '"Strand Map"' },
     { snippet: '"Temple Map"' },
+    #Tier 7
     { snippet: '"Jungle Valley Map"' },
     { snippet: '"Labyrinth Map"' },
-    { snippet: '"Mine Map"' },
+    { snippet: '"Abandoned Cavern Map"' },
     { snippet: '"Torture Chamber Map"' },
     { snippet: '"Waste Pool Map"' },
+    #Tier 8
     { snippet: '"Canyon Map"' },
     { snippet: '"Cells Map"' },
     { snippet: '"Dark Forest Map"' },
     { snippet: '"Dry Peninsula Map"' },
     { snippet: '"Orchard Map"' },
+    #Tier 9
     { snippet: '"Arid Lake Map"' },
     { snippet: '"Gorge Map"' },
     { snippet: '"Malformation Map"' },
     { snippet: '"Residence Map"' },
     { snippet: '"Underground River Map"' },
+    #Tier 10
     { snippet: '"Bazaar Map"' },
+    { snippet: '"Chateau Map"' },
     { snippet: '"Necropolis Map"' },
     { snippet: '"Plateau Map"' },
     { snippet: '"Volcano Map"' },
+    #Tier 11
     { snippet: '"Academy Map"' },
     { snippet: '"Crematorium Map"' },
     { snippet: '"Precinct Map"' },
     { snippet: '"Springs Map"' },
+    #Tier 12
     { snippet: '"Arsenal Map"' },
     { snippet: '"Overgrown Ruin Map"' },
     { snippet: '"Shipyard Map"' },
     { snippet: '"Village Ruin Map"' },
-    { snippet: '"The Alluring Abyss"' },
+    #Tier 13
     { snippet: '"Courtyard Map"' },
     { snippet: '"Excavation Map"' },
     { snippet: '"Wasteland Map"' },
     { snippet: '"Waterways Map"' },
-    { snippet: '"Maze Map"' },
+    #Tier 14
+    { snippet: '"Conservatory Map"' },
     { snippet: '"Palace Map"' },
     { snippet: '"Shrine Map"' },
     { snippet: '"Vaal Temple Map"' },
+    #Tier 15
     { snippet: '"Abyss Map"' },
     { snippet: '"Colosseum Map"' },
     { snippet: '"Core Map"' }
+    #Misc
+    { snippet: '"The Apex of Sacrifice"' },
+    { snippet: '"The Alluring Abyss"' },
   ]
 
   flasks: [
@@ -599,6 +681,12 @@ module.exports =
     { snippet: '"Diamond Flask"' },
     { snippet: '"Jade Flask"' },
     { snippet: '"Quartz Flask"' }
+    { snippet: '"Basalt Flask"' },
+    { snippet: '"Aquamarine Flask"' },
+    { snippet: '"Stibnite Flask"' },
+    { snippet: '"Sulphur Flask"' },
+    { snippet: '"Silver Flask"' },
+    { snippet: '"Bismuth Flask"' },
   ]
 
   bows: [
@@ -1352,7 +1440,7 @@ module.exports =
       suggestions = @classes
 
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
-      suggestions = suggestions.concat(@amulets, @belts, @rings, @currency, @skills, @jewels, @maps, @flasks,
+      suggestions = suggestions.concat(@amulets, @talisman, @belts, @rings, @currency, @skills, @jewels, @maps, @flasks,
                                        @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
                                        @bodyArmour, @boots, @gloves, @helmets, @shields)
 
