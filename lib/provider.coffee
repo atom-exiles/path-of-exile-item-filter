@@ -22,6 +22,7 @@ module.exports =
     { snippet: 'BaseType ${1:type}' },
     { snippet: 'Class ${1:class}' },
     { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
+    { snippet: 'Identified ${1:True}' },
     { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
     { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
     { snippet: 'Quality ${1:[operator]} ${2:quality}' },
@@ -55,6 +56,11 @@ module.exports =
     { snippet: '<'}
   ]
 
+  boolean: [
+    { snippet: 'True'},
+    { snippet: 'False'}
+  ]
+
   classes: [
     { snippet: '"Life Flask"' },
     { snippet: '"Mana Flask"' },
@@ -85,6 +91,7 @@ module.exports =
     { snippet: 'Shields' },
     { snippet: '"Stackable Currency"' },
     { snippet: '"Quest Items"' },
+    { snippet: 'Trinket' },
     { snippet: 'Sceptres' },
     { snippet: '"Utility Flasks"' },
     { snippet: 'Maps' },
@@ -1435,7 +1442,7 @@ module.exports =
   excludedPrefixes: [
     #filters
     'Class',   'BaseType',      'ItemLevel',   'DropLevel', 'Quality', 'Rarity',
-    'Sockets', 'LinkedSockets', 'SocketGroup', 'Height',    'Width',
+    'Sockets', 'LinkedSockets', 'SocketGroup', 'Height',    'Width',   'Identified',
     #actions
     'PlayAlertSound', 'SetBackgroundColor', 'SetBorderColor', 'SetFontSize', 'SetTextColor',
     #misc
@@ -1459,6 +1466,9 @@ module.exports =
 
     if 'filter.rarity.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = @rarity
+
+    if 'filter.identified.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
+      suggestions = @boolean
 
     if 'filter.class.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = @classes

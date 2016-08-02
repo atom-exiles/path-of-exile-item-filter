@@ -80,6 +80,20 @@
         ]
       }
       {
+        'comment': 'Identified filter'
+        'begin': '^\\s*(Identified)'
+        'name': 'filter.identified.poe'
+        'end': '(\\r|\\n)'
+        'patterns': [
+          {
+            'match': '\\s+([Tt]rue|[Ff]alse)'
+            'captures':
+              '1':
+                'name': 'filter.identified.level.poe'
+          }
+        ]
+      }
+      {
         'comment': 'ItemLevel filter'
         'begin': '^\\s*(ItemLevel)(\\s+(([<>=]+|\\[operator\\])\\s))?'
         'name': 'filter.itemlevel.poe'

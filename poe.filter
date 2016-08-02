@@ -9,6 +9,7 @@ Show
   BaseType type
   Class class
   Rarity [operator] rarity
+  Identified True
   ItemLevel [operator] level
   DropLevel [operator] level
   Quality [operator] quality
