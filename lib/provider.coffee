@@ -101,9 +101,11 @@ module.exports =
     { snippet: 'Microtransactions' },
     { snippet: 'Jewel' },
     { snippet: '"Divination Card"' },
-    { snippet: 'Talisman' },#? Not sure
+    { snippet: 'Talisman' },
     { snippet: '"Labyrinth Item"' },
     { snippet: '"Labyrinth Trinket"' },
+    #Essence League
+    { snippet: '"Essence"' },
   ]
 
   quest: [
@@ -161,6 +163,8 @@ module.exports =
     { snippet: '"Agate Amulet"' },
     { snippet: '"Citrine Amulet"' },
     { snippet: '"Onyx Amulet"' },
+    { snippet: '"Marble Amulet"' },
+    { snippet: '"Blue Pearl Amulet"' },
   ]
 
   talisman: [
@@ -206,6 +210,8 @@ module.exports =
     { snippet: '"Golden Obi"' },
     { snippet: '"Cloth Belt"' },
     { snippet: '"Studded Belt"' },
+    { snippet: '"Crystal Belt"' },
+    { snippet: '"Vanguard Belt"' },
   ]
 
   rings: [
@@ -224,6 +230,8 @@ module.exports =
     { snippet: '"Prismatic Ring"' },
     { snippet: '"Amethyst Ring"' },
     { snippet: '"Unset Ring"' },
+    { snippet: '"Steel Ring"' },
+    { snippet: '"Opal Ring"' },
   ]
 
   currency: [
@@ -256,12 +264,19 @@ module.exports =
     { snippet: '"Scroll Fragment"' },
     { snippet: '"Scroll of Wisdom"' },
     { snippet: '"Transmutation Shard"' },
-    { snippet: '"Vaal Orb"' }
+    { snippet: '"Vaal Orb"' },
+    { snippet: '"Stacked Deck"' },
     #Perandus
     { snippet: '"Perandus Coin"' },
-    #Phrophecy
+    #Prophecy
     { snippet: '"Silver Coin"' },
     { snippet: '"Prophecy"' },
+    #Atlas of Worlds
+    { snippet: '"Cartographer\'s Sextant"' },
+    { snippet: '"Cartographer\'s Seal"' },
+    { snippet: '"Shaper\'s Orb"' },
+    #Essence
+    { snippet: '"Remnant of Corruption"' },
   ]
 
   skills: [
@@ -552,104 +567,145 @@ module.exports =
 
   maps: [
     #Tier 1
-    { snippet: '"Crypt Map"' },
-    { snippet: '"Desert Map"' },
-    { snippet: '"Dunes Map"' },
-    { snippet: '"Dungeon Map"' },
-    { snippet: '"Grotto Map"' },
-    { snippet: '"Pit Map"' },
-    { snippet: '"Tropical Island Map"' },
+    { snippet: '"Tunnel"' },
+    { snippet: '"Jungle Valley"' },
+    { snippet: '"Arcade"' },
+    { snippet: '"Desert"' },
+
     #Tier 2
-    { snippet: '"Arcade Map"' },
-    { snippet: '"Cemetery Map"' },
-    { snippet: '"Channel Map"' },
-    { snippet: '"Mountain Ledge Map"' },
-    { snippet: '"Sewer Map"' },
-    { snippet: '"Thicket Map"' },
-    { snippet: '"Wharf Map"' },
+    { snippet: '"Beach"' },
+    { snippet: '"Ghetto"' },
+    { snippet: '"Oasis"' },
+    #{ snippet: '"AoW New Unknown Map"' },
+
     #Tier 3
-    { snippet: '"Ghetto Map"' },
-    { snippet: '"Mud Geyser Map"' },
-    { snippet: '"Museum Map"' },
-    { snippet: '"Quarry Map"' },
-    { snippet: '"Reef Map"' },
-    { snippet: '"Spider Lair Map"' },
-    { snippet: '"Vaal Pyramid Map"' },
+    { snippet: '"Channel"' },
+    { snippet: '"Abandoned Cavern"' },
+    { snippet: '"Vaal Pyramid"' },
+    { snippet: '"Sewers"' },
+    { snippet: '"Grotto"' },
+    { snippet: '"Arid Lake"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 4
-    { snippet: '"Arena Map"' },
-    { snippet: '"Overgrown Shrine Map"' },
-    { snippet: '"Promenade Map"' },
-    { snippet: '"Phantasmagoria Map"' },
-    { snippet: '"Shore Map"' },
-    { snippet: '"Spider Forest Map"' },
-    { snippet: '"Tunnel Map"' },
+    { snippet: '"Waste Pool"' },
+    { snippet: '"Phantasmagoria"' },
+    { snippet: '"Graveyard"' },
+    { snippet: '"Academy"' },
+    { snippet: '"Dungeon"' },
+    { snippet: '"Villa"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 5
-    { snippet: '"Bog Map"' },
-    { snippet: '"Coves Map"' },
-    { snippet: '"Graveyard Map"' },
-    { snippet: '"Pier Map"' },
-    { snippet: '"Underground Sea Map"' },
-    { snippet: '"Villa Map"' },
+    { snippet: '"Pit"' },
+    { snippet: '"Mesa"' },
+    { snippet: '"Burial Chamber"' },
+    { snippet: '"Spider Lair"' },
+    { snippet: '"Thicket"' },
+    { snippet: '"Dunes"' },
+    { snippet: '"Dry Peninsula"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 6
-    { snippet: '"Arachnid Nest Map"' },
-    { snippet: '"Catacomb Map"' },
-    { snippet: '"Colonnade Map"' },
-    { snippet: '"Dry Woods Map"' },
-    { snippet: '"Strand Map"' },
-    { snippet: '"Temple Map"' },
+    { snippet: '"Quarry"' },
+    { snippet: '"Vaal City"' },
+    { snippet: '"Canyon"' },
+    { snippet: '"Mud Geyser"' },
+    { snippet: '"Spider Forest"' },
+    { snippet: '"Ramparts"' },
+    { snippet: '"Wharf"' },
+    { snippet: '"Strand"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 7
-    { snippet: '"Jungle Valley Map"' },
-    { snippet: '"Labyrinth Map"' },
-    { snippet: '"Abandoned Cavern Map"' },
-    { snippet: '"Torture Chamber Map"' },
-    { snippet: '"Waste Pool Map"' },
+    { snippet: '"Cells"' },
+    { snippet: '"Catacombs"' },
+    { snippet: '"Colonnade"' },
+    { snippet: '"Pier"' },
+    { snippet: '"Village Ruin"' },
+    { snippet: '"Dry Woods"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 8
-    { snippet: '"Canyon Map"' },
-    { snippet: '"Cells Map"' },
-    { snippet: '"Dark Forest Map"' },
-    { snippet: '"Dry Peninsula Map"' },
-    { snippet: '"Orchard Map"' },
+    { snippet: '"Tropical Island"' },
+    { snippet: '"Shore"' },
+    { snippet: '"Arena"' },
+    { snippet: '"Mountain Ledge"' },
+    { snippet: '"Bog"' },
+    { snippet: '"Cemetery"' },
+    { snippet: '"Arachnid Nest"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 9
-    { snippet: '"Arid Lake Map"' },
-    { snippet: '"Gorge Map"' },
-    { snippet: '"Malformation Map"' },
-    { snippet: '"Residence Map"' },
-    { snippet: '"Underground River Map"' },
+    { snippet: '"Reef"' },
+    { snippet: '"Coves"' },
+    { snippet: '"Temple"' },
+    { snippet: '"Orchard"' },
+    { snippet: '"Crypt"' },
+    { snippet: '"Overgrown Shrine"' },
+    { snippet: '"Promenade"' },
+
     #Tier 10
-    { snippet: '"Bazaar Map"' },
-    { snippet: '"Chateau Map"' },
-    { snippet: '"Necropolis Map"' },
-    { snippet: '"Plateau Map"' },
-    { snippet: '"Volcano Map"' },
+    { snippet: '"Underground River"' },
+    { snippet: '"Malformation"' },
+    { snippet: '"Museum"' },
+    { snippet: '"Terrace"' },
+    { snippet: '"Arsenal"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 11
-    { snippet: '"Academy Map"' },
-    { snippet: '"Crematorium Map"' },
-    { snippet: '"Precinct Map"' },
-    { snippet: '"Springs Map"' },
+    { snippet: '"Precinct"' },
+    { snippet: '"Torture Chamber"' },
+    { snippet: '"Underground Sea"' },
+    { snippet: '"Excavation"' },
+    { snippet: '"Bazaar"' },
+    { snippet: '"Chateau"' },
+    { snippet: '"Courtyard"' },
+
     #Tier 12
-    { snippet: '"Arsenal Map"' },
-    { snippet: '"Overgrown Ruin Map"' },
-    { snippet: '"Shipyard Map"' },
-    { snippet: '"Village Ruin Map"' },
+    { snippet: '"Residence"' },
+    { snippet: '"Plateau"' },
+    { snippet: '"Necropolis"' },
+    { snippet: '"Shipyard"' },
+    { snippet: '"Estuary"' },
+    { snippet: '"Crematorium"' },
+    { snippet: '"Wasteland"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 13
-    { snippet: '"Courtyard Map"' },
-    { snippet: '"Excavation Map"' },
-    { snippet: '"Wasteland Map"' },
-    { snippet: '"Waterways Map"' },
+    { snippet: '"Plaza"' },
+    { snippet: '"Gorge"' },
+    { snippet: '"High Gardens"' },
+    { snippet: '"Waterways"' },
+    { snippet: '"Lighthouse"' },
+    { snippet: '"Sulphur Wastes"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 14
-    { snippet: '"Conservatory Map"' },
-    { snippet: '"Palace Map"' },
-    { snippet: '"Shrine Map"' },
-    { snippet: '"Vaal Temple Map"' },
-    { snippet: '"Plaza Map"' },
+    { snippet: '"Conservatory"' },
+    { snippet: '"Shrine"' },
+    { snippet: '"Palace"' },
+    { snippet: '"Springs"' },
+    { snippet: '"Volcano"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 15
-    { snippet: '"Abyss Map"' },
-    { snippet: '"Colosseum Map"' },
-    { snippet: '"Core Map"' }
-    #Misc
-    { snippet: '"The Apex of Sacrifice"' },
-    { snippet: '"The Alluring Abyss"' },
-    { snippet: '"Offering to the Goddess"' },
+    { snippet: '"Colosseum"' },
+    { snippet: '"Abyss"' },
+    { snippet: '"Overgrown Ruin"' },
+    { snippet: '"Dark Forest"' },
+    { snippet: '"Core"' },
+
+    #Tier 16
+    { snippet: '"Vaal Temple"' },
+    { snippet: '"Lair of the Hydra"' },
+    # { snippet: '"Minotaur Map"' },
+    # { snippet: '"Chimera Map"' },
+    # { snippet: '"Phoenix Map"' },
   ]
 
   fragments: [
@@ -666,6 +722,11 @@ module.exports =
     { snippet: '"Yriel\'s Key"' },
     { snippet: '"Inya\'s Key"' },
     { snippet: '"Volkuur\'s Key"' },
+    #Atlas of Worlds
+    { snippet: '"Fragment of the Chimera"' },
+    { snippet: '"Fragment of the Hydra"' },
+    { snippet: '"Fragment of the Minotaur"' },
+    { snippet: '"Fragment of the Phoenix"' },
   ]
 
   flasks: [
@@ -1224,7 +1285,8 @@ module.exports =
     { snippet: '"Sorcerer Boots"' },
     { snippet: '"Titan Greaves"' },
     { snippet: '"Murder Boots"' },
-    { snippet: '"Slink Boots"' }
+    { snippet: '"Slink Boots"' },
+    { snippet: '"Two-Toned Boots"' },
   ]
 
   gloves: [
@@ -1279,7 +1341,10 @@ module.exports =
     { snippet: '"Dragonscale Gauntlets"' },
     { snippet: '"Sorcerer Gloves"' },
     { snippet: '"Titan Gauntlets"' },
-    { snippet: '"Slink Gloves"' }
+    { snippet: '"Slink Gloves"' },
+    { snippet: '"Spiked Gloves"' },
+    { snippet: '"Gripped Gloves"' },
+    { snippet: '"Fingerless Silk Gloves"' },
   ]
 
   helmets: [
@@ -1345,7 +1410,8 @@ module.exports =
     { snippet: '"Praetor Crown"' },
     { snippet: '"Eternal Burgonet"' },
     { snippet: '"Hubris Circlet"' },
-    { snippet: '"Lion Pelt"' }
+    { snippet: '"Lion Pelt"' },
+    { snippet: '"Bone Helmet"' },
   ]
 
   shields: [
