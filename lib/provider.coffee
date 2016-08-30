@@ -105,7 +105,7 @@ module.exports =
     { snippet: '"Labyrinth Item"' },
     { snippet: '"Labyrinth Trinket"' },
     #Essence League
-    { snippet: '"Essence"' },
+    { snippet: 'Essence' },
   ]
 
   quest: [
@@ -324,7 +324,7 @@ module.exports =
     { snippet: '"Added Fire Damage Support"' },
     { snippet: '"Bloodlust Support"' },
     { snippet: '"Blood Magic Support"' },
-    { snippet: '"Cast on melee Kill Support"' },
+    { snippet: '"Cast on Melee Kill Support"' },
     { snippet: '"Cast when Damage Taken Support"' },
     { snippet: '"Cold to Fire Support"' },
     { snippet: '"Empower Support"' },
@@ -450,7 +450,7 @@ module.exports =
     { snippet: '"Vaal Grace"' },
     { snippet: '"Vaal Haste"' },
     { snippet: '"Vaal Rain of Arrows"' },
-    { snippet: '"Vall Reave"' },
+    { snippet: '"Vaal Reave"' },
     { snippet: '"Vaal Spectral Throw"' },
     #intelligence/blue active
     { snippet: 'Arc' },
@@ -1233,6 +1233,22 @@ module.exports =
     { snippet: '"Sacrificial Garb"' }
   ]
 
+  quivers: [
+    { snippet: '"Blunt Arrow Quiver"' },
+    { snippet: '"Broadhead Arrow Quiver"' },
+    { snippet: '"Fire Arrow Quiver"' },
+    { snippet: '"Penetrating Arrow Quiver"' },
+    { snippet: '"Serrated Arrow Quiver"' },
+    { snippet: '"Sharktooth Arrow Quiver"' },
+    { snippet: '"Spike-Point Arrow Quiver"' },
+    { snippet: '"Two-Point Arrow Quiver"' },
+    { snippet: '"Conductive Quiver"' },
+    { snippet: '"Cured Quiver"' },
+    { snippet: '"Heavy Quiver"' },
+    { snippet: '"Light Quiver"' },
+    { snippet: '"Rugged Quiver"' },
+  ]
+
   boots: [
     { snippet: '"Iron Greaves"' },
     { snippet: '"Wool Shoes"' },
@@ -1542,7 +1558,7 @@ module.exports =
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = suggestions.concat(@quest, @amulets, @talisman, @belts, @rings, @currency, @skills, @jewels, @maps, @fragments, @flasks,
                                        @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
-                                       @bodyArmour, @boots, @gloves, @helmets, @shields)
+                                       @bodyArmour, @quivers, @boots, @gloves, @helmets, @shields)
 
     if /filter\..*\.operator/.test(scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]) or prefix == '[operator]'
       suggestions = @operators
