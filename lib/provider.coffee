@@ -1758,7 +1758,7 @@ module.exports =
       suggestions = @classes
 
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
-      suggestions = suggestions.concat(@quest, @amulets, @talisman, @belts, @rings, @currency, @skills, @jewels, @maps, @fragments, @flasks,
+      suggestions = suggestions.concat(@quest, @amulets, @talisman, @belts, @rings, @currency, @divcards, @skills, @jewels, @maps, @fragments, @flasks,
                                        @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
                                        @bodyArmour, @quivers, @boots, @gloves, @helmets, @shields)
 
