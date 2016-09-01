@@ -10,3 +10,5 @@ This package provides a grammar that helps you create item filters for Path of E
 * Other more trivial examples
 
 ![Demo](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/demo.gif)
+
+## Thanks for the help with Atlas of Worlds [GlenCFL](https://github.com/GlenCFL)
