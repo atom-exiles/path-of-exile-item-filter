@@ -101,9 +101,11 @@ module.exports =
     { snippet: 'Microtransactions' },
     { snippet: 'Jewel' },
     { snippet: '"Divination Card"' },
-    { snippet: 'Talisman' },#? Not sure
+    { snippet: 'Talisman' },
     { snippet: '"Labyrinth Item"' },
     { snippet: '"Labyrinth Trinket"' },
+    #Essence League
+    { snippet: 'Essence' },
   ]
 
   quest: [
@@ -143,7 +145,7 @@ module.exports =
     { snippet: '"Cogs of Disruption"' },
     { snippet: '"Cube of Absorption"' },
     { snippet: '"Heart of the Gargoyle"' },
-    { snippet: '"Orb of Elemental Essence"' },
+    { snippet: '"Orb of Elemental Dispersion"' },
     { snippet: '"Portal Shredder"' },
     { snippet: '"Rod of Detonation"' },
     { snippet: '"Sand of Eternity"' },
@@ -161,6 +163,8 @@ module.exports =
     { snippet: '"Agate Amulet"' },
     { snippet: '"Citrine Amulet"' },
     { snippet: '"Onyx Amulet"' },
+    { snippet: '"Marble Amulet"' },
+    { snippet: '"Blue Pearl Amulet"' },
   ]
 
   talisman: [
@@ -206,6 +210,8 @@ module.exports =
     { snippet: '"Golden Obi"' },
     { snippet: '"Cloth Belt"' },
     { snippet: '"Studded Belt"' },
+    { snippet: '"Crystal Belt"' },
+    { snippet: '"Vanguard Belt"' },
   ]
 
   rings: [
@@ -224,6 +230,8 @@ module.exports =
     { snippet: '"Prismatic Ring"' },
     { snippet: '"Amethyst Ring"' },
     { snippet: '"Unset Ring"' },
+    { snippet: '"Steel Ring"' },
+    { snippet: '"Opal Ring"' },
   ]
 
   currency: [
@@ -233,7 +241,7 @@ module.exports =
     { snippet: '"Armourer\'s Scrap"' },
     { snippet: '"Blacksmith\'s Whetstone"' },
     { snippet: '"Blessed Orb"' },
-    { snippet: '"Cartographer\s Chisel"' },
+    { snippet: '"Cartographer\'s Chisel"' },
     { snippet: '"Chaos Orb"' },
     { snippet: '"Chromatic Orb"' },
     { snippet: '"Divine Orb"' },
@@ -256,12 +264,19 @@ module.exports =
     { snippet: '"Scroll Fragment"' },
     { snippet: '"Scroll of Wisdom"' },
     { snippet: '"Transmutation Shard"' },
-    { snippet: '"Vaal Orb"' }
+    { snippet: '"Vaal Orb"' },
+    { snippet: '"Stacked Deck"' },
     #Perandus
     { snippet: '"Perandus Coin"' },
-    #Phrophecy
+    #Prophecy
     { snippet: '"Silver Coin"' },
     { snippet: '"Prophecy"' },
+    #Atlas of Worlds
+    { snippet: '"Cartographer\'s Sextant"' },
+    { snippet: '"Cartographer\'s Seal"' },
+    { snippet: '"Shaper\'s Orb"' },
+    #Essence
+    { snippet: '"Remnant of Corruption"' },
   ]
 
   skills: [
@@ -309,7 +324,7 @@ module.exports =
     { snippet: '"Added Fire Damage Support"' },
     { snippet: '"Bloodlust Support"' },
     { snippet: '"Blood Magic Support"' },
-    { snippet: '"Cast on melee Kill Support"' },
+    { snippet: '"Cast on Melee Kill Support"' },
     { snippet: '"Cast when Damage Taken Support"' },
     { snippet: '"Cold to Fire Support"' },
     { snippet: '"Empower Support"' },
@@ -342,7 +357,7 @@ module.exports =
     { snippet: '"Vaal Lightning Strike"' },
     { snippet: '"Vaal Molten Shell"' },
     #dexterity/green active
-    { snippet: '"Animate WEapon"' },
+    { snippet: '"Animate Weapon"' },
     { snippet: '"Arctic Armour"' },
     { snippet: 'Barrage' },
     { snippet: '"Bear Trap"' },
@@ -358,7 +373,7 @@ module.exports =
     { snippet: '"Double Strike"' },
     { snippet: '"Dual Strike"' },
     { snippet: '"Elemental Hit"' },
-    { snippet: '"Ethereal knives"' },
+    { snippet: '"Ethereal Knives"' },
     { snippet: '"Explosive Arrow"' },
     { snippet: '"Fire Trap"' },
     { snippet: '"Flicker Strike"' },
@@ -435,11 +450,11 @@ module.exports =
     { snippet: '"Vaal Grace"' },
     { snippet: '"Vaal Haste"' },
     { snippet: '"Vaal Rain of Arrows"' },
-    { snippet: '"Vall reave"' },
+    { snippet: '"Vaal Reave"' },
     { snippet: '"Vaal Spectral Throw"' },
     #intelligence/blue active
     { snippet: 'Arc' },
-    { snippet: '"Arctiv Breath"' },
+    { snippet: '"Arctic Breath"' },
     { snippet: '"Assassin\'s Mark"' },
     { snippet: '"Ball Lightning"' },
     { snippet: '"Bone Offering"' },
@@ -475,7 +490,7 @@ module.exports =
     { snippet: '"Kinetic Blast"' },
     { snippet: '"Lightning Tendrils"' },
     { snippet: '"Lightning Trap"' },
-    { snippet: '"Lightning warp"' },
+    { snippet: '"Lightning Warp"' },
     { snippet: '"Magma Orb"' },
     { snippet: '"Orb of Storms"' },
     { snippet: '"Power Siphon"' },
@@ -504,7 +519,7 @@ module.exports =
     { snippet: '"Chance to Ignite Support"' },
     { snippet: '"Concentrated Effect Support"' },
     { snippet: '"Controlled Destruciton Support"' },
-    { snippet: '"Curse on Hit Support"' },
+    { snippet: '"Curse On Hit Support"' },
     { snippet: '"Elemental Focus Support"' },
     { snippet: '"Elemental Proliferation Support"' },
     { snippet: '"Enlighten Support"' },
@@ -552,104 +567,145 @@ module.exports =
 
   maps: [
     #Tier 1
-    { snippet: '"Crypt Map"' },
-    { snippet: '"Desert Map"' },
-    { snippet: '"Dunes Map"' },
-    { snippet: '"Dungeon Map"' },
-    { snippet: '"Grotto Map"' },
-    { snippet: '"Pit Map"' },
-    { snippet: '"Tropical Island Map"' },
-    #Tier 2
+    { snippet: '"Tunnel Map"' },
+    { snippet: '"Jungle Valley Map"' },
     { snippet: '"Arcade Map"' },
-    { snippet: '"Cemetery Map"' },
-    { snippet: '"Channel Map"' },
-    { snippet: '"Mountain Ledge Map"' },
-    { snippet: '"Sewer Map"' },
-    { snippet: '"Thicket Map"' },
-    { snippet: '"Wharf Map"' },
-    #Tier 3
+    { snippet: '"Desert Map"' },
+
+    #Tier 2
+    { snippet: '"Beach Map"' },
     { snippet: '"Ghetto Map"' },
-    { snippet: '"Mud Geyser Map"' },
-    { snippet: '"Museum Map"' },
-    { snippet: '"Quarry Map"' },
-    { snippet: '"Reef Map"' },
-    { snippet: '"Spider Lair Map"' },
+    { snippet: '"Oasis Map"' },
+    #{ snippet: '"AoW New Unknown Map"' },
+
+    #Tier 3
+    { snippet: '"Channel Map"' },
+    { snippet: '"Abandoned Cavern Map"' },
     { snippet: '"Vaal Pyramid Map"' },
+    { snippet: '"Sewers Map"' },
+    { snippet: '"Grotto Map"' },
+    { snippet: '"Arid Lake Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 4
+    { snippet: '"Waste Pool Map"' },
+    { snippet: '"Phantasmagoria Map"' },
+    { snippet: '"Graveyard Map"' },
+    { snippet: '"Academy Map"' },
+    { snippet: '"Dungeon Map"' },
+    { snippet: '"Villa Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 5
+    { snippet: '"Pit Map"' },
+    { snippet: '"Mesa Map"' },
+    { snippet: '"Burial Chamber Map"' },
+    { snippet: '"Spider Lair Map"' },
+    { snippet: '"Thicket Map"' },
+    { snippet: '"Dunes Map"' },
+    { snippet: '"Dry Peninsula Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 6
+    { snippet: '"Quarry Map"' },
+    { snippet: '"Vaal City Map"' },
+    { snippet: '"Canyon Map"' },
+    { snippet: '"Mud Geyser Map"' },
+    { snippet: '"Spider Forest Map"' },
+    { snippet: '"Ramparts Map"' },
+    { snippet: '"Wharf Map"' },
+    { snippet: '"Strand Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 7
+    { snippet: '"Cells Map"' },
+    { snippet: '"Catacombs Map"' },
+    { snippet: '"Colonnade Map"' },
+    { snippet: '"Pier Map"' },
+    { snippet: '"Village Ruin Map"' },
+    { snippet: '"Dry Woods Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 8
+    { snippet: '"Tropical Island Map"' },
+    { snippet: '"Shore Map"' },
     { snippet: '"Arena Map"' },
+    { snippet: '"Mountain Ledge Map"' },
+    { snippet: '"Bog Map"' },
+    { snippet: '"Cemetery Map"' },
+    { snippet: '"Arachnid Nest Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 9
+    { snippet: '"Reef Map"' },
+    { snippet: '"Coves Map"' },
+    { snippet: '"Temple Map"' },
+    { snippet: '"Orchard Map"' },
+    { snippet: '"Crypt Map"' },
     { snippet: '"Overgrown Shrine Map"' },
     { snippet: '"Promenade Map"' },
-    { snippet: '"Phantasmagoria Map"' },
-    { snippet: '"Shore Map"' },
-    { snippet: '"Spider Forest Map"' },
-    { snippet: '"Tunnel Map"' },
-    #Tier 5
-    { snippet: '"Bog Map"' },
-    { snippet: '"Coves Map"' },
-    { snippet: '"Graveyard Map"' },
-    { snippet: '"Pier Map"' },
-    { snippet: '"Underground Sea Map"' },
-    { snippet: '"Villa Map"' },
-    #Tier 6
-    { snippet: '"Arachnid Nest Map"' },
-    { snippet: '"Catacomb Map"' },
-    { snippet: '"Colonnade Map"' },
-    { snippet: '"Dry Woods Map"' },
-    { snippet: '"Strand Map"' },
-    { snippet: '"Temple Map"' },
-    #Tier 7
-    { snippet: '"Jungle Valley Map"' },
-    { snippet: '"Labyrinth Map"' },
-    { snippet: '"Abandoned Cavern Map"' },
-    { snippet: '"Torture Chamber Map"' },
-    { snippet: '"Waste Pool Map"' },
-    #Tier 8
-    { snippet: '"Canyon Map"' },
-    { snippet: '"Cells Map"' },
-    { snippet: '"Dark Forest Map"' },
-    { snippet: '"Dry Peninsula Map"' },
-    { snippet: '"Orchard Map"' },
-    #Tier 9
-    { snippet: '"Arid Lake Map"' },
-    { snippet: '"Gorge Map"' },
-    { snippet: '"Malformation Map"' },
-    { snippet: '"Residence Map"' },
-    { snippet: '"Underground River Map"' },
+
     #Tier 10
+    { snippet: '"Underground River Map"' },
+    { snippet: '"Malformation Map"' },
+    { snippet: '"Museum Map"' },
+    { snippet: '"Terrace Map"' },
+    { snippet: '"Arsenal Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 11
+    { snippet: '"Precinct Map"' },
+    { snippet: '"Torture Chamber Map"' },
+    { snippet: '"Underground Sea Map"' },
+    { snippet: '"Excavation Map"' },
     { snippet: '"Bazaar Map"' },
     { snippet: '"Chateau Map"' },
-    { snippet: '"Necropolis Map"' },
-    { snippet: '"Plateau Map"' },
-    { snippet: '"Volcano Map"' },
-    #Tier 11
-    { snippet: '"Academy Map"' },
-    { snippet: '"Crematorium Map"' },
-    { snippet: '"Precinct Map"' },
-    { snippet: '"Springs Map"' },
-    #Tier 12
-    { snippet: '"Arsenal Map"' },
-    { snippet: '"Overgrown Ruin Map"' },
-    { snippet: '"Shipyard Map"' },
-    { snippet: '"Village Ruin Map"' },
-    #Tier 13
     { snippet: '"Courtyard Map"' },
-    { snippet: '"Excavation Map"' },
+
+    #Tier 12
+    { snippet: '"Residence Map"' },
+    { snippet: '"Plateau Map"' },
+    { snippet: '"Necropolis Map"' },
+    { snippet: '"Shipyard Map"' },
+    { snippet: '"Estuary Map"' },
+    { snippet: '"Crematorium Map"' },
     { snippet: '"Wasteland Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
+    #Tier 13
+    { snippet: '"Plaza Map"' },
+    { snippet: '"Gorge Map"' },
+    { snippet: '"High Gardens Map"' },
     { snippet: '"Waterways Map"' },
+    { snippet: '"Lighthouse Map"' },
+    { snippet: '"Sulphur Wastes Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 14
     { snippet: '"Conservatory Map"' },
-    { snippet: '"Palace Map"' },
     { snippet: '"Shrine Map"' },
-    { snippet: '"Vaal Temple Map"' },
-    { snippet: '"Plaza Map"' },
+    { snippet: '"Palace Map"' },
+    { snippet: '"Springs Map"' },
+    { snippet: '"Volcano Map"' },
+    # { snippet: '"AoW New Unknown Map"' },
+
     #Tier 15
-    { snippet: '"Abyss Map"' },
     { snippet: '"Colosseum Map"' },
-    { snippet: '"Core Map"' }
-    #Misc
-    { snippet: '"The Apex of Sacrifice"' },
-    { snippet: '"The Alluring Abyss"' },
-    { snippet: '"Offering to the Goddess"' },
+    { snippet: '"Abyss Map"' },
+    { snippet: '"Overgrown Ruin Map"' },
+    { snippet: '"Dark Forest Map"' },
+    { snippet: '"Core Map"' },
+
+    #Tier 16
+    { snippet: '"Vaal Temple Map"' },
+    { snippet: '"Lair of the Hydra Map"' },
+    # { snippet: '"Minotaur Map"' },
+    # { snippet: '"Chimera Map"' },
+    # { snippet: '"Phoenix Map"' },
   ]
 
   fragments: [
@@ -666,6 +722,11 @@ module.exports =
     { snippet: '"Yriel\'s Key"' },
     { snippet: '"Inya\'s Key"' },
     { snippet: '"Volkuur\'s Key"' },
+    #Atlas of Worlds
+    { snippet: '"Fragment of the Chimera"' },
+    { snippet: '"Fragment of the Hydra"' },
+    { snippet: '"Fragment of the Minotaur"' },
+    { snippet: '"Fragment of the Phoenix"' },
   ]
 
   flasks: [
@@ -708,7 +769,7 @@ module.exports =
     { snippet: '"Sapphire Flask"' },
     { snippet: '"Topaz Flask"' },
     { snippet: '"Amethyst Flask"' },
-    { snippet: '"Granity Flask"' },
+    { snippet: '"Granite Flask"' },
     { snippet: '"Diamond Flask"' },
     { snippet: '"Jade Flask"' },
     { snippet: '"Quartz Flask"' }
@@ -1172,6 +1233,22 @@ module.exports =
     { snippet: '"Sacrificial Garb"' }
   ]
 
+  quivers: [
+    { snippet: '"Blunt Arrow Quiver"' },
+    { snippet: '"Broadhead Arrow Quiver"' },
+    { snippet: '"Fire Arrow Quiver"' },
+    { snippet: '"Penetrating Arrow Quiver"' },
+    { snippet: '"Serrated Arrow Quiver"' },
+    { snippet: '"Sharktooth Arrow Quiver"' },
+    { snippet: '"Spike-Point Arrow Quiver"' },
+    { snippet: '"Two-Point Arrow Quiver"' },
+    { snippet: '"Conductive Quiver"' },
+    { snippet: '"Cured Quiver"' },
+    { snippet: '"Heavy Quiver"' },
+    { snippet: '"Light Quiver"' },
+    { snippet: '"Rugged Quiver"' },
+  ]
+
   boots: [
     { snippet: '"Iron Greaves"' },
     { snippet: '"Wool Shoes"' },
@@ -1224,7 +1301,8 @@ module.exports =
     { snippet: '"Sorcerer Boots"' },
     { snippet: '"Titan Greaves"' },
     { snippet: '"Murder Boots"' },
-    { snippet: '"Slink Boots"' }
+    { snippet: '"Slink Boots"' },
+    { snippet: '"Two-Toned Boots"' },
   ]
 
   gloves: [
@@ -1279,7 +1357,10 @@ module.exports =
     { snippet: '"Dragonscale Gauntlets"' },
     { snippet: '"Sorcerer Gloves"' },
     { snippet: '"Titan Gauntlets"' },
-    { snippet: '"Slink Gloves"' }
+    { snippet: '"Slink Gloves"' },
+    { snippet: '"Spiked Gloves"' },
+    { snippet: '"Gripped Gloves"' },
+    { snippet: '"Fingerless Silk Gloves"' },
   ]
 
   helmets: [
@@ -1345,7 +1426,8 @@ module.exports =
     { snippet: '"Praetor Crown"' },
     { snippet: '"Eternal Burgonet"' },
     { snippet: '"Hubris Circlet"' },
-    { snippet: '"Lion Pelt"' }
+    { snippet: '"Lion Pelt"' },
+    { snippet: '"Bone Helmet"' },
   ]
 
   shields: [
@@ -1476,7 +1558,7 @@ module.exports =
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = suggestions.concat(@quest, @amulets, @talisman, @belts, @rings, @currency, @skills, @jewels, @maps, @fragments, @flasks,
                                        @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
-                                       @bodyArmour, @boots, @gloves, @helmets, @shields)
+                                       @bodyArmour, @quivers, @boots, @gloves, @helmets, @shields)
 
     if /filter\..*\.operator/.test(scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]) or prefix == '[operator]'
       suggestions = @operators
