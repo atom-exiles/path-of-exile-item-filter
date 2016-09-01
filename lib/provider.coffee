@@ -104,8 +104,6 @@ module.exports =
     { snippet: 'Talisman' },
     { snippet: '"Labyrinth Item"' },
     { snippet: '"Labyrinth Trinket"' },
-    #Essence League
-    { snippet: 'Essence' },
   ]
 
   quest: [
@@ -288,6 +286,13 @@ module.exports =
     { snippet: '"Cartographer\'s Seal"' },
     { snippet: '"Shaper\'s Orb"' },
     #Essence
+    { snippet: '"Whispering Essence"' }, #Convenience
+    { snippet: '"Muttering Essence"' }, #Convenience
+    { snippet: '"Weeping Essence"' }, #Convenience
+    { snippet: '"Wailing Essence"' }, #Convenience
+    { snippet: '"Screaming Essence"' }, #Convenience
+    { snippet: '"Shrieking Essence"' }, #Convenience
+    { snippet: '"Deafening Essence"' }, #Convenience
     { snippet: '"Whispering Essence of Hatred"' },
     { snippet: '"Muttering Essence of Hatred"' },
     { snippet: '"Weeping Essence of Hatred"' },
