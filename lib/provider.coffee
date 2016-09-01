@@ -150,6 +150,7 @@ module.exports =
     { snippet: '"Rod of Detonation"' },
     { snippet: '"Sand of Eternity"' },
     #Atlas of Worlds
+    { snippet: '"Shaper\'s Orb"' }, #Convenience
     { snippet: '"Shaper\'s Orb (Tier 1)"' },
     { snippet: '"Shaper\'s Orb (Tier 2)"' },
     { snippet: '"Shaper\'s Orb (Tier 3)"' },
