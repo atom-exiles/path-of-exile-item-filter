@@ -275,6 +275,7 @@ module.exports =
     { snippet: '"Scroll of Wisdom"' },
     { snippet: '"Transmutation Shard"' },
     { snippet: '"Vaal Orb"' },
+    { snippet: '"Offering to the Goddess"' },
     { snippet: '"Stacked Deck"' },
     #Perandus
     { snippet: '"Perandus Coin"' },
@@ -283,8 +284,14 @@ module.exports =
     { snippet: '"Prophecy"' },
     #Atlas of Worlds
     { snippet: '"Cartographer\'s Sextant"' },
+    { snippet: '"Apprentice Cartographer\'s Sextant"' },
+    { snippet: '"Journeyman Cartographer\'s Sextant"' },
+    { snippet: '"Master Cartographer\'s Sextant"' },
     { snippet: '"Cartographer\'s Seal"' },
-    { snippet: '"Shaper\'s Orb"' },
+    { snippet: '"Apprentice Cartographer\'s Seal"' },
+    { snippet: '"Journeyman Cartographer\'s Seal"' },
+    { snippet: '"Master Cartographer\'s Seal"' },
+    { snippet: '"Unshaping Orb"' },
     #Essence
     { snippet: '"Whispering Essence"' }, #Convenience
     { snippet: '"Muttering Essence"' }, #Convenience
@@ -398,13 +405,6 @@ module.exports =
     { snippet: '"Essence of Horror"' },
     { snippet: '"Essence of Delirium"' },
     { snippet: '"Remnant of Corruption"' },
-    { snippet: '"Apprentice Cartographer\'s Sextant"' },
-    { snippet: '"Journeyman Cartographer\'s Sextant"' },
-    { snippet: '"Master Cartographer\'s Sextant"' },
-    { snippet: '"Apprentice Cartographer\'s Seal"' },
-    { snippet: '"Journeyman Cartographer\'s Seal"' },
-    { snippet: '"Master Cartographer\'s Seal"' },
-    { snippet: '"Unshaping Orb"' },
   ]
 
   divcards: [
@@ -866,13 +866,11 @@ module.exports =
     { snippet: '"Jungle Valley Map"' },
     { snippet: '"Arcade Map"' },
     { snippet: '"Desert Map"' },
-
     #Tier 2
     { snippet: '"Beach Map"' },
     { snippet: '"Ghetto Map"' },
     { snippet: '"Oasis Map"' },
     { snippet: '"Factory Map"' },
-
     #Tier 3
     { snippet: '"Channel Map"' },
     { snippet: '"Cavern Map"' },
@@ -881,7 +879,6 @@ module.exports =
     { snippet: '"Grotto Map"' },
     { snippet: '"Arid Lake Map"' },
     { snippet: '"Marshes Map"' },
-
     #Tier 4
     { snippet: '"Waste Pool Map"' },
     { snippet: '"Phantasmagoria Map"' },
@@ -890,7 +887,6 @@ module.exports =
     { snippet: '"Dungeon Map"' },
     { snippet: '"Villa Map"' },
     { snippet: '"Acid Lakes Map"' },
-
     #Tier 5
     { snippet: '"Pit Map"' },
     { snippet: '"Mesa Map"' },
@@ -900,7 +896,6 @@ module.exports =
     { snippet: '"Peninsula Map"' },
     { snippet: '"Primordial Pool Map"' },
     { snippet: '"Tower Map"' },
-
     #Tier 6
     { snippet: '"Quarry Map"' },
     { snippet: '"Vaal City Map"' },
@@ -915,7 +910,6 @@ module.exports =
     { snippet: '"Shaped Crystal Ore Map"' },
     { snippet: '"Shaped Desert Map"' },
     { snippet: '"Shaped Jungle Valley Map"' },
-
     #Tier 7
     { snippet: '"Cells Map"' },
     { snippet: '"Catacombs Map"' },
@@ -928,7 +922,6 @@ module.exports =
     { snippet: '"Shaped Ghetto Map"' },
     { snippet: '"Shaped Oasis Map"' },
     { snippet: '"Shaped Factory Map"' },
-
     #Tier 8
     { snippet: '"Tropical Island Map"' },
     { snippet: '"Shore Map"' },
@@ -946,7 +939,6 @@ module.exports =
     { snippet: '"Shaped Grotto Map"' },
     { snippet: '"Shaped Arid Lake Map"' },
     { snippet: '"Shaped Marshes Map"' },
-
     #Tier 9
     { snippet: '"Coves Map"' },
     { snippet: '"Crypt Map"' },
@@ -963,7 +955,6 @@ module.exports =
     { snippet: '"Shaped Dungeon Map"' },
     { snippet: '"Shaped Villa Map"' },
     { snippet: '"Shaped Acid Lakes Map"' },
-
     #Tier 10
     { snippet: '"Colonnade Map"' },
     { snippet: '"Arsenal Map"' },
@@ -980,7 +971,6 @@ module.exports =
     { snippet: '"Shaped Peninsula Map"' },
     { snippet: '"Shaped Primordial Pool Map"' },
     { snippet: '"Shaped Tower Map"' },
-
     #Tier 11
     { snippet: '"Bazaar Map"' },
     { snippet: '"Chateau Map"' },
@@ -998,7 +988,6 @@ module.exports =
     { snippet: '"Shaped Strand Map"' },
     { snippet: '"Shaped Thicket Map"' },
     { snippet: '"Shaped Racecourse Map"' },
-
     #Tier 12
     { snippet: '"Crematorium Map"' },
     { snippet: '"Estuary Map"' },
@@ -1015,7 +1004,6 @@ module.exports =
     { snippet: '"Shaped Arachnid Tomb Map"' },
     { snippet: '"Shaped Armory Map"' },
     { snippet: '"Shaped Mud Geyser Map"' },
-
     #Tier 13
     { snippet: '"Lair Map"' },
     { snippet: '"Beacon Map"' },
@@ -1034,7 +1022,6 @@ module.exports =
     { snippet: '"Shaped Arachnid Nest Map"' },
     { snippet: '"Shaped Barrows Map"' },
     { snippet: '"Shaped Pier Map"' },
-
     #Tier 14
     { snippet: '"Maze Map"' },
     { snippet: '"Mineral Pools Map"' },
@@ -1050,7 +1037,6 @@ module.exports =
     { snippet: '"Shaped Promenade Map"' },
     { snippet: '"Shaped Reef Map"' },
     { snippet: '"Shaped Temple Map"' },
-
     #Tier 15
     { snippet: '"Abyss Map"' },
     { snippet: '"Colosseum Map"' },
@@ -1064,7 +1050,6 @@ module.exports =
     { snippet: '"Shaped Quay Map"' },
     { snippet: '"Shaped Terrace Map"' },
     { snippet: '"Shaped Underground River Map"' },
-
     #Tier 16
     { snippet: '"Pit of the Chimera Map"' },
     { snippet: '"Lair of the Hydra Map"' },
