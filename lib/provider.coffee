@@ -1881,6 +1881,17 @@ module.exports =
     '[operator]'
   ]
 
+  defaults: [
+    'Filter', 'Action',
+    #filters
+    'type', 'class', 'rarity', 'True', 'level', 'quality', 'sockets', 'links',
+    'height', 'width', 'group',
+    #actions
+    'red', 'green', 'blue', '[alpha]', 'id', '[volume]', 'size'
+    #operators
+    '[operator]'
+  ]
+
   # Required: Return a promise, an array of suggestions, or null.
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix}) ->
     suggestions = []
@@ -1891,7 +1902,12 @@ module.exports =
       suggestions = @blocks
 
     if 'show.block.poe' == scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]
-      suggestions = @filters.concat @actions
+      if prefix == 'Action'
+        suggestions = @actions
+      else if prefix == 'Filter'
+        suggestions = @filters
+      else
+        suggestions = @filters.concat @actions
 
     if 'hide.block.poe' == scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]
       suggestions = @filters
@@ -1914,8 +1930,9 @@ module.exports =
       suggestions = @operators
 
     @setReplacementPrefix(prefix, suggestions)
-    suggestions = @pruneSuggestions(prefix, suggestions)
-    @orderSuggestions(prefix, suggestions)
+    if prefix not in @defaults
+      suggestions = @pruneSuggestions(prefix, suggestions)
+      @orderSuggestions(prefix, suggestions)
 
     return suggestions
 
@@ -1929,8 +1946,9 @@ module.exports =
     if prefix.length > 0
       upperPrefix = prefix.toUpperCase()
       prunedSuggestions = (suggestion for suggestion in suggestions when suggestion.snippet.toUpperCase().indexOf(upperPrefix) > -1)
-
-    return prunedSuggestions
+      return prunedSuggestions
+    else
+      return suggestions
 
   # Order the suggestions based on the prefix
   orderSuggestions: (prefix, suggestions) ->
