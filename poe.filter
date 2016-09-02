@@ -23,3 +23,6 @@ Show
   SetTextColor red green blue [alpha]
   PlayAlertSound id [volume]
   SetFontSize size
+
+Hide
+  Filter

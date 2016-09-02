@@ -14,3 +14,8 @@
 * Quivers
 * Spelling mistakes
 * Thanks GlenCFL for the help
+
+## 0.1.4 - Fifth Release
+* Divination Cards (Thanks to GlenCFL)
+* Improved suggestion filtering
+* Added text highlighting

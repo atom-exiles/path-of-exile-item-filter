@@ -61,7 +61,7 @@
             'match': '\\s+(\".*\"|\\S+|class)'
             'captures':
               '1':
-                'name': 'filter.class.type.poe'
+                'name': 'filter.class.value.type.poe'
           }
         ]
       }
@@ -75,7 +75,7 @@
             'match': '\\s+(\".*\"|\\S+|type)'
             'captures':
               '1':
-                'name': 'filter.basetype.type.poe'
+                'name': 'filter.basetype.value.type.poe'
           }
         ]
       }
@@ -89,13 +89,13 @@
             'match': '\\s+([Tt]rue|[Ff]alse)'
             'captures':
               '1':
-                'name': 'filter.identified.level.poe'
+                'name': 'filter.identified.value.bool.poe'
           }
         ]
       }
       {
         'comment': 'ItemLevel filter'
-        'begin': '^\\s*(ItemLevel)(\\s+(([<>=]+|\\[operator\\])\\s))?'
+        'begin': '^\\s*(ItemLevel)(\\s+([<>=]+|\\[operator\\]))?'
         'name': 'filter.itemlevel.poe'
         'beginCaptures':
           '3':
@@ -106,7 +106,7 @@
             'match': '\\s+(1?\\d{1,2}|level)'
             'captures':
               '1':
-                'name': 'filter.itemlevel.level.poe'
+                'name': 'filter.itemlevel.value.level.poe'
           }
         ]
       }
@@ -123,7 +123,7 @@
             'match': '\\s+(1?\\d{1,2}|level)'
             'captures':
               '1':
-                'name': 'filter.droplevel.level.poe'
+                'name': 'filter.droplevel.value.level.poe'
           }
         ]
       }
@@ -140,7 +140,7 @@
             'match': '\\s+([12]?\\d|quality)'
             'captures':
               '1':
-                'name': 'filter.quality.amount.poe'
+                'name': 'filter.quality.value.amount.poe'
           }
         ]
       }
@@ -157,7 +157,7 @@
             'match': '\\s+(Normal|Magic|Rare|Unique|rarity)'
             'captures':
               '1':
-                'name': 'filter.rarity.tier.poe'
+                'name': 'filter.rarity.value.tier.poe'
           }
         ]
       }
@@ -174,7 +174,7 @@
             'match': '\\s+([0-6]|sockets)'
             'captures':
               '1':
-                'name': 'filter.sockets.amount.poe'
+                'name': 'filter.sockets.value.amount.poe'
           }
         ]
       }
@@ -191,7 +191,7 @@
             'match': '\\s+([02-6]|links)'
             'captures':
               '1':
-                'name': 'filter.linkedsockets.amount.poe'
+                'name': 'filter.linkedsockets.value.amount.poe'
           }
         ]
       }
@@ -205,7 +205,7 @@
             'match': '\\s+([RGBW]+|group)'
             'captures':
               '1':
-                'name': 'filter.socketgroup.group.poe'
+                'name': 'filter.socketgroup.value.group.poe'
           }
         ]
       }
@@ -222,7 +222,7 @@
             'match': '\\s+([1-4]|height)'
             'captures':
               '1':
-                'name': 'filter.height.amount.poe'
+                'name': 'filter.height.value.amount.poe'
           }
         ]
       }
@@ -239,7 +239,7 @@
             'match': '\\s+(1|2|width)'
             'captures':
               '1':
-                'name': 'filter.width.amount.poe'
+                'name': 'filter.width.value.amount.poe'
           }
         ]
       }
@@ -252,9 +252,9 @@
         'name': 'action.alert.poe'
         'captures':
           '2':
-            'name': 'action.alert.sound.poe'
+            'name': 'action.alert.value.sound.poe'
           '4':
-            'name': 'action.alert.volume.poe'
+            'name': 'action.alert.value.volume.poe'
       }
       {
         'comment': 'Set Font Size'
@@ -262,7 +262,7 @@
         'name': 'action.font.poe'
         'captures':
           '2':
-            'name': 'action.font.size.poe'
+            'name': 'action.font.value.size.poe'
       }
       {
         'comment': 'Set Background Colour'
@@ -270,13 +270,13 @@
         'name': 'action.background.poe'
         'captures':
           '2':
-            'name': 'action.background.red.poe'
+            'name': 'action.background.value.red.poe'
           '3':
-            'name': 'action.background.green.poe'
+            'name': 'action.background.value.green.poe'
           '4':
-            'name': 'action.background.blue.poe'
+            'name': 'action.background.value.blue.poe'
           '6':
-            'name': 'action.background.alpha.poe'
+            'name': 'action.background.value.alpha.poe'
       }
       {
         'comment': 'Set Border Colour'
@@ -284,13 +284,13 @@
         'name': 'action.border.poe'
         'captures':
           '2':
-            'name': 'action.border.red.poe'
+            'name': 'action.border.value.red.poe'
           '3':
-            'name': 'action.border.green.poe'
+            'name': 'action.border.value.green.poe'
           '4':
-            'name': 'action.border.blue.poe'
+            'name': 'action.border.value.blue.poe'
           '6':
-            'name': 'action.border.alpha.poe'
+            'name': 'action.border.value.alpha.poe'
       }
       {
         'comment': 'Set Text Colour'
@@ -298,12 +298,12 @@
         'name': 'action.text.poe'
         'captures':
           '2':
-            'name': 'action.text.red.poe'
+            'name': 'action.text.value.red.poe'
           '3':
-            'name': 'action.text.green.poe'
+            'name': 'action.text.value.green.poe'
           '4':
-            'name': 'action.text.blue.poe'
+            'name': 'action.text.value.blue.poe'
           '6':
-            'name': 'action.text.alpha.poe'
+            'name': 'action.text.value.alpha.poe'
       }
     ]
