@@ -104,8 +104,6 @@ module.exports =
     { snippet: 'Talisman' },
     { snippet: '"Labyrinth Item"' },
     { snippet: '"Labyrinth Trinket"' },
-    #Essence League
-    { snippet: 'Essence' },
   ]
 
   quest: [
@@ -277,6 +275,7 @@ module.exports =
     { snippet: '"Scroll of Wisdom"' },
     { snippet: '"Transmutation Shard"' },
     { snippet: '"Vaal Orb"' },
+    { snippet: '"Offering to the Goddess"' },
     { snippet: '"Stacked Deck"' },
     #Perandus
     { snippet: '"Perandus Coin"' },
@@ -285,9 +284,22 @@ module.exports =
     { snippet: '"Prophecy"' },
     #Atlas of Worlds
     { snippet: '"Cartographer\'s Sextant"' },
+    { snippet: '"Apprentice Cartographer\'s Sextant"' },
+    { snippet: '"Journeyman Cartographer\'s Sextant"' },
+    { snippet: '"Master Cartographer\'s Sextant"' },
     { snippet: '"Cartographer\'s Seal"' },
-    { snippet: '"Shaper\'s Orb"' },
+    { snippet: '"Apprentice Cartographer\'s Seal"' },
+    { snippet: '"Journeyman Cartographer\'s Seal"' },
+    { snippet: '"Master Cartographer\'s Seal"' },
+    { snippet: '"Unshaping Orb"' },
     #Essence
+    { snippet: '"Whispering Essence"' }, #Convenience
+    { snippet: '"Muttering Essence"' }, #Convenience
+    { snippet: '"Weeping Essence"' }, #Convenience
+    { snippet: '"Wailing Essence"' }, #Convenience
+    { snippet: '"Screaming Essence"' }, #Convenience
+    { snippet: '"Shrieking Essence"' }, #Convenience
+    { snippet: '"Deafening Essence"' }, #Convenience
     { snippet: '"Whispering Essence of Hatred"' },
     { snippet: '"Muttering Essence of Hatred"' },
     { snippet: '"Weeping Essence of Hatred"' },
@@ -393,22 +405,173 @@ module.exports =
     { snippet: '"Essence of Horror"' },
     { snippet: '"Essence of Delirium"' },
     { snippet: '"Remnant of Corruption"' },
-    { snippet: '"Apprentice Cartographer\'s Sextant"' },
-    { snippet: '"Journeyman Cartographer\'s Sextant"' },
-    { snippet: '"Master Cartographer\'s Sextant"' },
-    { snippet: '"Apprentice Cartographer\'s Seal"' },
-    { snippet: '"Journeyman Cartographer\'s Seal"' },
-    { snippet: '"Master Cartographer\'s Seal"' },
-    { snippet: '"Unshaping Orb"' },
   ]
 
   divcards: [
-    #Just a start, I'll add more when I have time
-    #I had no idea these had a base type
-    { snippet: '"The Oath"' },
-    { snippet: '"The Scavenger"' },
-    { snippet: '"The Void"' },
+    { snippet: '"Abandoned Wealth"' },
+    { snippet: '"The Aesthete"' },
+    { snippet: '"Anarchy\'s Price"' },
+    { snippet: '"The Arena Champion"' },
+    { snippet: '"The Artist"' },
+    { snippet: '"Assassin\'s Favour"' },
+    { snippet: 'Audacity' },
+    { snippet: '"The Avenger"' },
+    { snippet: '"The Battle Born"' },
+    { snippet: '"The Betrayal"' },
+    { snippet: '"Birth of the Three"' },
+    { snippet: '"Blind Venture"' },
+    { snippet: '"The Body"' },
+    { snippet: '"Boundless Realms"' },
+    { snippet: '"Bowyer\'s Dream"' },
+    { snippet: '"The Brittle Emperor"' },
+    { snippet: '"The Calling"' },
+    { snippet: '"The Carrion Crow"' },
+    { snippet: '"The Cartographer"' },
+    { snippet: '"Cartographer\'s Delight"' },
+    { snippet: '"The Cataclysm"' },
+    { snippet: '"The Catalyst"' },
+    { snippet: '"The Celestial Justicar"' },
+    { snippet: '"The Chains that Bind"' },
+    { snippet: '"Chaotic Disposition"' },
+    { snippet: '"The Conduit"' },
+    { snippet: '"Coveted Possession"' },
+    { snippet: '"The Cursed King"' },
+    { snippet: '"The Dapper Prodigy"' },
+    { snippet: '"The Dark Mage"' },
+    { snippet: 'Death' },
+    { snippet: '"The Demoness"' },
+    { snippet: '"Destined to Crumble"' },
+    { snippet: '"The Devastator"' },
+    { snippet: '"Dialla\'s Subjugation"' },
+    { snippet: '"The Doctor"' },
+    { snippet: '"Doedre\'s Madness"' },
+    { snippet: '"The Doppelganger"' },
+    { snippet: '"The Dragon"' },
+    { snippet: '"The Dragon\'s Heart"' },
+    { snippet: '"The Drunken Aristocrat"' },
+    { snippet: '"Dying Anguish"' },
+    { snippet: '"Earth Drinker"' },
+    { snippet: '"Emperor of Purity"' },
+    { snippet: '"Emperor\'s Luck"' },
+    { snippet: '"The Encroaching Darkness"' },
+    { snippet: '"The Endurance"' },
+    { snippet: '"The Enlightened"' },
+    { snippet: '"The Ethereal"' },
+    { snippet: '"The Explorer"' },
+    { snippet: '"The Feast"' },
+    { snippet: '"The Fiend"' },
+    { snippet: '"The Fletcher"' },
+    { snippet: '"The Flora\'s Gift"' },
+    { snippet: '"The Formless Sea"' },
+    { snippet: '"The Fox"' },
+    { snippet: '"The Gambler"' },
+    { snippet: '"The Gemcutter"' },
+    { snippet: '"Gemcutter\'s Promise"' },
+    { snippet: '"The Gentleman"' },
+    { snippet: '"Gift of the Gemling Queen"' },
+    { snippet: '"The Gladiator"' },
+    { snippet: '"Glimmer of Hope"' },
+    { snippet: '"Grave Knowledge"' },
+    { snippet: '"The Harvester"' },
+    { snippet: '"Her Mask"' },
+    { snippet: '"The Hermit"' },
+    { snippet: '"Heterochromia"' },
+    { snippet: '"The Hoarder"' },
+    { snippet: 'Hope' },
+    { snippet: '"House of Mirrors"' },
+    { snippet: 'Hubris' },
+    { snippet: 'Humility' },
+    { snippet: '"The Hunger"' },
+    { snippet: '"Hunter\'s Resolve"' },
+    { snippet: '"Hunter\'s Reward"' },
+    { snippet: '"The Immortal"' },
+    { snippet: '"The Incantation"' },
+    { snippet: '"The Inoculated"' },
+    { snippet: '"The Inventor"' },
+    { snippet: '"Jack in the Box"' },
+    { snippet: '"The Jester"' },
+    { snippet: '"The King\'s Blade"' },
+    { snippet: '"The King\'s Heart"' },
+    { snippet: '"Lantador\'s Lost Love"' },
+    { snippet: '"Last Hope"' },
+    { snippet: '"The Last One Standing"' },
+    { snippet: '"The Lich"' },
+    { snippet: '"Light and Truth"' },
+    { snippet: '"The Lion"' },
+    { snippet: '"The Lord in Black"' },
+    { snippet: '"Lost Worlds"' },
+    { snippet: '"The Lover"' },
+    { snippet: 'Loyalty' },
+    { snippet: '"Lucky Connections"' },
+    { snippet: '"Lucky Deck"' },
+    { snippet: '"The Lunaris Priestess"' },
+    { snippet: '"Lysah\'s Respite"' },
     { snippet: '"Mawr Blaidd"' },
+    { snippet: '"The Mercenary"' },
+    { snippet: '"Merciless Armament"' },
+    { snippet: '"The Metalsmith\'s Gift"' },
+    { snippet: '"A Mother\'s Parting Gift"' },
+    { snippet: '"The Oath"' },
+    { snippet: '"The Offering"' },
+    { snippet: '"The One With All"' },
+    { snippet: '"The Pack Leader"' },
+    { snippet: '"The Pact"' },
+    { snippet: '"The Penitent"' },
+    { snippet: '"The Poet"' },
+    { snippet: '"Pride Before the Fall"' },
+    { snippet: 'Prosperity' },
+    { snippet: '"The Queen"' },
+    { snippet: '"The Rabid Rhoa"' },
+    { snippet: '"Rain of Chaos"' },
+    { snippet: '"Rain Tempter"' },
+    { snippet: 'Rats' },
+    { snippet: '"The Risk"' },
+    { snippet: '"The Road to Power"' },
+    { snippet: '"The Scarred Meadow"' },
+    { snippet: '"The Scavenger"' },
+    { snippet: '"The Scholar"' },
+    { snippet: '"Scholar of the Seas"' },
+    { snippet: '"The Sephirot"' },
+    { snippet: '"Shard of Fate"' },
+    { snippet: '"The Sigil"' },
+    { snippet: '"The Siren"' },
+    { snippet: '"The Soul"' },
+    { snippet: '"The Spoiled Prince"' },
+    { snippet: '"The Stormcaller"' },
+    { snippet: '"The Summoner"' },
+    { snippet: '"The Sun"' },
+    { snippet: '"The Surgeon"' },
+    { snippet: '"The Surveyor"' },
+    { snippet: '"The Survivalist"' },
+    { snippet: '"The Thaumaturgist"' },
+    { snippet: '"Three Faces in the Dark"' },
+    { snippet: '"The Throne"' },
+    { snippet: '"Thunderous Skies"' },
+    { snippet: '"Time-Lost Relic"' },
+    { snippet: '"The Tower"' },
+    { snippet: '"The Traitor"' },
+    { snippet: 'Tranquillity' },
+    { snippet: '"Treasure Hunter"' },
+    { snippet: '"The Trial"' },
+    { snippet: '"Turn the Other Cheek"' },
+    { snippet: '"The Twins"' },
+    { snippet: '"The Tyrant"' },
+    { snippet: '"The Union"' },
+    { snippet: '"The Valkyrie"' },
+    { snippet: '"The Vast"' },
+    { snippet: '"Vinia\'s Token"' },
+    { snippet: '"The Visionary"' },
+    { snippet: '"The Void"' },
+    { snippet: '"Volatile Power"' },
+    { snippet: '"The Warden"' },
+    { snippet: '"The Warlord"' },
+    { snippet: '"The Watcher"' },
+    { snippet: '"Wealth and Power"' },
+    { snippet: '"The Web"' },
+    { snippet: '"The Wind"' },
+    { snippet: '"The Wolf"' },
+    { snippet: '"The Wolf\'s Shadow"' },
+    { snippet: '"The Wrath"' },
   ]
 
   skills: [
@@ -703,13 +866,11 @@ module.exports =
     { snippet: '"Jungle Valley Map"' },
     { snippet: '"Arcade Map"' },
     { snippet: '"Desert Map"' },
-
     #Tier 2
     { snippet: '"Beach Map"' },
     { snippet: '"Ghetto Map"' },
     { snippet: '"Oasis Map"' },
     { snippet: '"Factory Map"' },
-
     #Tier 3
     { snippet: '"Channel Map"' },
     { snippet: '"Cavern Map"' },
@@ -718,7 +879,6 @@ module.exports =
     { snippet: '"Grotto Map"' },
     { snippet: '"Arid Lake Map"' },
     { snippet: '"Marshes Map"' },
-
     #Tier 4
     { snippet: '"Waste Pool Map"' },
     { snippet: '"Phantasmagoria Map"' },
@@ -727,7 +887,6 @@ module.exports =
     { snippet: '"Dungeon Map"' },
     { snippet: '"Villa Map"' },
     { snippet: '"Acid Lakes Map"' },
-
     #Tier 5
     { snippet: '"Pit Map"' },
     { snippet: '"Mesa Map"' },
@@ -737,7 +896,6 @@ module.exports =
     { snippet: '"Peninsula Map"' },
     { snippet: '"Primordial Pool Map"' },
     { snippet: '"Tower Map"' },
-
     #Tier 6
     { snippet: '"Quarry Map"' },
     { snippet: '"Vaal City Map"' },
@@ -752,7 +910,6 @@ module.exports =
     { snippet: '"Shaped Crystal Ore Map"' },
     { snippet: '"Shaped Desert Map"' },
     { snippet: '"Shaped Jungle Valley Map"' },
-
     #Tier 7
     { snippet: '"Cells Map"' },
     { snippet: '"Catacombs Map"' },
@@ -765,7 +922,6 @@ module.exports =
     { snippet: '"Shaped Ghetto Map"' },
     { snippet: '"Shaped Oasis Map"' },
     { snippet: '"Shaped Factory Map"' },
-
     #Tier 8
     { snippet: '"Tropical Island Map"' },
     { snippet: '"Shore Map"' },
@@ -783,7 +939,6 @@ module.exports =
     { snippet: '"Shaped Grotto Map"' },
     { snippet: '"Shaped Arid Lake Map"' },
     { snippet: '"Shaped Marshes Map"' },
-
     #Tier 9
     { snippet: '"Coves Map"' },
     { snippet: '"Crypt Map"' },
@@ -800,7 +955,6 @@ module.exports =
     { snippet: '"Shaped Dungeon Map"' },
     { snippet: '"Shaped Villa Map"' },
     { snippet: '"Shaped Acid Lakes Map"' },
-
     #Tier 10
     { snippet: '"Colonnade Map"' },
     { snippet: '"Arsenal Map"' },
@@ -817,7 +971,6 @@ module.exports =
     { snippet: '"Shaped Peninsula Map"' },
     { snippet: '"Shaped Primordial Pool Map"' },
     { snippet: '"Shaped Tower Map"' },
-
     #Tier 11
     { snippet: '"Bazaar Map"' },
     { snippet: '"Chateau Map"' },
@@ -835,7 +988,6 @@ module.exports =
     { snippet: '"Shaped Strand Map"' },
     { snippet: '"Shaped Thicket Map"' },
     { snippet: '"Shaped Racecourse Map"' },
-
     #Tier 12
     { snippet: '"Crematorium Map"' },
     { snippet: '"Estuary Map"' },
@@ -852,7 +1004,6 @@ module.exports =
     { snippet: '"Shaped Arachnid Tomb Map"' },
     { snippet: '"Shaped Armory Map"' },
     { snippet: '"Shaped Mud Geyser Map"' },
-
     #Tier 13
     { snippet: '"Lair Map"' },
     { snippet: '"Beacon Map"' },
@@ -871,7 +1022,6 @@ module.exports =
     { snippet: '"Shaped Arachnid Nest Map"' },
     { snippet: '"Shaped Barrows Map"' },
     { snippet: '"Shaped Pier Map"' },
-
     #Tier 14
     { snippet: '"Maze Map"' },
     { snippet: '"Mineral Pools Map"' },
@@ -887,7 +1037,6 @@ module.exports =
     { snippet: '"Shaped Promenade Map"' },
     { snippet: '"Shaped Reef Map"' },
     { snippet: '"Shaped Temple Map"' },
-
     #Tier 15
     { snippet: '"Abyss Map"' },
     { snippet: '"Colosseum Map"' },
@@ -901,7 +1050,6 @@ module.exports =
     { snippet: '"Shaped Quay Map"' },
     { snippet: '"Shaped Terrace Map"' },
     { snippet: '"Shaped Underground River Map"' },
-
     #Tier 16
     { snippet: '"Pit of the Chimera Map"' },
     { snippet: '"Lair of the Hydra Map"' },
