@@ -1914,6 +1914,7 @@ module.exports =
       suggestions = @operators
 
     @setReplacementPrefix(prefix, suggestions)
+    suggestions = @pruneSuggestions(prefix, suggestions)
     @orderSuggestions(prefix, suggestions)
 
     return suggestions
@@ -1923,27 +1924,20 @@ module.exports =
     prefixRegex = /([\s]*([^\s]*))*$/
     prefixRegex.exec(line)?[2] or ''
 
+  # Prune the list of suggestions to improve speed
+  pruneSuggestions: (prefix, suggestions) ->
+    if prefix.length > 0
+      upperPrefix = prefix.toUpperCase()
+      prunedSuggestions = (suggestion for suggestion in suggestions when suggestion.snippet.toUpperCase().indexOf(upperPrefix) > -1)
+
+    return prunedSuggestions
+
   # Order the suggestions based on the prefix
   orderSuggestions: (prefix, suggestions) ->
-    # There are more efficient sorting methods but this is simple and the task is quick
-    suggestionSwapped = suggestions.length > 1
-    upperPrefix = prefix.toUpperCase()
-    while suggestionSwapped
-      suggestionSwapped = false
-      for index in [0...suggestions.length - 1]
-        current = suggestions[index].snippet.toUpperCase().indexOf(upperPrefix)
-        next = suggestions[index + 1].snippet.toUpperCase().indexOf(upperPrefix)
-        if current >= 0 and next >= 0
-          if current > next
-            suggestionSwapped = true
-            temp = suggestions[index]
-            suggestions[index] = suggestions[index + 1]
-            suggestions[index + 1] = temp
-        else if next >= 0
-          suggestionSwapped = true
-          temp = suggestions[index]
-          suggestions[index] = suggestions[index + 1]
-          suggestions[index + 1] = temp
+    if prefix.length > 0
+      upperPrefix = prefix.toUpperCase()
+      suggestions.sort (a, b) ->
+        return a.snippet.toUpperCase().indexOf(upperPrefix) - b.snippet.toUpperCase().indexOf(upperPrefix)
 
   # Fixes the suggestedPrefix.
   # There is an issue with the default function of using the prefix passed into getSuggestions,
