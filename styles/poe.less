@@ -1,26 +1,36 @@
 atom-text-editor::shadow {
-  .show.begin.poe {
-    color: #ccff99;
-  }
-  .filter.poe {
-    color: #66ccff;
-  }
-  .filter.value.poe {
-    color: #cceeff;
-  }
-  .action.poe {
-    color: #b3b3ff;
-  }
-  .action.value.poe {
-    color: #e6e6ff;
-  }
-  .operator.poe {
-    color: #ffffff;
-  }
-  .comment.poe {
-    color: #666666;
-  }
-  .hide.begin.poe {
-    color: #ccff99;
+  .poe {
+    //comments
+    .comment {
+      color: #666666;
+    }
+    //Show block
+    .show.begin {
+      color: #ccff99;
+    }
+    //Hide block
+    .hide.begin {
+      color: #ccff99;
+    }
+    //Filters
+    .filter {
+      color: #66ccff;
+    }
+    //Filter values
+    .filter.value {
+      color: #cceeff;
+    }
+    //Actions
+    .action {
+      color: #b3b3ff;
+    }
+    //Action values
+    .action.value {
+      color: #e6e6ff;
+    }
+    //Operators (> >= = <= <)
+    .operator {
+      color: #ffffff;
+    }
   }
 }
