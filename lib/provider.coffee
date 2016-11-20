@@ -916,7 +916,7 @@ module.exports =
     { snippet: '"Castle Ruins Map"' },
     { snippet: '"Ashen Wood Map"' },
     { snippet: '"Arachnid Tomb Map"' },
-    { snippet: '"Armory Map"' },
+    { snippet: '"Armoury Map"' },
     { snippet: '"Mud Geyser Map"' },
     { snippet: '"Shaped Beach Map"' },
     { snippet: '"Shaped Ghetto Map"' },
@@ -1002,7 +1002,7 @@ module.exports =
     { snippet: '"Shaped Castle Ruins Map"' },
     { snippet: '"Shaped Ashen Wood Map"' },
     { snippet: '"Shaped Arachnid Tomb Map"' },
-    { snippet: '"Shaped Armory Map"' },
+    { snippet: '"Shaped Armoury Map"' },
     { snippet: '"Shaped Mud Geyser Map"' },
     #Tier 13
     { snippet: '"Lair Map"' },
