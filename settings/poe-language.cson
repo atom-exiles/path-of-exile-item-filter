@@ -1,0 +1,6 @@
+'.source.poe':
+  'editor':
+    'commentStart': '# '
+    'increaseIndentPattern': '(?x)
+        ^ \\s* (Show|Hide) \\s* ([#]+ .*)* $'
+    'decreaseIndentPattern': '^\\s+(Show|Hide)'

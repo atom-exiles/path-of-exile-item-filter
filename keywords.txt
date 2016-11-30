@@ -1,0 +1,24 @@
+NOTE: all values may appear surrounded by double quotation marks, including numbers.
+      ~ denotes a case-insensitive value.
+
+Show [#...]
+Hide [#...]
+
+ItemLevel [Operator] <Number(0-100)>
+DropLevel [Operator] <Number(0-100)>
+Quality [Operator] <Number(0-20)>
+Rarity [Operator] <Word(Normal, Magic, Rare, Unique)>
+Class	<String[]>
+BaseType <String[]>
+Sockets [Operator] <Number(0-6)>
+LinkedSockets [Operator] <Number(0, 2-6)>
+SocketGroup	<~Group(R, G, B, W)>
+Height [Operator] <Number(1-4)>
+Width [Operator] <Number(1-2)>
+Identified <~Word(true, false)>
+
+SetBorderColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>]
+SetTextColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>]
+SetBackgroundColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>]
+PlayAlertSound <Number(1-9)> <Number(0-300)>
+SetFontSize <Number(18-45)>
