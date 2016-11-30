@@ -768,7 +768,7 @@ module.exports =
     { snippet: '"Arctic Breath"' },
     { snippet: '"Assassin\'s Mark"' },
     { snippet: '"Ball Lightning"' },
-    { snippet: '"Blight"' },
+    { snippet: 'Blight' },
     { snippet: '"Bone Offering"' },
     { snippet: 'Clarity' },
     { snippet: '"Cold Snap"' },
