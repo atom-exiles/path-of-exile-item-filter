@@ -46,9 +46,9 @@
         'name': 'constant.number.poe'
   'word':
     'name': 'string.word.poe'
-    'match': '\\s*([A-Za-z\u00F6]+)'
+    'match': '\\s*([A-Za-z\u00F6\\-]+)'
   'string':
-    'match': '\\s*(\"[ \'0-9A-Za-z\u00F6()]+\")'
+    'match': '\\s*(\"[ \'0-9A-Za-z\u00F6()\\-]+\")'
     'captures':
       '1':
         'name': 'string.quotation.poe'
