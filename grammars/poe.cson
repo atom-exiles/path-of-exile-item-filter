@@ -111,7 +111,7 @@
       }
       {
         'name': 'filter.corrupted.poe'
-        'begin': '^\\s*(Corrupted)\\s'
+        'begin': '(?i)^\\s*(Corrupted)\\s'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.corrupted.poe'
