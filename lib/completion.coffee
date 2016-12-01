@@ -23,6 +23,7 @@ module.exports =
     { snippet: 'Class ${1:class}' },
     { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
     { snippet: 'Identified ${1:True}' },
+    { snippet: 'Corrupted ${1:True}' },
     { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
     { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
     { snippet: 'Quality ${1:[operator]} ${2:quality}' },

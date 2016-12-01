@@ -110,6 +110,17 @@
         ]
       }
       {
+        'name': 'filter.corrupted.poe'
+        'begin': '^\\s*(Corrupted)\\s'
+        'beginCaptures':
+          '1':
+            'name': 'keyword.cond.corrupted.poe'
+        'end': '\\s*$'
+        'patterns': [
+          { 'include': '#boolean' }
+        ]
+      }
+      {
         'begin': '^\\s*(ItemLevel)\\s'
         'beginCaptures':
           '1':
