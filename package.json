@@ -1,6 +1,6 @@
 {
   "name": "path-of-exile-item-filter",
-  "main": "./lib/path-of-exile-item-filter",
+  "main": "./lib/main",
   "version": "0.1.5",
   "description": "A grammar implementation for Path of Exile item filters",
   "activationCommands": {},
@@ -10,10 +10,11 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {},
+  "devDependencies": {},
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
-        "2.0.0": "provide"
+        "2.0.0": "provideCompletion"
       }
     }
   }

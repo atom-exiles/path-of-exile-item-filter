@@ -23,6 +23,7 @@ module.exports =
     { snippet: 'Class ${1:class}' },
     { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
     { snippet: 'Identified ${1:True}' },
+    { snippet: 'Corrupted ${1:True}' },
     { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
     { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
     { snippet: 'Quality ${1:[operator]} ${2:quality}' },
@@ -242,6 +243,8 @@ module.exports =
     { snippet: '"Unset Ring"' },
     { snippet: '"Steel Ring"' },
     { snippet: '"Opal Ring"' },
+    #Breach
+    { snippet: '"Breach Ring"' }
   ]
 
   currency: [
@@ -405,6 +408,19 @@ module.exports =
     { snippet: '"Essence of Horror"' },
     { snippet: '"Essence of Delirium"' },
     { snippet: '"Remnant of Corruption"' },
+    #Breach
+    { snippet: 'Splinter' }, #Convenience
+    { snippet: 'Blessing' }, #Convenience
+    { snippet: '"Splinter of Xoph"' },
+    { snippet: '"Splinter of Tul"' },
+    { snippet: '"Splinter of Esh"' },
+    { snippet: '"Splinter of Uul-Netol"' },
+    { snippet: '"Splinter of Chayula"' },
+    { snippet: '"Blessing of Xoph"' },
+    { snippet: '"Blessing of Tul"' },
+    { snippet: '"Blessing of Esh"' },
+    { snippet: '"Blessing of Uul-Netol"' },
+    { snippet: '"Blessing of Chayula"' }
   ]
 
   divcards: [
@@ -657,6 +673,7 @@ module.exports =
     { snippet: 'Barrage' },
     { snippet: '"Bear Trap"' },
     { snippet: '"Bladefall"' },
+    { snippet: '"Blade Flurry"'},
     { snippet: '"Blade Vortex"' },
     { snippet: '"Blast Rain"' },
     { snippet: '"Blink Arrow"' },
@@ -752,6 +769,7 @@ module.exports =
     { snippet: '"Arctic Breath"' },
     { snippet: '"Assassin\'s Mark"' },
     { snippet: '"Ball Lightning"' },
+    { snippet: 'Blight' },
     { snippet: '"Bone Offering"' },
     { snippet: 'Clarity' },
     { snippet: '"Cold Snap"' },
@@ -794,6 +812,7 @@ module.exports =
     { snippet: '"Raise Spectre"' },
     { snippet: '"Raise Zombie"' },
     { snippet: '"Righteous Fire"' },
+    { snippet: '"Scorching Ray"' },
     { snippet: '"Shock Nova"' },
     { snippet: 'Spark' },
     { snippet: '"Spirit Offering"' },
@@ -811,6 +830,7 @@ module.exports =
     { snippet: '"Added Lightning Damage Support"' },
     { snippet: '"Blasphemy Support"' },
     { snippet: '"Cast when Stunned Support"' },
+    { snippet: '"Cast while Channelling Support"' },
     { snippet: '"Chance to Ignite Support"' },
     { snippet: '"Concentrated Effect Support"' },
     { snippet: '"Controlled Destruciton Support"' },
@@ -851,7 +871,8 @@ module.exports =
     { snippet: '"Vaal Summon Skeletons"' },
     #white gems
     { snippet: '"Detonate Mines"' },
-    { snippet: 'Portal' }
+    { snippet: 'Portal' },
+    { snippet: '"Vaal Breach"' }
   ]
 
   jewels: [
@@ -1077,6 +1098,13 @@ module.exports =
     { snippet: '"Fragment of the Hydra"' },
     { snippet: '"Fragment of the Minotaur"' },
     { snippet: '"Fragment of the Phoenix"' },
+    #Breach
+    { snippet: 'Breachstone' }, #Convenience
+    { snippet: '"Xoph\'s Breachstone"' },
+    { snippet: '"Tul\'s Breachstone"' },
+    { snippet: '"Esh\'s Breachstone"' },
+    { snippet: '"Uul-Netol\'s Breachstone"' },
+    { snippet: '"Chayula\'s Breachstone"' }
   ]
 
   flasks: [
@@ -1926,8 +1954,9 @@ module.exports =
                                        @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
                                        @bodyArmour, @quivers, @boots, @gloves, @helmets, @shields)
 
-    if /filter\..*\.operator/.test(scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]) or prefix == '[operator]'
-      suggestions = @operators
+    # TODO(glen): figure out another way to do this
+    # if /filter\..*\.operator/.test(scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]) or prefix == '[operator]'
+    #   suggestions = @operators
 
     @setReplacementPrefix(prefix, suggestions)
     if prefix not in @defaults

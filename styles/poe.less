@@ -1,36 +1,59 @@
-atom-text-editor::shadow {
-  .poe {
-    //comments
-    .comment {
-      color: #666666;
+@import "ui-variables.less";
+@import "syntax-variables.less";
+
+atom-text-editor::shadow .poe {
+  .keyword {
+    &.block {
+      color: @syntax-color-class
     }
-    //Show block
-    .show.begin {
-      color: #ccff99;
+
+    &.cond {
+      color: lighten(@syntax-color-function, 5%)
     }
-    //Hide block
-    .hide.begin {
-      color: #ccff99;
+
+    &.action {
+      color: darken(@syntax-color-function, 5%)
     }
-    //Filters
-    .filter {
-      color: #66ccff;
+
+    &.operator {
+      color: @syntax-text-color
     }
-    //Filter values
-    .filter.value {
-      color: #cceeff;
+  }
+
+  .comment {
+    &.trailing {
     }
-    //Actions
-    .action {
-      color: #b3b3ff;
+
+    &.line {
     }
-    //Action values
-    .action.value {
-      color: #e6e6ff;
+  }
+
+  .constant {
+    &.number {
+
     }
-    //Operators (> >= = <= <)
-    .operator {
-      color: #ffffff;
+  }
+
+  .string {
+    &.word {
+
+    }
+
+    &.quotation {
+
+    }
+
+    &.rarity {
+      
+    }
+
+    &.socket-group {
+
+    }
+
+
+    &.boolean {
+
     }
   }
 }

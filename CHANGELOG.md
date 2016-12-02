@@ -13,9 +13,17 @@
 * Atlas of Worlds
 * Quivers
 * Spelling mistakes
-* Thanks GlenCFL for the help
 
 ## 0.1.4 - Fifth Release
-* Divination Cards (Thanks to GlenCFL)
+* Divination Cards
 * Improved suggestion filtering
 * Added text highlighting
+
+## 0.1.5 - Sixth Release
+* Fixed several typos in map names
+
+## 0.1.6 - Seventh Release
+* Added 'toggle-line-comments' support
+* Revamp of the grammar to work well with syntax themes
+* Added the new 2.4.2 active gems
+* Support for 2.5 and Breach league
