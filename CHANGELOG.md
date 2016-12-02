@@ -27,3 +27,4 @@
 * Revamp of the grammar to work well with syntax themes
 * Added the new 2.4.2 active gems
 * Support for 2.5 and Breach league
+* Added support for Corrupted filter
