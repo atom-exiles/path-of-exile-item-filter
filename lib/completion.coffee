@@ -1505,6 +1505,10 @@ module.exports =
     { snippet: '"Profane Wand"' }
   ]
 
+  fishingRods: [
+    { snippet: '"Fishing Rod"'}
+  ]
+
   bodyArmour: [
     { snippet: '"Plate Vest"' },
     { snippet: '"Shabby Jerkin"' },
@@ -1951,7 +1955,7 @@ module.exports =
 
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = suggestions.concat(@quest, @amulets, @talisman, @belts, @rings, @currency, @divcards, @skills, @jewels, @maps, @fragments, @flasks,
-                                       @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand,
+                                       @bows, @claws, @daggers, @oneHandAxe, @oneHandMace, @oneHandSword, @thrustingOneHandSword, @sceptre, @staff, @twoHandAxe, @twoHandMace, @twoHandSword, @wand, @fishingRods,
                                        @bodyArmour, @quivers, @boots, @gloves, @helmets, @shields)
 
     # TODO(glen): figure out another way to do this
