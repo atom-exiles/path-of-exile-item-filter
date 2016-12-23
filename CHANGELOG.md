@@ -22,9 +22,14 @@
 ## 0.1.5 - Sixth Release
 * Fixed several typos in map names
 
-## 0.1.6 - Seventh Release
+## 0.1.7 - Seventh Release
 * Added 'toggle-line-comments' support
 * Revamp of the grammar to work well with syntax themes
 * Added the new 2.4.2 active gems
 * Support for 2.5 and Breach league
 * Added support for Corrupted filter
+
+## 0.1.8 - Eighth Release
+* Added the 15 new divination cards from 2.5.1
+* Allow empty lines in Show and Hide blocks
+* Fix for the Corrupted rule, as it is case sensitive after all
