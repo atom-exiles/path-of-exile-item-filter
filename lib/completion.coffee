@@ -1891,7 +1891,7 @@ module.exports =
     { snippet: '"Crested Tower Shield"' },
     { snippet: '"Lacewood Spirit Shield"' },
     { snippet: '"Ironwood Buckler"' },
-    { snippet: '"Alder Spike Shield"' },
+    { snippet: '"Alder Spiked Shield"' },
     { snippet: '"Shagreen Tower Shield"' },
     { snippet: '"Teak Round Shield"' },
     { snippet: '"Branded Kite Shield"' },
