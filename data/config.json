@@ -1,0 +1,88 @@
+{
+  "generalSettings": {
+    "title": "General",
+    "type": "object",
+    "order": 1,
+    "properties": {
+      "enableCompletion": {
+        "title": "Enable Autocompletion",
+        "description": "Enable or disable autocompletion within item filters.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "enableLinter": {
+        "title": "Enable Linter",
+        "description": "Enable or disable error checking within item filters.",
+        "type": "boolean",
+        "default": true,
+        "order": 2
+      }
+    }
+  },
+  "dataSettings": {
+    "title": "Data",
+    "type": "object",
+    "order": 2,
+    "properties": {
+      "enableLeague": {
+        "title": "League-specific Items",
+        "description": "Allow the use of league-specific items within item filters.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "enableLegacy": {
+        "title": "Legacy Items",
+        "description": "Allow the use of items that are unobtainable in the current temporary leagues.",
+        "type": "boolean",
+        "default": false,
+        "order": 2
+      },
+      "enableRecipe": {
+        "title": "Vendor Recipe Items",
+        "description": "Allow the use of items which are only obtainable through vendor recipes.",
+        "type": "boolean",
+        "default": false,
+        "order": 3
+      },
+      "classWhitelist": {
+        "title": "Item Class Whitelist",
+        "description": "Allow the following additonal item classes to be used within filter files. Multiple entries should be separated by a comma.",
+        "type": "array",
+        "default": [],
+        "order": 4,
+        "items": { "type": "string" }
+      },
+      "baseWhitelist": {
+        "title": "Item Base Whitelist",
+        "description": "Allow the following additonal base types to be used within filter files. Multiple entries should be separated by a comma.",
+        "type": "array",
+        "default": [],
+        "order": 5,
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "linterSettings": {
+    "title": "Linter",
+    "type": "object",
+    "order": 4,
+    "properties": {
+      "enableWarnings": {
+        "title": "Enable Warnings",
+        "description": "Display warnings for potential issues within item filters.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "enableDebugging": {
+        "title": "Enable Debugging",
+        "description": "Enable extra debugging decorations within the editor.",
+        "type": "boolean",
+        "default": false,
+        "order": 2
+      }
+    }
+  }
+}
