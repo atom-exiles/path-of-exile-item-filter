@@ -33,3 +33,5 @@
 * Added the 15 new divination cards from 2.5.1
 * Allow empty lines in Show and Hide blocks
 * Fix for the Corrupted rule, as it is case sensitive after all
+* Added fishing rods
+* Fixed a typo in Alder Spiked Shield
