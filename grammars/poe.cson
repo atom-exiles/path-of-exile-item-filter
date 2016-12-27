@@ -13,7 +13,7 @@
         'name': 'keyword.block.show.poe'
       '3':
         'name': 'comment.trailing.poe'
-    'end': "(?=^\\s*(Show|Hide)|^(\r|\n)*$)"
+    'end': "(?=^\\s*(Show|Hide))"
     'patterns': [
       { 'include': '#line_comment' }
       { 'include': '#conditionals' }
@@ -28,7 +28,7 @@
         'name': 'keyword.block.hide.poe'
       '3':
         'name': 'comment.trailing.poe'
-    'end': "(?=^\\s*(Show|Hide)|^(\r|\n)*$)"
+    'end': "(?=^\\s*(Show|Hide))"
     'patterns': [
       { 'include': '#line_comment' }
       { 'include': '#conditionals' }
@@ -39,6 +39,9 @@
   'line_comment':
     'name': 'comment.line.poe'
     'match': '^\\s*#+.*$'
+  'empty_line':
+    'name': 'line.empty'
+    'match': '^\\s*$'
   'number':
     'match': '\\s*(([0-9]+)|("[0-9]+"))'
     'captures':
@@ -74,6 +77,7 @@
         'name': 'keyword.operator.poe'
   'conditionals':
     'patterns': [
+      { 'include': '#empty_line' }
       {
         'name': 'filter.class.poe'
         'begin': '^\\s*(Class)\\s'
@@ -111,7 +115,7 @@
       }
       {
         'name': 'filter.corrupted.poe'
-        'begin': '(?i)^\\s*(Corrupted)\\s'
+        'begin': '^\\s*(Corrupted)\\s'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.corrupted.poe'
@@ -222,6 +226,7 @@
     ]
   'actions':
     'patterns': [
+      { 'include': '#empty_line' }
       {
         'begin': '^\\s*(SetBorderColor)'
         'beginCaptures':
