@@ -35,3 +35,7 @@
 * Fix for the Corrupted rule, as it is case sensitive after all
 * Added fishing rods
 * Fixed a typo in Alder Spiked Shield
+
+## TBD - Ninth Release
+* Began using JSON files for our data
+* Added configuration settings

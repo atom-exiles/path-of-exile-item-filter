@@ -16,6 +16,7 @@ SocketGroup	<~Group(R, G, B, W)>
 Height [Operator] <Number(1-4)>
 Width [Operator] <Number(1-2)>
 Identified <~Word(true, false)>
+Corrupted <~Word(true, false)>
 
 SetBorderColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>]
 SetTextColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>]
