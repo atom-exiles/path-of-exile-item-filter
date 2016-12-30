@@ -97,6 +97,17 @@ module.exports =
     '[operator]'
   ]
 
+  blocksWithOperators: [
+    'filter.item-level.poe'
+    'filter.drop-level.poe'
+    'filter.quality.poe'
+    'filter.sockets.poe'
+    'filter.linked-sockets.poe'
+    'filter.height.poe'
+    'filter.width.poe'
+    # 'filter.rarity.poe'
+  ]
+
   defaults: [
     'Filter', 'Action',
     #filters
@@ -128,8 +139,11 @@ module.exports =
     if 'hide.block.poe' == scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]
       suggestions = @filters
 
-    if 'filter.rarity.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
-      suggestions = @rarity
+    if 'filter.rarity.poe' in scopeDescriptor.scopes # and prefix not in @excludedPrefixes
+      if @isFirstToken(editor, bufferPosition) or prefix is '[operator]'
+        suggestions = @operators
+      else
+        suggestions = @rarity
 
     if 'filter.identified.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = @boolean
@@ -140,9 +154,9 @@ module.exports =
     if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = @itemData.bases
 
-    # TODO(glen): figure out another way to do this
-    # if /filter\..*\.operator/.test(scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1]) or prefix == '[operator]'
-    #   suggestions = @operators
+    if scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1] in @blocksWithOperators
+      if @isFirstToken(editor, bufferPosition) or prefix is '[operator]'
+        suggestions = @operators
 
     @setReplacementPrefix(prefix, suggestions)
     if prefix not in @defaults
@@ -150,6 +164,19 @@ module.exports =
       @orderSuggestions(prefix, suggestions)
 
     return suggestions
+
+  isFirstToken: (editor, bufferPosition) ->
+    line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
+    regex = new RegExp('^\\s*\\S+\\s*(\\S*)')
+    result = regex.exec(line)
+
+    trailingText = result[1]
+    if trailingText?
+      if trailingText.length > 0
+        return false
+      else
+        return true
+    true
 
   getPrefix: (editor, bufferPosition) ->
     line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
