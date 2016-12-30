@@ -942,7 +942,6 @@
     "Cobalt Jewel",
     "Prismatic Jewel"
   ],
-  "Maces": [],
   "Claws": [
     "Nailed Fist",
     "Sharktooth Claw",
@@ -1707,5 +1706,6 @@
   "Gems": [],
   "Skill Gems": [],
   "Swords": [],
-  "Axes": []
+  "Axes": [],
+  "Maces": []
 }

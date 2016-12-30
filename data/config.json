@@ -10,13 +10,6 @@
         "type": "boolean",
         "default": true,
         "order": 1
-      },
-      "enableLinter": {
-        "title": "Enable Linter",
-        "description": "Enable or disable error checking within item filters.",
-        "type": "boolean",
-        "default": true,
-        "order": 2
       }
     }
   },
@@ -61,27 +54,6 @@
         "default": [],
         "order": 5,
         "items": { "type": "string" }
-      }
-    }
-  },
-  "linterSettings": {
-    "title": "Linter",
-    "type": "object",
-    "order": 4,
-    "properties": {
-      "enableWarnings": {
-        "title": "Enable Warnings",
-        "description": "Display warnings for potential issues within item filters.",
-        "type": "boolean",
-        "default": true,
-        "order": 1
-      },
-      "enableDebugging": {
-        "title": "Enable Debugging",
-        "description": "Enable extra debugging decorations within the editor.",
-        "type": "boolean",
-        "default": false,
-        "order": 2
       }
     }
   }

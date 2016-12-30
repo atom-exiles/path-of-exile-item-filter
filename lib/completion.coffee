@@ -122,6 +122,10 @@ module.exports =
   # Required: Return a promise, an array of suggestions, or null.
   getSuggestions: ({editor, bufferPosition, scopeDescriptor, prefix}) ->
     suggestions = []
+
+    if not settings.general.enableCompletion.get()
+      return suggestions
+
     # The default prefix doesn't include the # symbol which is desired for headers.
     prefix = @getPrefix(editor, bufferPosition)
 
