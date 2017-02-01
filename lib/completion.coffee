@@ -155,7 +155,7 @@ module.exports =
     if 'filter.class.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = @itemData.classes
 
-    if 'filter.basetype.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
+    if 'filter.base-type.poe' in scopeDescriptor.scopes and prefix not in @excludedPrefixes
       suggestions = @itemData.bases
 
     if scopeDescriptor.scopes[scopeDescriptor.scopes.length - 1] in @blocksWithOperators

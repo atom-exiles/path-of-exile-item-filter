@@ -91,7 +91,7 @@
         ]
       }
       {
-        'name': 'filter.basetype.poe'
+        'name': 'filter.base-type.poe'
         'begin': '^\\s*(BaseType)\\s'
         'beginCaptures':
           '1':

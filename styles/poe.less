@@ -1,58 +1,58 @@
 @import "ui-variables.less";
 @import "syntax-variables.less";
 
-atom-text-editor::shadow .poe {
-  .keyword {
-    &.block {
+atom-text-editor.editor .syntax--poe {
+  .syntax--keyword {
+    &.syntax--block {
       color: @syntax-color-class
     }
 
-    &.cond {
+    &.syntax--cond {
       color: lighten(@syntax-color-function, 5%)
     }
 
-    &.action {
+    &.syntax--action {
       color: darken(@syntax-color-function, 5%)
     }
 
-    &.operator {
+    &.syntax--operator {
       color: @syntax-text-color
     }
   }
 
-  .comment {
-    &.trailing {
+  .syntax--comment {
+    &.syntax--trailing {
     }
 
-    &.line {
-    }
-  }
-
-  .constant {
-    &.number {
-
+    &.syntax--line {
     }
   }
 
-  .string {
-    &.word {
+  .syntax--constant {
+    &.syntax--number {
+
+    }
+  }
+
+  .syntax--string {
+    &.syntax--word {
 
     }
 
-    &.quotation {
+    &.syntax--quotation {
 
     }
 
-    &.rarity {
-      
-    }
-
-    &.socket-group {
+    &.syntax--rarity {
 
     }
 
+    &.syntax--socket-group {
 
-    &.boolean {
+    }
+
+
+    &.syntax--boolean {
 
     }
   }
