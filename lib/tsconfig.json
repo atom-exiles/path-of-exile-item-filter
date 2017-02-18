@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "noLib": false,
+    "lib": [
+      "es5", "dom", "es2015.promise", "es2015.collection", "es2016.array.include"
+    ],
+    "declaration": false,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "outDir": "../dist",
+    "rootDir": ".",
+    "sourceMap": false,
+    "removeComments": true,
+    "paths": {
+    }
+  }
+}

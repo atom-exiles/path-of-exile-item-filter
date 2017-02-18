@@ -7,7 +7,7 @@
   { 'include': '#line_comment' }
   {
     'name': 'show.block.poe'
-    'begin': '^\\s*(Show)(\\s*(#.*))?$'
+    'begin': '^\\s*(Show)(\\s*(#.*)?)$'
     'beginCaptures':
       '1':
         'name': 'keyword.block.show.poe'
@@ -18,11 +18,12 @@
       { 'include': '#line_comment' }
       { 'include': '#conditionals' }
       { 'include': '#actions' }
+      { 'include': '#unknown' }
     ]
   }
   {
     'name': 'hide.block.poe'
-    'begin': '^\\s*(Hide)(\\s*(#.*))?$'
+    'begin': '^\\s*(Hide)(\\s*(#.*)?)$'
     'beginCaptures':
       '1':
         'name': 'keyword.block.hide.poe'
@@ -32,6 +33,7 @@
     'patterns': [
       { 'include': '#line_comment' }
       { 'include': '#conditionals' }
+      { 'include': '#unknown' }
     ]
   }
 ]
@@ -39,8 +41,11 @@
   'line_comment':
     'name': 'comment.line.poe'
     'match': '^\\s*#+.*$'
+  'unknown':
+    'name': 'line.unknown.poe'
+    'match': '^.*$'
   'empty_line':
-    'name': 'line.empty'
+    'name': 'line.empty.poe'
     'match': '^\\s*$'
   'number':
     'match': '\\s*(([0-9]+)|("[0-9]+"))'
@@ -71,7 +76,7 @@
       '1':
         'name': 'string.socket-group.poe'
   'operator':
-    'match': '\\s*(>|>=|<|<=|=)'
+    'match': '\\s*(>=|<=|>|<|=)'
     'captures':
       '1':
         'name': 'keyword.operator.poe'

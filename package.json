@@ -1,6 +1,6 @@
 {
   "name": "path-of-exile-item-filter",
-  "main": "./lib/main",
+  "main": "./dist/main",
   "version": "0.1.8",
   "description": "A grammar implementation for Path of Exile item filters",
   "activationCommands": {},
@@ -13,7 +13,11 @@
     "atom-package-deps": "^4.3.1",
     "chai": "^3.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/jquery": "^2.0.34",
+    "@types/node": "^6.0.46"
+  },
   "package-deps": [
     "linter"
   ],

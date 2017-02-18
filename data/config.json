@@ -6,10 +6,17 @@
     "properties": {
       "enableCompletion": {
         "title": "Enable Autocompletion",
-        "description": "Enable or disable autocompletion within item filters.",
+        "description": "Enable autocompletion within loot filters.",
         "type": "boolean",
         "default": true,
         "order": 1
+      },
+      "enableLinter": {
+        "title": "Enable Linter",
+        "description": "Enable error checking on loot filters.",
+        "type": "boolean",
+        "default": true,
+        "order": 2
       }
     }
   },
@@ -20,7 +27,7 @@
     "properties": {
       "enableLeague": {
         "title": "League-specific Items",
-        "description": "Allow the use of league-specific items within item filters.",
+        "description": "Allow the use of league-specific items within loot filters.",
         "type": "boolean",
         "default": true,
         "order": 1
@@ -54,6 +61,38 @@
         "default": [],
         "order": 5,
         "items": { "type": "string" }
+      }
+    }
+  },
+  "linterSettings": {
+    "title": "Linter",
+    "type": "object",
+    "order": 3,
+    "properties": {
+      "enableWarnings": {
+        "title": "Warnings",
+        "description": "Enable linter warnings within the editor.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "performanceTips": {
+        "title": "Performance Tips",
+        "description": "Provide performance tips for loot filters as warnings.",
+        "type": "boolean",
+        "default": false,
+        "order": 2
+      },
+      "method": {
+        "title": "Method",
+        "description": "Determines when filter files will be processed by the linter.",
+        "type": "string",
+        "default": "onEdit",
+        "order": 3,
+        "enum": [
+          { "value": "onEdit", "description": "On Edit: process loot filters as they are modified." },
+          { "value": "onSave", "description": "On Save: only process loot filters on save and load." }
+        ]
       }
     }
   }
