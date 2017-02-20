@@ -144,6 +144,15 @@ function isPartialOperator(editor, position) {
     else
         return false;
 }
+function getPrefix(editor, position) {
+    var line = editor.getTextInBufferRange([[position.row, 0], position]);
+    var prefixRegex = /([\s]*([^\s]*))*$/;
+    var result = prefixRegex.exec(line);
+    if (result)
+        return result[2];
+    else
+        return '';
+}
 function setReplacementPrefix(editor, position, prefix, suggestions) {
     for (var _i = 0, suggestions_1 = suggestions; _i < suggestions_1.length; _i++) {
         var suggestion = suggestions_1[_i];
@@ -187,17 +196,18 @@ function getSuggestions(args) {
     }
     var suggestions = new Array();
     var shouldPruneSuggestions = true;
+    var prefix = getPrefix(args.editor, args.bufferPosition);
     var currentScope = args.scopeDescriptor.scopes[args.scopeDescriptor.scopes.length - 1];
     if (currentScope == 'source.poe') {
         suggestions = suggestions.concat(blocks);
     }
     else if (currentScope == 'line.empty.poe' || currentScope == 'line.unknown.poe') {
         if (args.scopeDescriptor.scopes.indexOf('show.block.poe') != -1) {
-            if (args.prefix == 'Action') {
+            if (prefix == 'Action') {
                 suggestions = suggestions.concat(actions);
                 shouldPruneSuggestions = false;
             }
-            else if (args.prefix == 'Filter') {
+            else if (prefix == 'Filter') {
                 suggestions = suggestions.concat(filters);
                 shouldPruneSuggestions = false;
             }
@@ -206,7 +216,7 @@ function getSuggestions(args) {
             }
         }
         else if (args.scopeDescriptor.scopes.indexOf('hide.block.poe') != -1) {
-            if (args.prefix == 'Filter') {
+            if (prefix == 'Filter') {
                 suggestions = suggestions.concat(filters);
                 shouldPruneSuggestions = false;
             }
@@ -217,11 +227,11 @@ function getSuggestions(args) {
     }
     else {
         if (args.scopeDescriptor.scopes.indexOf('filter.rarity.poe') != -1) {
-            if (isFirstToken(args.editor, args.bufferPosition) || args.prefix == '[operator]') {
+            if (isFirstToken(args.editor, args.bufferPosition) || prefix == '[operator]') {
                 suggestions = suggestions.concat(operators, rarity);
                 shouldPruneSuggestions = false;
             }
-            else if (args.prefix == 'rarity') {
+            else if (prefix == 'rarity') {
                 suggestions = suggestions.concat(rarity);
                 shouldPruneSuggestions = false;
             }
@@ -233,40 +243,72 @@ function getSuggestions(args) {
             }
         }
         else if (args.scopeDescriptor.scopes.indexOf('filter.identified.poe') != -1) {
-            if (!(args.prefix == "Identified")) {
+            if (!(prefix == "Identified")) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
                     suggestions = suggestions.concat(boolean);
                 }
             }
         }
         else if (args.scopeDescriptor.scopes.indexOf('filter.corrupted.poe') != -1) {
-            if (!(args.prefix == "Corrupted")) {
+            if (!(prefix == "Corrupted")) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
                     suggestions = suggestions.concat(boolean);
                 }
             }
         }
         else if (args.scopeDescriptor.scopes.indexOf('filter.class.poe') != -1) {
-            if (!(args.prefix == "Class")) {
+            if (prefix == "class") {
+                suggestions = suggestions.concat(validClasses);
+                shouldPruneSuggestions = false;
+            }
+            else if (!(prefix == "Class")) {
                 suggestions = suggestions.concat(validClasses);
             }
         }
         else if (args.scopeDescriptor.scopes.indexOf('filter.base-type.poe') != -1) {
-            if (!(args.prefix == "BaseType")) {
+            if (prefix == "type") {
+                suggestions = suggestions.concat(validBases);
+                shouldPruneSuggestions = false;
+            }
+            else if (!(prefix == "BaseType")) {
                 suggestions = suggestions.concat(validBases);
             }
         }
     }
-    setReplacementPrefix(args.editor, args.bufferPosition, args.prefix, suggestions);
+    setReplacementPrefix(args.editor, args.bufferPosition, prefix, suggestions);
     if (shouldPruneSuggestions) {
-        suggestions = pruneSuggestions(args.prefix, suggestions);
+        suggestions = pruneSuggestions(prefix, suggestions);
     }
     return suggestions;
+}
+function removeConsecutiveQuotes(editor, position) {
+    var leftCharLocation = new atom_1.Range([position.row, position.column - 1], position);
+    var rightCharLocation = new atom_1.Range(position, [position.row,
+        position.column + 1]);
+    var leftChar = editor.getTextInBufferRange(leftCharLocation);
+    var rightChar = editor.getTextInBufferRange(rightCharLocation);
+    if (leftChar == '"' && rightChar == '"') {
+        editor.setTextInBufferRange(rightCharLocation, "", { undo: 'skip' });
+    }
+}
+function insertedSuggestion(params) {
+    if (params.editor.hasMultipleCursors()) {
+        var cursorPositions = params.editor.getCursorBufferPositions();
+        for (var _i = 0, cursorPositions_1 = cursorPositions; _i < cursorPositions_1.length; _i++) {
+            var cursorPosition = cursorPositions_1[_i];
+            removeConsecutiveQuotes(params.editor, cursorPosition);
+        }
+    }
+    else {
+        var cursorPosition_1 = params.editor.getCursorBufferPosition();
+        removeConsecutiveQuotes(params.editor, cursorPosition_1);
+    }
 }
 exports.provider = {
     selector: '.source.poe',
     disableForSelector: '.source.poe .comment',
     inclusionPriority: 1,
     excludeLowerPriority: true,
-    getSuggestions: getSuggestions
+    getSuggestions: getSuggestions,
+    onDidInsertSuggestion: insertedSuggestion
 };

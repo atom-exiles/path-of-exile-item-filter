@@ -11,6 +11,12 @@ interface SuggestionParams {
   activatedManually: boolean
 }
 
+interface TextInsertionParams {
+  editor: AtomCore.TextEditor
+  triggerPosition: Point
+  suggestion: Suggestion
+}
+
 interface Suggestion {
   /** The text which will be inserted into the editor, in place of the prefix. */
   text?: string
@@ -222,6 +228,17 @@ function isPartialOperator(editor: AtomCore.TextEditor, position: Point): boolea
   else return false;
 }
 
+/** Returns a prefix that does not consume whitespace characters if they
+ *  do precede the current position in the buffer. */
+function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
+  const line = editor.getTextInBufferRange([[position.row, 0], position]);
+  const prefixRegex: RegExp = /([\s]*([^\s]*))*$/;
+  const result = prefixRegex.exec(line);
+
+  if(result) return result[2];
+  else return '';
+}
+
 /** Handles any special casing in regards to the prefix for autocompletion suggestions.
  *  For example, block elements will have the whitespace prepended onto the prefix,
  *  so that they are left aligned on column #0 on text insertion. */
@@ -273,7 +290,7 @@ function getSuggestions(args: SuggestionParams) {
 
   var suggestions = new Array<Suggestion>();
   var shouldPruneSuggestions = true;
-  // var prefix = args.prefix;
+  const prefix = getPrefix(args.editor, args.bufferPosition);
   var currentScope = args.scopeDescriptor.scopes[
       args.scopeDescriptor.scopes.length - 1];
 
@@ -283,17 +300,17 @@ function getSuggestions(args: SuggestionParams) {
     suggestions = suggestions.concat(blocks);
   } else if(currentScope == 'line.empty.poe' || currentScope == 'line.unknown.poe') {
     if(args.scopeDescriptor.scopes.indexOf('show.block.poe') != -1) {
-      if(args.prefix == 'Action') {
+      if(prefix == 'Action') {
         suggestions = suggestions.concat(actions);
         shouldPruneSuggestions = false;
-      } else if(args.prefix == 'Filter') {
+      } else if(prefix == 'Filter') {
         suggestions = suggestions.concat(filters);
         shouldPruneSuggestions = false;
       } else {
         suggestions = suggestions.concat(blocks, actions, filters);
       }
     } else if(args.scopeDescriptor.scopes.indexOf('hide.block.poe') != -1) {
-      if(args.prefix == 'Filter') {
+      if(prefix == 'Filter') {
         suggestions = suggestions.concat(filters);
         shouldPruneSuggestions = false;
       } else {
@@ -302,10 +319,10 @@ function getSuggestions(args: SuggestionParams) {
     }
   } else {
     if(args.scopeDescriptor.scopes.indexOf('filter.rarity.poe') != -1) {
-      if(isFirstToken(args.editor, args.bufferPosition) || args.prefix == '[operator]') {
+      if(isFirstToken(args.editor, args.bufferPosition) || prefix == '[operator]') {
         suggestions = suggestions.concat(operators, rarity);
         shouldPruneSuggestions = false;
-      } else if(args.prefix == 'rarity') {
+      } else if(prefix == 'rarity') {
         suggestions = suggestions.concat(rarity);
         shouldPruneSuggestions = false;
       } else if(isPartialOperator(args.editor, args.bufferPosition)) {
@@ -314,33 +331,71 @@ function getSuggestions(args: SuggestionParams) {
         suggestions = suggestions.concat(rarity);
       }
     } else if(args.scopeDescriptor.scopes.indexOf('filter.identified.poe') != -1) {
-      if(!(args.prefix == "Identified")) {
+      if(!(prefix == "Identified")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
           suggestions = suggestions.concat(boolean);
         }
       }
     } else if(args.scopeDescriptor.scopes.indexOf('filter.corrupted.poe') != -1) {
-      if(!(args.prefix == "Corrupted")) {
+      if(!(prefix == "Corrupted")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
           suggestions = suggestions.concat(boolean);
         }
       }
     } else if(args.scopeDescriptor.scopes.indexOf('filter.class.poe') != -1) {
-      if(!(args.prefix == "Class")) {
+      if(prefix == "class") {
+        suggestions = suggestions.concat(validClasses);
+        shouldPruneSuggestions = false;
+      } else if(!(prefix == "Class")) {
         suggestions = suggestions.concat(validClasses);
       }
     } else if(args.scopeDescriptor.scopes.indexOf('filter.base-type.poe') != -1) {
-      if(!(args.prefix == "BaseType")) {
+      if(prefix == "type") {
+        suggestions = suggestions.concat(validBases);
+        shouldPruneSuggestions = false;
+      } else if(!(prefix == "BaseType")) {
         suggestions = suggestions.concat(validBases);
       }
     }
   }
 
-  setReplacementPrefix(args.editor, args.bufferPosition, args.prefix, suggestions);
+  setReplacementPrefix(args.editor, args.bufferPosition, prefix, suggestions);
   if(shouldPruneSuggestions) {
-    suggestions = pruneSuggestions(args.prefix, suggestions)
+    suggestions = pruneSuggestions(prefix, suggestions)
   }
   return suggestions
+}
+
+/** Determines whether the given position in the editor is surrounded on both
+ *  sides by double quotation marks, removing one if so. */
+function removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
+  const leftCharLocation = new Range([position.row, position.column - 1],
+      position);
+  const rightCharLocation = new Range(position, [position.row,
+      position.column + 1]);
+  const leftChar = editor.getTextInBufferRange(leftCharLocation);
+  const rightChar = editor.getTextInBufferRange(rightCharLocation);
+
+  if(leftChar == '"' && rightChar == '"') {
+    editor.setTextInBufferRange(rightCharLocation, "", { undo: 'skip' });
+  }
+}
+
+/** Performs the buffer manipulations necessary following a suggestion insertion. */
+function insertedSuggestion(params: TextInsertionParams) {
+  // Whenever the user opens with quotation marks and accepts a suggestion,
+  // two closing quotation marks will be left at the end:
+  //  BaseType "Cha" -> accepts "Chaos Orb"
+  //  BaseType "Chaos Orb""
+  if(params.editor.hasMultipleCursors()) {
+    const cursorPositions = params.editor.getCursorBufferPositions();
+    for(var cursorPosition of cursorPositions) {
+      removeConsecutiveQuotes(params.editor, cursorPosition);
+    }
+  } else {
+    const cursorPosition = params.editor.getCursorBufferPosition();
+    removeConsecutiveQuotes(params.editor, cursorPosition);
+  }
 }
 
 export const provider = {
@@ -348,5 +403,6 @@ export const provider = {
   disableForSelector: '.source.poe .comment',
   inclusionPriority: 1,
   excludeLowerPriority: true,
-  getSuggestions: getSuggestions
+  getSuggestions: getSuggestions,
+  onDidInsertSuggestion: insertedSuggestion
 }

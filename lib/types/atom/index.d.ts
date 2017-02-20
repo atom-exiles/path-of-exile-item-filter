@@ -646,28 +646,109 @@ declare namespace AtomCore {
     getCurrentParagraphBufferRange(): TextBuffer.Range;
 
     // Mutating Text ==========================================================
-    // setText(text)
-    // setTextInBufferRange(range, text, [options])
-    // insertText(text, [options])
-    // insertNewline()
-    // delete()
-    // backspace()
-    // mutateSelectedText(fn)
-    // transpose()
-    // upperCase()
-    // lowerCase()
-    // toggleLineCommentsInSelection()
-    // insertNewlineBelow()
-    // insertNewlineAbove()
-    // deleteToBeginningOfWord()
-    // deleteToPreviousWordBoundary()
-    // deleteToNextWordBoundary()
-    // deleteToBeginningOfSubword()
-    // deleteToEndOfSubword()
-    // deleteToBeginningOfLine()
-    // deleteToEndOfLine()
-    // deleteToEndOfWord()
-    // deleteLine()
+    /** Replaces the entire contents of the buffer with the given string. */
+    setText(text: string): void;
+
+    /** Set the text in the given Range in buffer coordinates. */
+    setTextInBufferRange(range: TextBuffer.IRange, text: string, options?: {
+        normalizeLineEndings?: boolean, undo?: 'skip' }): void;
+    /** Set the text in the given Range in buffer coordinates. */
+    setTextInBufferRange(range: [TextBuffer.IPoint, TextBuffer.IPoint],
+        text: string, options?: { normalizeLineEndings?: boolean,
+        undo?: 'skip' }):void;
+    /** Set the text in the given Range in buffer coordinates. */
+    setTextInBufferRange(range: [[number, number], [number, number]],
+        text: string, options?: { normalizeLineEndings?: boolean,
+        undo?: 'skip' }): void;
+    /** Set the text in the given Range in buffer coordinates. */
+    setTextInBufferRange(range: [TextBuffer.IPoint, [number, number]],
+        text: string, options?: { normalizeLineEndings?: boolean,
+        undo?: 'skip' }): void;
+    /** Set the text in the given Range in buffer coordinates. */
+    setTextInBufferRange(range: [[number, number], TextBuffer.IPoint],
+        text: string, options?: { normalizeLineEndings?: boolean,
+        undo?: 'skip' }): void;
+
+    /* For each selection, replace the selected text with the given text. */
+    insertText(text: string, options?: { select?: boolean, autoIndent?: boolean,
+        autoIndentNewline?: boolean, autoDecreaseIndent?: boolean,
+        normalizeLineEndings?: boolean, undo?: 'skip' }): TextBuffer.Range|false;
+
+    /** For each selection, replace the selected text with a newline. */
+    insertNewline(): void;
+
+    /** For each selection, if the selection is empty, delete the character following
+     *  the cursor. Otherwise delete the selected text. */
+    delete(): void;
+
+    /** For each selection, if the selection is empty, delete the character preceding
+     *  the cursor. Otherwise delete the selected text. */
+    backspace(): void;
+
+    /** Mutate the text of all the selections in a single transaction.
+     *  All the changes made inside the given Function can be reverted with a single
+     *  call to ::undo. */
+    mutateSelectedText(fn: (selection: AtomCore.Selection, index: number) => void): void;
+
+    /** For each selection, transpose the selected text.
+     *  If the selection is empty, the characters preceding and following the cursor
+     *  are swapped. Otherwise, the selected characters are reversed. */
+    transpose(): void;
+
+    /** Convert the selected text to upper case.
+     *  For each selection, if the selection is empty, converts the containing word
+     *  to upper case. Otherwise convert the selected text to upper case. */
+    upperCase(): void;
+
+    /** Convert the selected text to lower case.
+     *  For each selection, if the selection is empty, converts the containing word
+     *  to upper case. Otherwise convert the selected text to upper case. */
+    lowerCase(): void;
+
+    /** Toggle line comments for rows intersecting selections.
+     *  If the current grammar doesn't support comments, does nothing. */
+    toggleLineCommentsInSelection(): void;
+
+    /** For each cursor, insert a newline at beginning the following line. */
+    insertNewlineBelow(): void;
+
+    /** For each cursor, insert a newline at the end of the preceding line. */
+    insertNewlineAbove(): void;
+
+    /** For each selection, if the selection is empty, delete all characters of the
+     *  containing word that precede the cursor. Otherwise delete the selected text. */
+    deleteToBeginningOfWord(): void;
+
+    /** Similar to ::deleteToBeginningOfWord, but deletes only back to the previous
+     *  word boundary. */
+    deleteToPreviousWordBoundary(): void;
+
+    /** Similar to ::deleteToEndOfWord, but deletes only up to the next word boundary. */
+    deleteToNextWordBoundary(): void;
+
+    /** For each selection, if the selection is empty, delete all characters of the
+     *  containing subword following the cursor. Otherwise delete the selected text. */
+    deleteToBeginningOfSubword(): void;
+
+    /** For each selection, if the selection is empty, delete all characters of the
+     *  containing subword following the cursor. Otherwise delete the selected text. */
+    deleteToEndOfSubword(): void;
+
+    /** For each selection, if the selection is empty, delete all characters of the
+     *  containing line that precede the cursor. Otherwise delete the selected text. */
+    deleteToBeginningOfLine(): void;
+
+    /** For each selection, if the selection is not empty, deletes the selection;
+     *  otherwise, deletes all characters of the containing line following the cursor.
+     *  If the cursor is already at the end of the line, deletes the following newline. */
+    deleteToEndOfLine(): void;
+
+    /** For each selection, if the selection is empty, delete all characters of the
+     *  containing word following the cursor. Otherwise delete the selected text. */
+    deleteToEndOfWord(): void;
+
+    /** Delete all lines intersecting selections. */
+    deleteLine(): void;
 
     // History ================================================================
     // undo()
@@ -711,40 +792,129 @@ declare namespace AtomCore {
     // getMarkerCount()
 
     // Cursors ================================================================
-    // getCursorBufferPosition()
-    // getCursorBufferPositions()
-    // setCursorBufferPosition(position, [options])
-    // getCursorAtScreenPosition(position)
-    // getCursorScreenPosition()
-    // getCursorScreenPositions()
-    // setCursorScreenPosition(position, [options])
-    // addCursorAtBufferPosition(bufferPosition)
-    // addCursorAtScreenPosition(screenPosition)
-    // hasMultipleCursors()
-    // moveUp([lineCount])
-    // moveDown([lineCount])
-    // moveLeft([columnCount])
-    // moveRight([columnCount])
-    // moveToBeginningOfLine()
-    // moveToBeginningOfScreenLine()
-    // moveToFirstCharacterOfLine()
-    // moveToEndOfLine()
-    // moveToEndOfScreenLine()
-    // moveToBeginningOfWord()
-    // moveToEndOfWord()
-    // moveToTop()
-    // moveToBottom()
-    // moveToBeginningOfNextWord()
-    // moveToPreviousWordBoundary()
-    // moveToNextWordBoundary()
-    // moveToPreviousSubwordBoundary()
-    // moveToNextSubwordBoundary()
-    // moveToBeginningOfNextParagraph()
-    // moveToBeginningOfPreviousParagraph()
-    // getLastCursor()
-    // getWordUnderCursor([options])
-    // getCursors()
-    // getCursorsOrderedByBufferPosition()
+    /** Get the position of the most recently added cursor in buffer coordinates. */
+    getCursorBufferPosition(): TextBuffer.Point;
+
+    /** Get the position of all the cursor positions in buffer coordinates. */
+    getCursorBufferPositions(): Array<TextBuffer.Point>;
+
+    /** Move the cursor to the given position in buffer coordinates.
+     *  If there are multiple cursors, they will be consolidated to a single cursor. */
+    setCursorBufferPosition(position: TextBuffer.IPoint, options:
+        { autoscroll: boolean }): void;
+    /** Move the cursor to the given position in buffer coordinates.
+     *  If there are multiple cursors, they will be consolidated to a single cursor. */
+    setCursorBufferPosition(position: [number, number], options?:
+        { autoscroll: boolean }): void;
+
+    /** Get a Cursor at given screen coordinates Point. */
+    getCursorAtScreenPosition(position: TextBuffer.IPoint): AtomCore.Cursor|undefined;
+    /** Get a Cursor at given screen coordinates Point. */
+    getCursorAtScreenPosition(position: [number, number]): AtomCore.Cursor|undefined;
+
+    /** Get the position of the most recently added cursor in screen coordinates. */
+    getCursorScreenPosition(): TextBuffer.Point;
+
+    /** Get the position of all the cursor positions in screen coordinates. */
+    getCursorScreenPositions(): Array<TextBuffer.Point>;
+
+    /** Move the cursor to the given position in screen coordinates.
+     *  If there are multiple cursors, they will be consolidated to a single cursor. */
+    setCursorScreenPosition(position: TextBuffer.IPoint,
+        options?: { autoscroll: boolean }): void;
+    /** Move the cursor to the given position in screen coordinates.
+     *  If there are multiple cursors, they will be consolidated to a single cursor. */
+    setCursorScreenPosition(position: [number, number],
+        options?: { autoscroll: boolean }): void;
+
+    /** Add a cursor at the given position in buffer coordinates. */
+    addCursorAtBufferPosition(bufferPosition: TextBuffer.IPoint): AtomCore.Cursor;
+    /** Add a cursor at the given position in buffer coordinates. */
+    addCursorAtBufferPosition(bufferPosition: [number, number]): AtomCore.Cursor;
+
+    /** Add a cursor at the position in screen coordinates. */
+    addCursorAtScreenPosition(screenPosition: TextBuffer.IPoint): AtomCore.Cursor;
+    /** Add a cursor at the position in screen coordinates. */
+    addCursorAtScreenPosition(screenPosition: [number, number]): AtomCore.Cursor;
+
+    /** Returns a boolean indicating whether or not there are multiple cursors. */
+    hasMultipleCursors(): boolean;
+
+    /** Move every cursor up one row in screen coordinates. */
+    moveUp(lineCount?: number): void;
+
+    /** Move every cursor down one row in screen coordinates. */
+    moveDown(lineCount?: number): void;
+
+    /** Move every cursor left one column. */
+    moveLeft(columnCount?: number): void;
+
+    /** Move every cursor right one column. */
+    moveRight(columnCount?: number): void;
+
+    /** Move every cursor to the beginning of its line in buffer coordinates. */
+    moveToBeginningOfLine(): void;
+
+    /** Move every cursor to the beginning of its line in screen coordinates. */
+    moveToBeginningOfScreenLine(): void;
+
+    /** Move every cursor to the first non-whitespace character of its line. */
+    moveToFirstCharacterOfLine(): void;
+
+    /** Move every cursor to the end of its line in buffer coordinates. */
+    moveToEndOfLine(): void;
+
+    /** Move every cursor to the end of its line in screen coordinates. */
+    moveToEndOfScreenLine(): void;
+
+    /** Move every cursor to the beginning of its surrounding word. */
+    moveToBeginningOfWord(): void;
+
+    /** Move every cursor to the end of its surrounding word. */
+    moveToEndOfWord(): void;
+
+    /** Move every cursor to the top of the buffer.
+     *  If there are multiple cursors, they will be merged into a single cursor. */
+    moveToTop(): void;
+
+    /** Move every cursor to the bottom of the buffer.
+     *  If there are multiple cursors, they will be merged into a single cursor. */
+    moveToBottom(): void;
+
+    /** Move every cursor to the beginning of the next word. */
+    moveToBeginningOfNextWord(): void;
+
+    /** Move every cursor to the previous word boundary. */
+    moveToPreviousWordBoundary(): void;
+
+    /** Move every cursor to the next word boundary. */
+    moveToNextWordBoundary(): void;
+
+    /** Move every cursor to the previous subword boundary. */
+    moveToPreviousSubwordBoundary(): void;
+
+    /** Move every cursor to the next subword boundary. */
+    moveToNextSubwordBoundary(): void;
+
+    /** Move every cursor to the beginning of the next paragraph. */
+    moveToBeginningOfNextParagraph(): void;
+
+    /** Move every cursor to the beginning of the previous paragraph. */
+    moveToBeginningOfPreviousParagraph(): void;
+
+    /** Returns the most recently added Cursor. */
+    getLastCursor(): AtomCore.Cursor;
+
+    /** Returns the word surrounding the most recently added cursor. */
+    getWordUnderCursor(options?: { wordRegex?: RegExp,
+        includeNonWordCharacters: boolean, allowPrevious: boolean }): string;
+
+    /** Get an Array of all Cursors. */
+    getCursors(): Array<AtomCore.Cursor>;
+
+    /** Get all Cursorss, ordered by their position in the buffer instead of the
+     *  order in which they were added. */
+    getCursorsOrderedByBufferPosition(): Array<AtomCore.Cursor>;
 
     // Selections =============================================================
     // getSelectedText()
@@ -861,6 +1031,16 @@ declare namespace AtomCore {
     // TextEditor Rendering ===================================================
     // getPlaceholderText()
     // setPlaceholderText(placeholderText)
+  }
+
+  // TODO(glen): implement from -> https://atom.io/docs/api/v1.14.3/Cursor
+  class Cursor {
+
+  }
+
+  // TODO(glen): implement from -> https://atom.io/docs/api/v1.14.3/Selection
+  class Selection {
+
   }
 
   // Managers and Registries ==================================================
