@@ -39,3 +39,5 @@
 ## TBD - Ninth Release
 * Began using JSON files for our data
 * Added configuration settings
+* Autocompletion improvements and bug fixes
+* Hide blocks can now have action rules, such as SetFontSize

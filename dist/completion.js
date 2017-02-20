@@ -7,8 +7,8 @@ var blocks = [
         snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2',
         displayText: '## Heading ##'
     },
-    { snippet: 'Show\n  ${1:Filter}\n  ${2:Action}' },
-    { snippet: 'Hide\n  ${1:Filter}' }
+    { snippet: 'Show\n  ${1:Rule}' },
+    { snippet: 'Hide\n  ${1:Rule}' }
 ];
 var filters = [
     { snippet: 'BaseType ${1:type}' },
@@ -197,26 +197,13 @@ function getSuggestions(args) {
         suggestions = suggestions.concat(blocks);
     }
     else if (topScope == 'line.empty.poe' || topScope == 'line.unknown.poe') {
-        if (cursorScopes.indexOf('show.block.poe') != -1) {
-            if (prefix == 'Action') {
-                suggestions = suggestions.concat(actions);
-                shouldPruneSuggestions = false;
-            }
-            else if (prefix == 'Filter') {
-                suggestions = suggestions.concat(filters);
+        if (cursorScopes.indexOf('block.poe') != -1) {
+            if (prefix == 'Rule') {
+                suggestions = suggestions.concat(actions, filters);
                 shouldPruneSuggestions = false;
             }
             else {
                 suggestions = suggestions.concat(blocks, actions, filters);
-            }
-        }
-        else if (cursorScopes.indexOf('hide.block.poe') != -1) {
-            if (prefix == 'Filter') {
-                suggestions = suggestions.concat(filters);
-                shouldPruneSuggestions = false;
-            }
-            else {
-                suggestions = suggestions.concat(blocks, filters);
             }
         }
     }
