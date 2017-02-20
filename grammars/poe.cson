@@ -56,10 +56,15 @@
     'name': 'string.word.poe'
     'match': '\\s*([A-Za-z\u00F6\\-]+)'
   'string':
-    'match': '\\s*(\"[ \'0-9A-Za-z\u00F6()\\-]+\")'
+    'match': '\\s*(\"[^"]*\")'
     'captures':
       '1':
         'name': 'string.quotation.poe'
+  'partial_string':
+    'match': '\\s*(\"[^"\n\r]*)$'
+    'captures':
+      '1':
+        'name': 'string.partial-quotation.poe'
   'boolean':
     'match': '(?i)\\s*((True|False)|("(True|False)"))'
     'captures':
@@ -85,31 +90,33 @@
       { 'include': '#empty_line' }
       {
         'name': 'filter.class.poe'
-        'begin': '^\\s*(Class)\\s'
+        'begin': '^\\s*(Class)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.class.poe'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#string' }
+          { 'include': '#partial_string' }
           { 'include': '#word' }
         ]
       }
       {
         'name': 'filter.base-type.poe'
-        'begin': '^\\s*(BaseType)\\s'
+        'begin': '^\\s*(BaseType)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.base-type.poe'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#string' }
+          { 'include': '#partial_string' }
           { 'include': '#word' }
         ]
       }
       {
         'name': 'filter.identified.poe'
-        'begin': '^\\s*(Identified)\\s'
+        'begin': '^\\s*(Identified)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.identified.poe'
@@ -120,7 +127,7 @@
       }
       {
         'name': 'filter.corrupted.poe'
-        'begin': '^\\s*(Corrupted)\\s'
+        'begin': '^\\s*(Corrupted)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.corrupted.poe'
@@ -131,7 +138,7 @@
       }
       {
         'name': 'filter.item-level.poe'
-        'begin': '^\\s*(ItemLevel)\\s'
+        'begin': '^\\s*(ItemLevel)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.item-level.poe'
@@ -143,7 +150,7 @@
       }
       {
         'name': 'filter.drop-level.poe'
-        'begin': '^\\s*(DropLevel)\\s'
+        'begin': '^\\s*(DropLevel)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.drop-level.poe'
@@ -155,7 +162,7 @@
       }
       {
         'name': 'filter.quality.poe'
-        'begin': '^\\s*(Quality)\\s'
+        'begin': '^\\s*(Quality)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.quality.poe'
@@ -167,7 +174,7 @@
       }
       {
         'name': 'filter.rarity.poe'
-        'begin': '^\\s*(Rarity)\\s'
+        'begin': '^\\s*(Rarity)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.rarity.poe'
@@ -179,7 +186,7 @@
       }
       {
         'name': 'filter.sockets.poe'
-        'begin': '^\\s*(Sockets)\\s'
+        'begin': '^\\s*(Sockets)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.sockets.poe'
@@ -191,7 +198,7 @@
       }
       {
         'name': 'filter.linked-sockets.poe'
-        'begin': '^\\s*(LinkedSockets)\\s'
+        'begin': '^\\s*(LinkedSockets)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.linked-sockets.poe'
@@ -203,7 +210,7 @@
       }
       {
         'name': 'filter.socket-group.poe'
-        'begin': '^\\s*(SocketGroup)\\s'
+        'begin': '^\\s*(SocketGroup)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.socket-group.poe'
@@ -214,7 +221,7 @@
       }
       {
         'name': 'filter.height.poe'
-        'begin': '^\\s*(Height)\\s'
+        'begin': '^\\s*(Height)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.height.poe'
@@ -226,7 +233,7 @@
       }
       {
         'name': 'filter.width.poe'
-        'begin': '^\\s*(Width)\\s'
+        'begin': '^\\s*(Width)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.cond.width.poe'
@@ -242,7 +249,7 @@
       { 'include': '#empty_line' }
       {
         'name': 'filter.set-border-color.poe'
-        'begin': '^\\s*(SetBorderColor)'
+        'begin': '^\\s*(SetBorderColor)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.action.set-border-color.poe'
@@ -253,7 +260,7 @@
       }
       {
         'name': 'filter.set-text-color.poe'
-        'begin': '^\\s*(SetTextColor)'
+        'begin': '^\\s*(SetTextColor)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.action.set-text-color.poe'
@@ -264,7 +271,7 @@
       }
       {
         'name': 'filter.set-background-color.poe'
-        'begin': '^\\s*(SetBackgroundColor)'
+        'begin': '^\\s*(SetBackgroundColor)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.action.set-background-color.poe'
@@ -276,7 +283,7 @@
 
       {
         'name': 'filter.play-alert-sound.poe'
-        'begin': '^\\s*(PlayAlertSound)'
+        'begin': '^\\s*(PlayAlertSound)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.action.play-alert-sound.poe'
@@ -287,7 +294,7 @@
       }
       {
         'name': 'filter.set-font-size.poe'
-        'begin': '^\\s*(SetFontSize)'
+        'begin': '^\\s*(SetFontSize)[ ]+'
         'beginCaptures':
           '1':
             'name': 'keyword.action.set-font-size.poe'

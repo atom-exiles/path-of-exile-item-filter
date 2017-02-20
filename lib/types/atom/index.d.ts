@@ -990,10 +990,23 @@ declare namespace AtomCore {
     // setGrammar(grammar)
 
     // Managing Syntax Scopes =================================================
-    // getRootScopeDescriptor()
-    // scopeDescriptorForBufferPosition(bufferPosition)
-    // bufferRangeForScopeAtCursor(scopeSelector)
-    // isBufferRowCommented()
+    /** Returns a ScopeDescriptor that includes this editor's language.
+     *  e.g. ['.source.ruby'], or ['.source.coffee']. */
+    getRootScopeDescriptor(): AtomCore.ScopeDescriptor;
+
+    /** Get the syntactic scopeDescriptor for the given position in buffer coordinates. */
+    scopeDescriptorForBufferPosition(bufferPosition: TextBuffer.IPoint):
+        AtomCore.ScopeDescriptor;
+    /** Get the syntactic scopeDescriptor for the given position in buffer coordinates. */
+    scopeDescriptorForBufferPosition(bufferPosition: [number, number]):
+        AtomCore.ScopeDescriptor;
+
+    /** Get the range in buffer coordinates of all tokens surrounding the cursor
+     *  that match the given scope selector. */
+    bufferRangeForScopeAtCursor(scopeSelector: string): TextBuffer.Range;
+
+    /** Determine if the given row is entirely a comment. */
+    isBufferRowCommented(bufferRow: number): boolean;
 
     // Clipboard Operations ===================================================
     // copySelectedText()

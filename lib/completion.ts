@@ -150,12 +150,14 @@ function updateItemData() {
 
   data.itemData.forEach((value, key) => {
     if(!validClasses.includes(key)) {
-      if(key.indexOf(' ') != -1) validClasses.push({ snippet: '"' + key + '"' });
-      else validClasses.push({ snippet: key });
+      if(key.indexOf(' ') != -1) validClasses.push({ snippet: '"' + key + '"',
+          displayText: key });
+      else validClasses.push({ snippet: key, displayText: key });
     }
     value.forEach((v) => {
-      if(v.indexOf(' ') != -1) validBases.push({ snippet: '"' + v + '"' });
-      else validBases.push({ snippet: v });
+      if(v.indexOf(' ') != -1) validBases.push({ snippet: '"' + v + '"',
+          displayText: v, leftLabel: key });
+      else validBases.push({ snippet: v, displayText: v, leftLabel: key });
     });
   });
 }
@@ -228,15 +230,52 @@ function isPartialOperator(editor: AtomCore.TextEditor, position: Point): boolea
   else return false;
 }
 
-/** Returns a prefix that does not consume whitespace characters if they
- *  do precede the current position in the buffer. */
+/** Returns a prefix tailored towards loot filters, with support for things
+ *  like value strings. */
 function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
-  const line = editor.getTextInBufferRange([[position.row, 0], position]);
-  const prefixRegex: RegExp = /([\s]*([^\s]*))*$/;
-  const result = prefixRegex.exec(line);
+  // The previous position in the editor is often a lot more useful than the
+  // current ones, as it will contain the scopes for the value which the user
+  // may still be editing.
+  var previousPositionScopes: Array<string>|undefined;
+  if(position.column > 0) {
+    const previousPosition = new Point(position.row, position.column - 1);
+    previousPositionScopes = editor.scopeDescriptorForBufferPosition(
+        previousPosition).scopes;
+  }
 
-  if(result) return result[2];
-  else return '';
+  const previousText = editor.getTextInBufferRange([[position.row, 0], position]);
+  var prefix: string|undefined;
+  if(previousPositionScopes && previousPositionScopes.indexOf(
+      'string.partial-quotation.poe') != -1) {
+    const prefixRegex = /(\"[^"]*)$/
+    const result = prefixRegex.exec(previousText);
+    if(result) prefix = result[1];
+
+  } else if(previousPositionScopes && previousPositionScopes.indexOf(
+      'string.quotation.poe') != -1) {
+    // The closing quotation mark might be further in on the line, which
+    // requires a different regex.
+    const stringRange = editor.bufferRangeForScopeAtCursor('string.quotation.poe');
+    if(stringRange.end.column > position.column) {
+      const prefixRegex = /(\"[^"]*)$/
+      const result = prefixRegex.exec(previousText);
+      if(result) prefix = result[1];
+    } else {
+      const prefixRegex = /(\"[^"]*\")$/
+      const result = prefixRegex.exec(previousText);
+      if(result) prefix = result[1];
+    }
+
+  // Default back to using the previous word value. If the previous character
+  // was a whitespace character, then use an empty prefix.
+  } else {
+    const prefixRegex = /([\s]*([^\s]*))*$/;
+    const result = prefixRegex.exec(previousText);
+    if(result) prefix = result[2];
+  }
+
+  if(prefix == undefined) prefix = '';
+  return prefix;
 }
 
 /** Handles any special casing in regards to the prefix for autocompletion suggestions.
@@ -291,15 +330,16 @@ function getSuggestions(args: SuggestionParams) {
   var suggestions = new Array<Suggestion>();
   var shouldPruneSuggestions = true;
   const prefix = getPrefix(args.editor, args.bufferPosition);
-  var currentScope = args.scopeDescriptor.scopes[
-      args.scopeDescriptor.scopes.length - 1];
+  const cursorScopes = args.scopeDescriptor.scopes;
+  const topScope = cursorScopes[
+      cursorScopes.length - 1];
 
   // TODO(glen): we need to somehow support operators as they are being inputted.
   // User hasn't inputted a block.
-  if(currentScope == 'source.poe') {
+  if(topScope == 'source.poe') {
     suggestions = suggestions.concat(blocks);
-  } else if(currentScope == 'line.empty.poe' || currentScope == 'line.unknown.poe') {
-    if(args.scopeDescriptor.scopes.indexOf('show.block.poe') != -1) {
+  } else if(topScope == 'line.empty.poe' || topScope == 'line.unknown.poe') {
+    if(cursorScopes.indexOf('show.block.poe') != -1) {
       if(prefix == 'Action') {
         suggestions = suggestions.concat(actions);
         shouldPruneSuggestions = false;
@@ -309,7 +349,7 @@ function getSuggestions(args: SuggestionParams) {
       } else {
         suggestions = suggestions.concat(blocks, actions, filters);
       }
-    } else if(args.scopeDescriptor.scopes.indexOf('hide.block.poe') != -1) {
+    } else if(cursorScopes.indexOf('hide.block.poe') != -1) {
       if(prefix == 'Filter') {
         suggestions = suggestions.concat(filters);
         shouldPruneSuggestions = false;
@@ -318,43 +358,55 @@ function getSuggestions(args: SuggestionParams) {
       }
     }
   } else {
-    if(args.scopeDescriptor.scopes.indexOf('filter.rarity.poe') != -1) {
-      if(isFirstToken(args.editor, args.bufferPosition) || prefix == '[operator]') {
+    if(cursorScopes.indexOf('filter.rarity.poe') != -1) {
+      if(prefix == '[operator]') {
         suggestions = suggestions.concat(operators, rarity);
         shouldPruneSuggestions = false;
       } else if(prefix == 'rarity') {
         suggestions = suggestions.concat(rarity);
         shouldPruneSuggestions = false;
-      } else if(isPartialOperator(args.editor, args.bufferPosition)) {
-        suggestions = suggestions.concat(operators);
       } else if(isFirstValue(args.editor, args.bufferPosition, true)) {
         suggestions = suggestions.concat(rarity);
       }
-    } else if(args.scopeDescriptor.scopes.indexOf('filter.identified.poe') != -1) {
+    } else if(cursorScopes.indexOf('filter.identified.poe') != -1) {
       if(!(prefix == "Identified")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
           suggestions = suggestions.concat(boolean);
         }
       }
-    } else if(args.scopeDescriptor.scopes.indexOf('filter.corrupted.poe') != -1) {
+    } else if(cursorScopes.indexOf('filter.corrupted.poe') != -1) {
       if(!(prefix == "Corrupted")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
           suggestions = suggestions.concat(boolean);
         }
       }
-    } else if(args.scopeDescriptor.scopes.indexOf('filter.class.poe') != -1) {
+    } else if(cursorScopes.indexOf('filter.class.poe') != -1) {
       if(prefix == "class") {
         suggestions = suggestions.concat(validClasses);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Class")) {
         suggestions = suggestions.concat(validClasses);
       }
-    } else if(args.scopeDescriptor.scopes.indexOf('filter.base-type.poe') != -1) {
+    } else if(cursorScopes.indexOf('filter.base-type.poe') != -1) {
       if(prefix == "type") {
         suggestions = suggestions.concat(validBases);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "BaseType")) {
         suggestions = suggestions.concat(validBases);
+      }
+    } else {
+      const numberValueRule = cursorScopes.indexOf('filter.item-level.poe') != 1 ||
+          cursorScopes.indexOf('filter.drop-level.poe') != 1 ||
+          cursorScopes.indexOf('filter.quality.poe') != 1 ||
+          cursorScopes.indexOf('filter.socket.poe') != 1 ||
+          cursorScopes.indexOf('filter.linked-sockets.poe') != 1 ||
+          cursorScopes.indexOf('filter.height.poe') != 1 ||
+          cursorScopes.indexOf('filter.width.poe') != 1;
+      if(numberValueRule) {
+        if(prefix == "[operator]") {
+          suggestions = suggestions.concat(operators);
+          shouldPruneSuggestions = false;
+        }
       }
     }
   }
