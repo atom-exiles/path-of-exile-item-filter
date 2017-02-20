@@ -45,7 +45,6 @@ function mergeJSONItemData(list: JSONItemData) {
 }
 
 function refreshItemData() {
-  console.log("PoE Status: completely refreshing item data.");
   itemData.clear();
   mergeJSONItemData(coreData);
   if(settings.config.dataSettings.enableLeague.get()) mergeJSONItemData(leagueData);

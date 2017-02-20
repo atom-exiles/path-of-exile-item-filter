@@ -2,8 +2,8 @@
 // Project: https://github.com/atom/atom/tree/v1.12.6
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
-// NOTE: WORK IN PROGRESS, API will be fully implemented soon, but is not 100%
-//  yet.
+// NOTE: these typings contain only what is used by the packages that I maintain
+//    due to the size of the Atom API.
 
 /// <reference types="node" />
 /// <reference path="../text-buffer/index.d.ts" />
@@ -564,8 +564,6 @@ declare namespace AtomCore {
     onDidStopChanging(callback: (event: CallbackArgs.TEStoppedChangesEvent) => void):
         AtomEventKit.Disposable;
 
-    /** Calls your callback when a Cursor is moved. If there are multiple cursors,
-     *  your callback will be called for each cursor. */
     // onDidChangeCursorPosition(callback): AtomEventKit.Disposable;
     // onDidChangeSelectionRange(callback): AtomEventKit.Disposable;
     // onDidSave(callback): AtomEventKit.Disposable;
@@ -607,15 +605,45 @@ declare namespace AtomCore {
     // saveAs(filePath)
 
     // Reading Text ===========================================================
-    // getText()
-    // getTextInBufferRange(range)
-    // getLineCount()
-    // getScreenLineCount()
-    // getLastBufferRow()
-    // getLastScreenRow()
-    // lineTextForBufferRow(bufferRow)
-    // lineTextForScreenRow(screenRow)
-    // getCurrentParagraphBufferRange()
+    /** Returns a string representing the entire contents of the editor. */
+    getText(): string;
+
+    /** Get the text in the given range in buffer coordinates. */
+    getTextInBufferRange(range: TextBuffer.IRange): string;
+    /** Get the text in the given range in buffer coordinates. */
+    getTextInBufferRange(range: [TextBuffer.IPoint, TextBuffer.IPoint]): string;
+    /** Get the text in the given range in buffer coordinates. */
+    getTextInBufferRange(range: [[number, number], [number, number]]): string;
+    /** Get the text in the given range in buffer coordinates. */
+    getTextInBufferRange(range: [TextBuffer.IPoint, [number, number]]): string;
+    /** Get the text in the given range in buffer coordinates. */
+    getTextInBufferRange(range: [[number, number], TextBuffer.IPoint]): string;
+
+    /** Returns a number representing the number of lines in the buffer. */
+    getLineCount(): number;
+
+    /** Returns a number representing the number of screen lines in the editor.
+     *  This accounts for folds. */
+    getScreenLineCount(): number;
+
+    /** Returns a number representing the last zero-indexed buffer row number of
+     *  the editor. */
+    getLastBufferRow(): number;
+
+    /** Returns a number representing the last zero-indexed screen row number of
+     *  the editor. */
+    getLastScreenRow(): number;
+
+    /** Returns a string representing the contents of the line at the given
+     *  buffer row. */
+    lineTextForBufferRow(bufferRow: number): string;
+
+    /** Returns a string representing the contents of the line at the given
+     *  screen row. */
+    lineTextForScreenRow(screenRow: number): string;
+
+    /** Get the range of the paragraph surrounding the most recently added cursor. */
+    getCurrentParagraphBufferRange(): TextBuffer.Range;
 
     // Mutating Text ==========================================================
     // setText(text)

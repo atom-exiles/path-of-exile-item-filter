@@ -18,20 +18,11 @@
     "@types/jquery": "^2.0.34",
     "@types/node": "^6.0.46"
   },
-  "package-deps": [
-    "linter"
-  ],
+  "package-deps": [],
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
         "2.0.0": "provideCompletion"
-      }
-    }
-  },
-  "consumedServices": {
-    "linter-indie": {
-      "versions": {
-        "1.0.0": "consumeLinter"
       }
     }
   }
