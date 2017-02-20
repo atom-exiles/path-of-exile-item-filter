@@ -49,22 +49,6 @@ var boolean = [
     { snippet: 'True' },
     { snippet: 'False' }
 ];
-var blocksWithOperators = [
-    'filter.item-level.poe',
-    'filter.drop-level.poe',
-    'filter.quality.poe',
-    'filter.sockets.poe',
-    'filter.linked-sockets.poe',
-    'filter.height.poe',
-    'filter.width.poe',
-];
-var defaults = [
-    'Filter', 'Action',
-    'type', 'class', 'rarity', 'True', 'level', 'quality', 'sockets', 'links',
-    'height', 'width', 'group',
-    'red', 'green', 'blue', '[alpha]', 'id', '[volume]', 'size',
-    '[operator]'
-];
 var validBases = new Array();
 var validClasses = new Array();
 function updateItemData() {
@@ -103,21 +87,6 @@ exports.setupSubscriptions = setupSubscriptions;
 function removeSubscriptions() {
 }
 exports.removeSubscriptions = removeSubscriptions;
-function isFirstToken(editor, position) {
-    var line = editor.lineTextForBufferRow(position.row);
-    var regex = new RegExp('^\\s*\\S+\\s*(\\S*)');
-    var result = regex.exec(line);
-    if (result) {
-        var trailingText = result[1];
-        if (trailingText.length > 0)
-            return false;
-        else
-            return true;
-    }
-    else {
-        return true;
-    }
-}
 function isFirstValue(editor, position, hasOperator) {
     var line = editor.lineTextForBufferRow(position.row);
     var regex;
@@ -138,13 +107,6 @@ function isFirstValue(editor, position, hasOperator) {
     else {
         return true;
     }
-}
-function isPartialOperator(editor, position) {
-    var leadingChar = editor.getTextInBufferRange([[position.row, position.column - 1], position]);
-    if (leadingChar == ">" || leadingChar == "<")
-        return true;
-    else
-        return false;
 }
 function getPrefix(editor, position) {
     var previousPositionScopes;

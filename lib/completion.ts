@@ -108,39 +108,6 @@ const boolean = [
   { snippet: 'False'}
 ]
 
-// const excludedPrefixes = [
-//   // filters
-//   'Class',   'BaseType',      'ItemLevel',   'DropLevel', 'Quality', 'Rarity',
-//   'Sockets', 'LinkedSockets', 'SocketGroup', 'Height',    'Width',   'Identified',
-//   // actions
-//   'PlayAlertSound', 'SetBackgroundColor', 'SetBorderColor', 'SetFontSize',
-//   'SetTextColor',
-//   // misc
-//   '[operator]'
-// ]
-
-const blocksWithOperators = [
-  'filter.item-level.poe',
-  'filter.drop-level.poe',
-  'filter.quality.poe',
-  'filter.sockets.poe',
-  'filter.linked-sockets.poe',
-  'filter.height.poe',
-  'filter.width.poe',
-  // 'filter.rarity.poe'
-]
-
-const defaults = [
-  'Filter', 'Action',
-  // filters
-  'type', 'class', 'rarity', 'True', 'level', 'quality', 'sockets', 'links',
-  'height', 'width', 'group',
-  // actions
-  'red', 'green', 'blue', '[alpha]', 'id', '[volume]', 'size',
-  // operators
-  '[operator]'
-]
-
 var validBases = new Array<Suggestion>();
 var validClasses = new Array<Suggestion>();
 
@@ -182,22 +149,6 @@ export function removeSubscriptions() {
 
 }
 
-/** Determines whether or not text entered at the given position in the editor
- *  would be the first token for the filter rule which precedes that position. */
-function isFirstToken(editor: AtomCore.TextEditor, position: Point): boolean {
-  const line: string = editor.lineTextForBufferRow(position.row);
-  const regex = new RegExp('^\\s*\\S+\\s*(\\S*)');
-  const result = regex.exec(line);
-
-  if(result) {
-    const trailingText = result[1];
-    if(trailingText.length > 0) return false;
-    else return true;
-  } else {
-    return true;
-  }
-}
-
 /** Determines whether or text entered at the given position in the editor
  *  would be the first value for the filter rule which precedes that position.*/
 function isFirstValue(editor: AtomCore.TextEditor, position: Point,
@@ -220,16 +171,6 @@ function isFirstValue(editor: AtomCore.TextEditor, position: Point,
   }
 }
 
-/** Returns whether or not the preceding characters at the given position in the
- *  editor can be combined with other characters to form a valid filter operator. */
-function isPartialOperator(editor: AtomCore.TextEditor, position: Point): boolean {
-  const leadingChar = editor.getTextInBufferRange(
-      [[position.row, position.column - 1], position]);
-
-  if(leadingChar == ">" || leadingChar == "<") return true;
-  else return false;
-}
-
 /** Returns a prefix tailored towards loot filters, with support for things
  *  like value strings. */
 function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
@@ -247,7 +188,7 @@ function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
   var prefix: string|undefined;
   if(previousPositionScopes && previousPositionScopes.indexOf(
       'string.partial-quotation.poe') != -1) {
-    const prefixRegex = /(\"[^"]*)$/
+    const prefixRegex = /(\"[^"]*)$/;
     const result = prefixRegex.exec(previousText);
     if(result) prefix = result[1];
 
@@ -257,11 +198,11 @@ function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
     // requires a different regex.
     const stringRange = editor.bufferRangeForScopeAtCursor('string.quotation.poe');
     if(stringRange.end.column > position.column) {
-      const prefixRegex = /(\"[^"]*)$/
+      const prefixRegex = /(\"[^"]*)$/;
       const result = prefixRegex.exec(previousText);
       if(result) prefix = result[1];
     } else {
-      const prefixRegex = /(\"[^"]*\")$/
+      const prefixRegex = /(\"[^"]*\")$/;
       const result = prefixRegex.exec(previousText);
       if(result) prefix = result[1];
     }
@@ -331,11 +272,8 @@ function getSuggestions(args: SuggestionParams) {
   var shouldPruneSuggestions = true;
   const prefix = getPrefix(args.editor, args.bufferPosition);
   const cursorScopes = args.scopeDescriptor.scopes;
-  const topScope = cursorScopes[
-      cursorScopes.length - 1];
+  const topScope = cursorScopes[cursorScopes.length - 1];
 
-  // TODO(glen): we need to somehow support operators as they are being inputted.
-  // User hasn't inputted a block.
   if(topScope == 'source.poe') {
     suggestions = suggestions.concat(blocks);
   } else if(topScope == 'line.empty.poe' || topScope == 'line.unknown.poe') {
@@ -413,9 +351,9 @@ function getSuggestions(args: SuggestionParams) {
 
   setReplacementPrefix(args.editor, args.bufferPosition, prefix, suggestions);
   if(shouldPruneSuggestions) {
-    suggestions = pruneSuggestions(prefix, suggestions)
+    suggestions = pruneSuggestions(prefix, suggestions);
   }
-  return suggestions
+  return suggestions;
 }
 
 /** Determines whether the given position in the editor is surrounded on both
