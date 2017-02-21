@@ -32,5 +32,9 @@ exports.config = {
         enableRecipe: new SettingValue("dataSettings.enableRecipe"),
         classWhitelist: new SettingValue("dataSettings.classWhitelist"),
         baseWhitelist: new SettingValue("dataSettings.baseWhitelist")
+    },
+    completionSettings: {
+        enableRightLabel: new SettingValue("completionSettings.enableRightLabel"),
+        enableIcon: new SettingValue("completionSettings.enableIcon")
     }
 };

@@ -64,10 +64,31 @@
       }
     }
   },
+  "completionSettings": {
+    "title": "Autocompletion",
+    "type": "object",
+    "order": 3,
+    "properties": {
+      "enableRightLabel": {
+        "title": "Right Label",
+        "description": "Enable the right label, which provides additional information.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "enableIcon": {
+        "title": "Icons",
+        "description": "Enable the icon decoration.",
+        "type": "boolean",
+        "default": true,
+        "order": 2
+      }
+    }
+  },
   "linterSettings": {
     "title": "Linter",
     "type": "object",
-    "order": 3,
+    "order": 4,
     "properties": {
       "enableWarnings": {
         "title": "Warnings",

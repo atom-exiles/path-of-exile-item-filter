@@ -1,7 +1,13 @@
-import { Point, Range } from "atom";
+import { Point, Range, CompositeDisposable } from "atom";
 
 import * as settings from "./settings";
 import * as data from "./data";
+
+var validBases = new Array<TextSuggestion>();
+var validClasses = new Array<TextSuggestion>();
+var injectedBases = new Array<TextSuggestion>();
+var injectedClasses = new Array<TextSuggestion>();
+var subscriptions = new CompositeDisposable;
 
 interface SuggestionParams {
   editor: AtomCore.TextEditor
@@ -48,6 +54,10 @@ interface Suggestion {
   /** A url to the documentation or more information about this suggestion. When
    *  specified, a More.. link will be displayed in the description area. */
   descriptionMoreURL?: string
+  /** Stores the unmodified rightLabel for the suggestion. Depending on user
+   *  configuration, the rightLabel field may be set to undefined. This property
+   *  allows us to restore it when necessary. */
+  _rightLabel?: string
 }
 
 interface SnippetSuggestion extends Suggestion {
@@ -114,10 +124,8 @@ const booleans: Array<TextSuggestion|SnippetSuggestion> = [
   { text: 'False'}
 ]
 
-var validBases = new Array<TextSuggestion>();
-var validClasses = new Array<TextSuggestion>();
-
-function updateItemData() {
+/** Transforms the base item data into the format used by this completion provider. */
+function updateItemData(externalCall = true) {
   validBases = new Array<TextSuggestion>();
   validClasses = new Array<TextSuggestion>();
 
@@ -136,30 +144,73 @@ function updateItemData() {
     }
     value.forEach((v) => {
       if(v.indexOf(' ') != -1) validBases.push({ text: '"' + v + '"',
-          displayText: v, leftLabel: key });
-      else validBases.push({ text: v, displayText: v, leftLabel: key });
+          displayText: v, _rightLabel: key });
+      else validBases.push({ text: v, displayText: v, _rightLabel: key });
     });
   });
+  if(externalCall) updateDecorations();
 }
 
-function reinjectClassWhitelist() {
+function updateWhitelists(externalCall = true) {
+  injectedBases = new Array<TextSuggestion>();
+  injectedClasses = new Array<TextSuggestion>();
+
+  const bases = settings.config.dataSettings.baseWhitelist.get();
+  const classes = settings.config.dataSettings.classWhitelist.get();
+  const labelText = "Whitelisted";
+
+  // TODO(glen): can this return undefined?
+  for(var c of classes) {
+    if(c.indexOf(' ') != -1) injectedClasses.push({ text: '"' + c + '"',
+        displayText: c, _rightLabel: labelText });
+    else injectedClasses.push({ text: c, displayText: c, _rightLabel: labelText });
+  }
+
+  for(var b of bases) {
+    if(b.indexOf(' ') != -1) injectedBases.push({ text: '"' + b + '"',
+        displayText: b, _rightLabel: labelText });
+    else injectedBases.push({ text: b, displayText: b, _rightLabel: labelText });
+  }
+  if(externalCall) updateDecorations();
 }
 
-function reinjectBaseWhitelist() {
+/** Manages the decoration data for each of the item data suggestions. */
+function updateDecorations() {
+  const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
+  const enableIcon = settings.config.completionSettings.enableIcon.get();
+
+  // In order to allow specific decorations to be disabled, we store backup values
+  // under the same name, except prefixed by an underscore.
+  const action = (s: TextSuggestion): void => {
+    if(enableRightLabel) s.rightLabel = s._rightLabel;
+    else s.rightLabel = undefined;
+
+    if(enableIcon) {} // no-op until icons are implemented.
+  }
+
+  validBases.forEach(action);
+  injectedClasses.forEach(action);
+  injectedBases.forEach(action);
 }
 
 export function setupSubscriptions() {
-  data.emitter.on("poe-did-update-item-data", updateItemData);
-  data.emitter.on("poe-did-update-injected-classes", reinjectClassWhitelist);
-  data.emitter.on("poe-did-update-injected-bases", reinjectBaseWhitelist);
+  subscriptions = new CompositeDisposable;
 
-  updateItemData();
-  reinjectClassWhitelist();
-  reinjectBaseWhitelist();
+  data.emitter.on("poe-did-update-item-data", updateItemData);
+  data.emitter.on("poe-did-update-injected-data", updateWhitelists);
+
+  subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange(
+      updateDecorations));
+  subscriptions.add(settings.config.completionSettings.enableIcon.onDidChange(
+      updateDecorations));
+
+  updateItemData(false);
+  updateWhitelists(false);
+  updateDecorations();
 }
 
 export function removeSubscriptions() {
-
+  subscriptions.dispose();
 }
 
 /** Determines whether or text entered at the given position in the editor
@@ -339,17 +390,17 @@ function getSuggestions(args: SuggestionParams) {
       }
     } else if(cursorScopes.indexOf('filter.class.poe') != -1) {
       if(prefix == "class") {
-        suggestions = suggestions.concat(validClasses);
+        suggestions = suggestions.concat(validClasses, injectedClasses);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Class")) {
-        suggestions = suggestions.concat(validClasses);
+        suggestions = suggestions.concat(validClasses, injectedClasses);
       }
     } else if(cursorScopes.indexOf('filter.base-type.poe') != -1) {
       if(prefix == "type") {
-        suggestions = suggestions.concat(validBases);
+        suggestions = suggestions.concat(validBases, injectedBases);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "BaseType")) {
-        suggestions = suggestions.concat(validBases);
+        suggestions = suggestions.concat(validBases, injectedBases);
       }
     } else {
       const numberValueRule = cursorScopes.indexOf('filter.item-level.poe') != 1 ||

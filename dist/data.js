@@ -67,11 +67,11 @@ function setupSubscriptions() {
     }));
     subscriptions.add(settings.config.dataSettings.classWhitelist.observe(function () {
         exports.injectedClasses = settings.config.dataSettings.classWhitelist.get();
-        exports.emitter.emit('poe-did-update-injected-classes', exports.injectedClasses);
+        exports.emitter.emit('poe-did-update-injected-data', exports.injectedClasses);
     }));
     subscriptions.add(settings.config.dataSettings.baseWhitelist.observe(function () {
         exports.injectedBases = settings.config.dataSettings.baseWhitelist.get();
-        exports.emitter.emit('poe-did-update-injected-bases', exports.injectedBases);
+        exports.emitter.emit('poe-did-update-injected-data', exports.injectedBases);
     }));
 }
 exports.setupSubscriptions = setupSubscriptions;

@@ -2,6 +2,11 @@
 var atom_1 = require("atom");
 var settings = require("./settings");
 var data = require("./data");
+var validBases = new Array();
+var validClasses = new Array();
+var injectedBases = new Array();
+var injectedClasses = new Array();
+var subscriptions = new atom_1.CompositeDisposable;
 var blocks = [
     {
         snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2',
@@ -49,9 +54,8 @@ var booleans = [
     { text: 'True' },
     { text: 'False' }
 ];
-var validBases = new Array();
-var validClasses = new Array();
-function updateItemData() {
+function updateItemData(externalCall) {
+    if (externalCall === void 0) { externalCall = true; }
     validBases = new Array();
     validClasses = new Array();
     data.itemData.forEach(function (value, key) {
@@ -72,26 +76,67 @@ function updateItemData() {
         value.forEach(function (v) {
             if (v.indexOf(' ') != -1)
                 validBases.push({ text: '"' + v + '"',
-                    displayText: v, leftLabel: key });
+                    displayText: v, _rightLabel: key });
             else
-                validBases.push({ text: v, displayText: v, leftLabel: key });
+                validBases.push({ text: v, displayText: v, _rightLabel: key });
         });
     });
+    if (externalCall)
+        updateDecorations();
 }
-function reinjectClassWhitelist() {
+function updateWhitelists(externalCall) {
+    if (externalCall === void 0) { externalCall = true; }
+    injectedBases = new Array();
+    injectedClasses = new Array();
+    var bases = settings.config.dataSettings.baseWhitelist.get();
+    var classes = settings.config.dataSettings.classWhitelist.get();
+    var labelText = "Whitelisted";
+    for (var _i = 0, classes_1 = classes; _i < classes_1.length; _i++) {
+        var c = classes_1[_i];
+        if (c.indexOf(' ') != -1)
+            injectedClasses.push({ text: '"' + c + '"',
+                displayText: c, _rightLabel: labelText });
+        else
+            injectedClasses.push({ text: c, displayText: c, _rightLabel: labelText });
+    }
+    for (var _a = 0, bases_1 = bases; _a < bases_1.length; _a++) {
+        var b = bases_1[_a];
+        if (b.indexOf(' ') != -1)
+            injectedBases.push({ text: '"' + b + '"',
+                displayText: b, _rightLabel: labelText });
+        else
+            injectedBases.push({ text: b, displayText: b, _rightLabel: labelText });
+    }
+    if (externalCall)
+        updateDecorations();
 }
-function reinjectBaseWhitelist() {
+function updateDecorations() {
+    var enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
+    var enableIcon = settings.config.completionSettings.enableIcon.get();
+    var action = function (s) {
+        if (enableRightLabel)
+            s.rightLabel = s._rightLabel;
+        else
+            s.rightLabel = undefined;
+        if (enableIcon) { }
+    };
+    validBases.forEach(action);
+    injectedClasses.forEach(action);
+    injectedBases.forEach(action);
 }
 function setupSubscriptions() {
+    subscriptions = new atom_1.CompositeDisposable;
     data.emitter.on("poe-did-update-item-data", updateItemData);
-    data.emitter.on("poe-did-update-injected-classes", reinjectClassWhitelist);
-    data.emitter.on("poe-did-update-injected-bases", reinjectBaseWhitelist);
-    updateItemData();
-    reinjectClassWhitelist();
-    reinjectBaseWhitelist();
+    data.emitter.on("poe-did-update-injected-data", updateWhitelists);
+    subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange(updateDecorations));
+    subscriptions.add(settings.config.completionSettings.enableIcon.onDidChange(updateDecorations));
+    updateItemData(false);
+    updateWhitelists(false);
+    updateDecorations();
 }
 exports.setupSubscriptions = setupSubscriptions;
 function removeSubscriptions() {
+    subscriptions.dispose();
 }
 exports.removeSubscriptions = removeSubscriptions;
 function isFirstValue(editor, position, hasOperator) {
@@ -263,20 +308,20 @@ function getSuggestions(args) {
         }
         else if (cursorScopes.indexOf('filter.class.poe') != -1) {
             if (prefix == "class") {
-                suggestions = suggestions.concat(validClasses);
+                suggestions = suggestions.concat(validClasses, injectedClasses);
                 shouldPruneSuggestions = false;
             }
             else if (!(prefix == "Class")) {
-                suggestions = suggestions.concat(validClasses);
+                suggestions = suggestions.concat(validClasses, injectedClasses);
             }
         }
         else if (cursorScopes.indexOf('filter.base-type.poe') != -1) {
             if (prefix == "type") {
-                suggestions = suggestions.concat(validBases);
+                suggestions = suggestions.concat(validBases, injectedBases);
                 shouldPruneSuggestions = false;
             }
             else if (!(prefix == "BaseType")) {
-                suggestions = suggestions.concat(validBases);
+                suggestions = suggestions.concat(validBases, injectedBases);
             }
         }
         else {

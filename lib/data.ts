@@ -91,13 +91,13 @@ export function setupSubscriptions() {
   subscriptions.add(settings.config.dataSettings.classWhitelist.observe(
       () => {
     injectedClasses = settings.config.dataSettings.classWhitelist.get();
-    emitter.emit('poe-did-update-injected-classes', injectedClasses);
+    emitter.emit('poe-did-update-injected-data', injectedClasses);
   }));
 
   subscriptions.add(settings.config.dataSettings.baseWhitelist.observe(
       () => {
     injectedBases = settings.config.dataSettings.baseWhitelist.get();
-    emitter.emit('poe-did-update-injected-bases', injectedBases);
+    emitter.emit('poe-did-update-injected-data', injectedBases);
   }));
 }
 

@@ -45,5 +45,10 @@ export const config = {
     enableRecipe: new SettingValue<boolean>("dataSettings.enableRecipe"),
     classWhitelist: new SettingValue<Array<string>>("dataSettings.classWhitelist"),
     baseWhitelist: new SettingValue<Array<string>>("dataSettings.baseWhitelist")
+  },
+
+  completionSettings: {
+    enableRightLabel: new SettingValue<boolean>("completionSettings.enableRightLabel"),
+    enableIcon: new SettingValue<boolean>("completionSettings.enableIcon")
   }
 }
