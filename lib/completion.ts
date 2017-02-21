@@ -14,15 +14,10 @@ interface SuggestionParams {
 interface TextInsertionParams {
   editor: AtomCore.TextEditor
   triggerPosition: Point
-  suggestion: Suggestion
+  suggestion: TextSuggestion|SnippetSuggestion
 }
 
 interface Suggestion {
-  /** The text which will be inserted into the editor, in place of the prefix. */
-  text?: string
-  /** A snippet string. This will allow users to tab through function arguments
-   *  or other options. */
-  snippet?: string
   /** A string that will show in the UI for this suggestion. When not set,
    *  snippet || text is displayed. */
   displayText?: string
@@ -55,7 +50,18 @@ interface Suggestion {
   descriptionMoreURL?: string
 }
 
-const blocks = [
+interface SnippetSuggestion extends Suggestion {
+  /** A snippet string. This will allow users to tab through function arguments
+   *  or other options. */
+  snippet: string
+}
+
+interface TextSuggestion extends Suggestion {
+  /** The text which will be inserted into the editor, in place of the prefix. */
+  text: string
+}
+
+const blocks: Array<TextSuggestion|SnippetSuggestion> = [
   {
     snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2',
     displayText: '## Heading ##'
@@ -64,12 +70,12 @@ const blocks = [
   { snippet: 'Hide\n  ${1:Rule}' }
 ]
 
-const filters = [
+const filters: Array<TextSuggestion|SnippetSuggestion> = [
   { snippet: 'BaseType ${1:type}' },
   { snippet: 'Class ${1:class}' },
   { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
-  { snippet: 'Identified ${1:True}' },
-  { snippet: 'Corrupted ${1:True}' },
+  { snippet: 'Identified ${1:True|False}' },
+  { snippet: 'Corrupted ${1:True|False}' },
   { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
   { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
   { snippet: 'Quality ${1:[operator]} ${2:quality}' },
@@ -80,7 +86,7 @@ const filters = [
   { snippet: 'SocketGroup ${1:group}' }
 ]
 
-const actions = [
+const actions: Array<TextSuggestion|SnippetSuggestion> = [
   { snippet: 'SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
   { snippet: 'SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
   { snippet: 'SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
@@ -88,43 +94,50 @@ const actions = [
   { snippet: 'SetFontSize ${1:size}' }
 ]
 
-const rarity = [
-  { snippet: 'Normal' },
-  { snippet: 'Magic' },
-  { snippet: 'Rare' },
-  { snippet: 'Unique' }
+const rarities: Array<TextSuggestion|SnippetSuggestion> = [
+  { text: 'Normal' },
+  { text: 'Magic' },
+  { text: 'Rare' },
+  { text: 'Unique' }
 ]
 
-const operators = [
-  { snippet: '>'},
-  { snippet: '>='},
-  { snippet: '='},
-  { snippet: '<='},
-  { snippet: '<'}
+const operators: Array<TextSuggestion|SnippetSuggestion> = [
+  { text: '>'},
+  { text: '>='},
+  { text: '='},
+  { text: '<='},
+  { text: '<'}
 ]
 
-const boolean = [
-  { snippet: 'True'},
-  { snippet: 'False'}
+const booleans: Array<TextSuggestion|SnippetSuggestion> = [
+  { text: 'True'},
+  { text: 'False'}
 ]
 
-var validBases = new Array<Suggestion>();
-var validClasses = new Array<Suggestion>();
+var validBases = new Array<TextSuggestion>();
+var validClasses = new Array<TextSuggestion>();
 
 function updateItemData() {
-  validBases = new Array<Suggestion>();
-  validClasses = new Array<Suggestion>();
+  validBases = new Array<TextSuggestion>();
+  validClasses = new Array<TextSuggestion>();
 
   data.itemData.forEach((value, key) => {
-    if(!validClasses.includes(key)) {
-      if(key.indexOf(' ') != -1) validClasses.push({ snippet: '"' + key + '"',
+    var knownClass = false;
+    for(var c of validClasses) {
+      if(c.text == key) {
+        knownClass = true;
+      }
+    }
+
+    if(!knownClass) {
+      if(key.indexOf(' ') != -1) validClasses.push({ text: '"' + key + '"',
           displayText: key });
-      else validClasses.push({ snippet: key, displayText: key });
+      else validClasses.push({ text: key, displayText: key });
     }
     value.forEach((v) => {
-      if(v.indexOf(' ') != -1) validBases.push({ snippet: '"' + v + '"',
+      if(v.indexOf(' ') != -1) validBases.push({ text: '"' + v + '"',
           displayText: v, leftLabel: key });
-      else validBases.push({ snippet: v, displayText: v, leftLabel: key });
+      else validBases.push({ text: v, displayText: v, leftLabel: key });
     });
   });
 }
@@ -223,20 +236,28 @@ function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
  *  For example, block elements will have the whitespace prepended onto the prefix,
  *  so that they are left aligned on column #0 on text insertion. */
 function setReplacementPrefix(editor: AtomCore.TextEditor, position: Point,
-    prefix: string, suggestions: Array<Suggestion>): Array<Suggestion> {
+    prefix: string, suggestions: Array<TextSuggestion|SnippetSuggestion>):
+    Array<TextSuggestion|SnippetSuggestion> {
 
   for(var suggestion of suggestions) {
     var blockElement = false;
 
     for(var block of blocks) {
-      if(suggestion.snippet == block.snippet) {
-        const range = new Range([position.row, 0], position);
-        suggestion.replacementPrefix = editor.getTextInBufferRange(range);
-        blockElement = true;
+      if((<SnippetSuggestion>suggestion).snippet && (<SnippetSuggestion>block).snippet) {
+        if((<SnippetSuggestion>suggestion).snippet == (<SnippetSuggestion>block).snippet) {
+          blockElement = true;
+        }
+      } else if((<TextSuggestion>suggestion).text && (<TextSuggestion>block).text) {
+        if((<TextSuggestion>suggestion).text == (<TextSuggestion>block).text) {
+          blockElement = true;
+        }
       }
     }
 
-    if(!blockElement) {
+    if(blockElement) {
+      const range = new Range([position.row, 0], position);
+      suggestion.replacementPrefix = editor.getTextInBufferRange(range);
+    } else {
       suggestion.replacementPrefix = prefix;
     }
   }
@@ -244,18 +265,20 @@ function setReplacementPrefix(editor: AtomCore.TextEditor, position: Point,
 }
 
 /** Removes suggestions that do not contain the prefix. */
-function pruneSuggestions(prefix: string, suggestions: Array<Suggestion>):
-    Array<Suggestion> {
+function pruneSuggestions(prefix: string, suggestions:
+    Array<TextSuggestion|SnippetSuggestion>): Array<TextSuggestion|SnippetSuggestion> {
   if(prefix.length == 0) return suggestions;
 
   const upperPrefix = prefix.toUpperCase();
-  const prunedSuggestions = new Array<Suggestion>();
+  const prunedSuggestions = new Array<TextSuggestion|SnippetSuggestion>();
 
   for(var s of suggestions) {
     var text: string;
-    if(s.snippet) text = s.snippet.toUpperCase();
-    else if(s.text) text = s.text.toUpperCase();
-    else continue;
+    if((<SnippetSuggestion>s).snippet) {
+      text = (<SnippetSuggestion>s).snippet.toUpperCase();
+    } else if((<TextSuggestion>s).text) {
+      text = (<TextSuggestion>s).text.toUpperCase();
+    } else continue;
 
     if(text.indexOf(upperPrefix) != -1) prunedSuggestions.push(s);
   }
@@ -268,7 +291,7 @@ function getSuggestions(args: SuggestionParams) {
     return [];
   }
 
-  var suggestions = new Array<Suggestion>();
+  var suggestions = new Array<TextSuggestion|SnippetSuggestion>();
   var shouldPruneSuggestions = true;
   const prefix = getPrefix(args.editor, args.bufferPosition);
   const cursorScopes = args.scopeDescriptor.scopes;
@@ -288,24 +311,30 @@ function getSuggestions(args: SuggestionParams) {
   } else {
     if(cursorScopes.indexOf('filter.rarity.poe') != -1) {
       if(prefix == '[operator]') {
-        suggestions = suggestions.concat(operators, rarity);
+        suggestions = suggestions.concat(operators, rarities);
         shouldPruneSuggestions = false;
       } else if(prefix == 'rarity') {
-        suggestions = suggestions.concat(rarity);
+        suggestions = suggestions.concat(rarities);
         shouldPruneSuggestions = false;
       } else if(isFirstValue(args.editor, args.bufferPosition, true)) {
-        suggestions = suggestions.concat(rarity);
+        suggestions = suggestions.concat(rarities);
       }
     } else if(cursorScopes.indexOf('filter.identified.poe') != -1) {
-      if(!(prefix == "Identified")) {
+      if(prefix == 'True|False') {
+        suggestions = suggestions.concat(booleans);
+        shouldPruneSuggestions = false;
+      } else if(!(prefix == "Identified")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
-          suggestions = suggestions.concat(boolean);
+          suggestions = suggestions.concat(booleans);
         }
       }
     } else if(cursorScopes.indexOf('filter.corrupted.poe') != -1) {
-      if(!(prefix == "Corrupted")) {
+      if(prefix == 'True|False') {
+        suggestions = suggestions.concat(booleans);
+        shouldPruneSuggestions = false;
+      } else if(!(prefix == "Corrupted")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
-          suggestions = suggestions.concat(boolean);
+          suggestions = suggestions.concat(booleans);
         }
       }
     } else if(cursorScopes.indexOf('filter.class.poe') != -1) {
@@ -361,12 +390,22 @@ function removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
   }
 }
 
+/** Removes the trailing Rarity placeholder value 'rarity' if it exists
+ *  following the given position in the buffer. */
+function removeRarityPlaceholder(editor: AtomCore.TextEditor, startPosition: Point) {
+  const endPosition = new Point(startPosition.row, startPosition.column + 7);
+  const text = editor.getTextInBufferRange([startPosition, endPosition]);
+  if(text == ' rarity') {
+    editor.setTextInBufferRange([startPosition, endPosition], '', { undo: 'skip' });
+  }
+}
+
 /** Performs the buffer manipulations necessary following a suggestion insertion. */
 function insertedSuggestion(params: TextInsertionParams) {
   // Whenever the user opens with quotation marks and accepts a suggestion,
   // two closing quotation marks will be left at the end:
-  //  BaseType "Cha" -> accepts "Chaos Orb"
-  //  BaseType "Chaos Orb""
+  //    BaseType "Cha" -> accepts "Chaos Orb"
+  //    BaseType "Chaos Orb""
   if(params.editor.hasMultipleCursors()) {
     const cursorPositions = params.editor.getCursorBufferPositions();
     for(var cursorPosition of cursorPositions) {
@@ -375,6 +414,39 @@ function insertedSuggestion(params: TextInsertionParams) {
   } else {
     const cursorPosition = params.editor.getCursorBufferPosition();
     removeConsecutiveQuotes(params.editor, cursorPosition);
+  }
+
+  // The rarity rule is currently the only one with an operator that we also
+  // provide value completion for. That operator is also optional, so if the
+  // user were to choose to insert one of the rarity suggestions while the
+  // prefix is the operator placeholder, they would end up with a line like this:
+  //    Rarity Normal rarity
+  // We need to detect this case and automatically remove ' rarity' from the
+  // buffer.
+  var wasRarity = false;
+  for(var r of rarities) {
+    const suggestion = params.suggestion;
+    if((<TextSuggestion>suggestion).text && (<TextSuggestion>r).text) {
+      if((<TextSuggestion>suggestion).text == (<TextSuggestion>r).text) {
+        wasRarity = true;
+        break;
+      }
+    } else if((<SnippetSuggestion>suggestion).snippet && (<SnippetSuggestion>r).snippet) {
+      if((<SnippetSuggestion>suggestion).snippet == (<SnippetSuggestion>r).snippet) {
+        wasRarity = true;
+        break;
+      }
+    }
+  }
+
+  if(wasRarity && params.editor.hasMultipleCursors()) {
+    const cursorPositions = params.editor.getCursorBufferPositions();
+    for(var cursorPosition of cursorPositions) {
+      removeRarityPlaceholder(params.editor, cursorPosition);
+    }
+  } else if(wasRarity) {
+    const cursorPosition = params.editor.getCursorBufferPosition();
+    removeRarityPlaceholder(params.editor, cursorPosition);
   }
 }
 

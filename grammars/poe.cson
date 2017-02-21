@@ -286,9 +286,9 @@
       '1':
         'name': 'string.rarity.poe'
   'socket_group':
-    'match': '(?i)\\s*(([rgbw]+)|("[rgbw]+"))'
+    'match': '(?i)\\s*(group)|(([rgbw]+)|("[rgbw]+"))'
     'captures':
-      '1':
+      '2':
         'name': 'string.socket-group.poe'
   'operator':
     'match': '\\s*(>=|<=|>|<|=)'

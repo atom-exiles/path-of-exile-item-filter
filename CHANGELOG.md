@@ -40,4 +40,9 @@
 * Began using JSON files for our data
 * Added configuration settings
 * Autocompletion improvements and bug fixes
+* Added completion decorations, which can be turned off in settings
+* Improvements to the grammar, especially regarding blank lines
 * Hide blocks can now have action rules, such as SetFontSize
+* Action rules can now have a trailing comment
+* Changed the placeholder value for Boolean rules (like Identified)
+* Stopped syntax highlighting the placeholder value for SocketGroups

@@ -14,8 +14,8 @@ var filters = [
     { snippet: 'BaseType ${1:type}' },
     { snippet: 'Class ${1:class}' },
     { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
-    { snippet: 'Identified ${1:True}' },
-    { snippet: 'Corrupted ${1:True}' },
+    { snippet: 'Identified ${1:True|False}' },
+    { snippet: 'Corrupted ${1:True|False}' },
     { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
     { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
     { snippet: 'Quality ${1:[operator]} ${2:quality}' },
@@ -32,22 +32,22 @@ var actions = [
     { snippet: 'PlayAlertSound ${1:id} ${2:[volume]}' },
     { snippet: 'SetFontSize ${1:size}' }
 ];
-var rarity = [
-    { snippet: 'Normal' },
-    { snippet: 'Magic' },
-    { snippet: 'Rare' },
-    { snippet: 'Unique' }
+var rarities = [
+    { text: 'Normal' },
+    { text: 'Magic' },
+    { text: 'Rare' },
+    { text: 'Unique' }
 ];
 var operators = [
-    { snippet: '>' },
-    { snippet: '>=' },
-    { snippet: '=' },
-    { snippet: '<=' },
-    { snippet: '<' }
+    { text: '>' },
+    { text: '>=' },
+    { text: '=' },
+    { text: '<=' },
+    { text: '<' }
 ];
-var boolean = [
-    { snippet: 'True' },
-    { snippet: 'False' }
+var booleans = [
+    { text: 'True' },
+    { text: 'False' }
 ];
 var validBases = new Array();
 var validClasses = new Array();
@@ -55,19 +55,26 @@ function updateItemData() {
     validBases = new Array();
     validClasses = new Array();
     data.itemData.forEach(function (value, key) {
-        if (!validClasses.includes(key)) {
+        var knownClass = false;
+        for (var _i = 0, validClasses_1 = validClasses; _i < validClasses_1.length; _i++) {
+            var c = validClasses_1[_i];
+            if (c.text == key) {
+                knownClass = true;
+            }
+        }
+        if (!knownClass) {
             if (key.indexOf(' ') != -1)
-                validClasses.push({ snippet: '"' + key + '"',
+                validClasses.push({ text: '"' + key + '"',
                     displayText: key });
             else
-                validClasses.push({ snippet: key, displayText: key });
+                validClasses.push({ text: key, displayText: key });
         }
         value.forEach(function (v) {
             if (v.indexOf(' ') != -1)
-                validBases.push({ snippet: '"' + v + '"',
+                validBases.push({ text: '"' + v + '"',
                     displayText: v, leftLabel: key });
             else
-                validBases.push({ snippet: v, displayText: v, leftLabel: key });
+                validBases.push({ text: v, displayText: v, leftLabel: key });
         });
     });
 }
@@ -153,13 +160,22 @@ function setReplacementPrefix(editor, position, prefix, suggestions) {
         var blockElement = false;
         for (var _a = 0, blocks_1 = blocks; _a < blocks_1.length; _a++) {
             var block = blocks_1[_a];
-            if (suggestion.snippet == block.snippet) {
-                var range = new atom_1.Range([position.row, 0], position);
-                suggestion.replacementPrefix = editor.getTextInBufferRange(range);
-                blockElement = true;
+            if (suggestion.snippet && block.snippet) {
+                if (suggestion.snippet == block.snippet) {
+                    blockElement = true;
+                }
+            }
+            else if (suggestion.text && block.text) {
+                if (suggestion.text == block.text) {
+                    blockElement = true;
+                }
             }
         }
-        if (!blockElement) {
+        if (blockElement) {
+            var range = new atom_1.Range([position.row, 0], position);
+            suggestion.replacementPrefix = editor.getTextInBufferRange(range);
+        }
+        else {
             suggestion.replacementPrefix = prefix;
         }
     }
@@ -173,10 +189,12 @@ function pruneSuggestions(prefix, suggestions) {
     for (var _i = 0, suggestions_2 = suggestions; _i < suggestions_2.length; _i++) {
         var s = suggestions_2[_i];
         var text;
-        if (s.snippet)
+        if (s.snippet) {
             text = s.snippet.toUpperCase();
-        else if (s.text)
+        }
+        else if (s.text) {
             text = s.text.toUpperCase();
+        }
         else
             continue;
         if (text.indexOf(upperPrefix) != -1)
@@ -210,28 +228,36 @@ function getSuggestions(args) {
     else {
         if (cursorScopes.indexOf('filter.rarity.poe') != -1) {
             if (prefix == '[operator]') {
-                suggestions = suggestions.concat(operators, rarity);
+                suggestions = suggestions.concat(operators, rarities);
                 shouldPruneSuggestions = false;
             }
             else if (prefix == 'rarity') {
-                suggestions = suggestions.concat(rarity);
+                suggestions = suggestions.concat(rarities);
                 shouldPruneSuggestions = false;
             }
             else if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                suggestions = suggestions.concat(rarity);
+                suggestions = suggestions.concat(rarities);
             }
         }
         else if (cursorScopes.indexOf('filter.identified.poe') != -1) {
-            if (!(prefix == "Identified")) {
+            if (prefix == 'True|False') {
+                suggestions = suggestions.concat(booleans);
+                shouldPruneSuggestions = false;
+            }
+            else if (!(prefix == "Identified")) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(boolean);
+                    suggestions = suggestions.concat(booleans);
                 }
             }
         }
         else if (cursorScopes.indexOf('filter.corrupted.poe') != -1) {
-            if (!(prefix == "Corrupted")) {
+            if (prefix == 'True|False') {
+                suggestions = suggestions.concat(booleans);
+                shouldPruneSuggestions = false;
+            }
+            else if (!(prefix == "Corrupted")) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(boolean);
+                    suggestions = suggestions.concat(booleans);
                 }
             }
         }
@@ -285,6 +311,13 @@ function removeConsecutiveQuotes(editor, position) {
         editor.setTextInBufferRange(rightCharLocation, "", { undo: 'skip' });
     }
 }
+function removeRarityPlaceholder(editor, startPosition) {
+    var endPosition = new atom_1.Point(startPosition.row, startPosition.column + 7);
+    var text = editor.getTextInBufferRange([startPosition, endPosition]);
+    if (text == ' rarity') {
+        editor.setTextInBufferRange([startPosition, endPosition], '', { undo: 'skip' });
+    }
+}
 function insertedSuggestion(params) {
     if (params.editor.hasMultipleCursors()) {
         var cursorPositions = params.editor.getCursorBufferPositions();
@@ -296,6 +329,34 @@ function insertedSuggestion(params) {
     else {
         var cursorPosition_1 = params.editor.getCursorBufferPosition();
         removeConsecutiveQuotes(params.editor, cursorPosition_1);
+    }
+    var wasRarity = false;
+    for (var _a = 0, rarities_1 = rarities; _a < rarities_1.length; _a++) {
+        var r = rarities_1[_a];
+        var suggestion = params.suggestion;
+        if (suggestion.text && r.text) {
+            if (suggestion.text == r.text) {
+                wasRarity = true;
+                break;
+            }
+        }
+        else if (suggestion.snippet && r.snippet) {
+            if (suggestion.snippet == r.snippet) {
+                wasRarity = true;
+                break;
+            }
+        }
+    }
+    if (wasRarity && params.editor.hasMultipleCursors()) {
+        var cursorPositions = params.editor.getCursorBufferPositions();
+        for (var _b = 0, cursorPositions_2 = cursorPositions; _b < cursorPositions_2.length; _b++) {
+            var cursorPosition = cursorPositions_2[_b];
+            removeRarityPlaceholder(params.editor, cursorPosition);
+        }
+    }
+    else if (wasRarity) {
+        var cursorPosition_2 = params.editor.getCursorBufferPosition();
+        removeRarityPlaceholder(params.editor, cursorPosition_2);
     }
 }
 exports.provider = {
