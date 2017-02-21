@@ -69,19 +69,26 @@
     "type": "object",
     "order": 3,
     "properties": {
+      "enableExtraSuggestions": {
+        "title": "Extra Suggestions",
+        "description": "Enable extra suggestions, such as the ones for map tiers.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
       "enableRightLabel": {
         "title": "Right Label",
         "description": "Enable the right label, which provides additional information.",
         "type": "boolean",
         "default": true,
-        "order": 1
+        "order": 2
       },
       "enableIcon": {
         "title": "Icons",
         "description": "Enable the icon decoration.",
         "type": "boolean",
         "default": true,
-        "order": 2
+        "order": 3
       }
     }
   },

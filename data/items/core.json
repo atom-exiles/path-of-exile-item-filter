@@ -1,5 +1,5 @@
 {
-  "Currency": [
+  "Stackable Currency": [
     "Chaos Orb",
     "Mirror of Kalandra",
     "Orb of Alchemy",
@@ -240,7 +240,7 @@
     "Fragment of the Chimera",
     "Fragment of the Hydra"
   ],
-  "Card": [
+  "Divination Card": [
     "Three Faces in the Dark",
     "The Doctor",
     "The Hermit",
@@ -1701,8 +1701,8 @@
     "Vanguard Belt",
     "Crystal Belt"
   ],
-  "Stackable Currency": [],
-  "Divination Card": [],
+  "Currency": [],
+  "Card": [],
   "Microtransactions": [],
   "Gems": [],
   "Skill Gems": [],

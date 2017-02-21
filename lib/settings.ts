@@ -48,6 +48,7 @@ export const config = {
   },
 
   completionSettings: {
+    enableExtraSuggestions: new SettingValue<boolean>("completionSettings.enableExtraSuggestions"),
     enableRightLabel: new SettingValue<boolean>("completionSettings.enableRightLabel"),
     enableIcon: new SettingValue<boolean>("completionSettings.enableIcon")
   }

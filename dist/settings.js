@@ -34,6 +34,7 @@ exports.config = {
         baseWhitelist: new SettingValue("dataSettings.baseWhitelist")
     },
     completionSettings: {
+        enableExtraSuggestions: new SettingValue("completionSettings.enableExtraSuggestions"),
         enableRightLabel: new SettingValue("completionSettings.enableRightLabel"),
         enableIcon: new SettingValue("completionSettings.enableIcon")
     }

@@ -8,40 +8,36 @@ var injectedBases = new Array();
 var injectedClasses = new Array();
 var subscriptions = new atom_1.CompositeDisposable;
 var blocks = [
-    {
-        snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2',
-        displayText: '## Heading ##'
-    },
-    { snippet: 'Show\n  ${1:Rule}' },
-    { snippet: 'Hide\n  ${1:Rule}' }
+    { displayText: "Show", snippet: 'Show\n  ${1:Rule}' },
+    { displayText: "Hide", snippet: 'Hide\n  ${1:Rule}' }
 ];
 var filters = [
-    { snippet: 'BaseType ${1:type}' },
-    { snippet: 'Class ${1:class}' },
-    { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
-    { snippet: 'Identified ${1:True|False}' },
-    { snippet: 'Corrupted ${1:True|False}' },
-    { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
-    { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
-    { snippet: 'Quality ${1:[operator]} ${2:quality}' },
-    { snippet: 'Sockets ${1:[operator]} ${2:sockets}' },
-    { snippet: 'LinkedSockets ${1:[operator]} ${2:links}' },
-    { snippet: 'Height ${1:[operator]} ${2:height}' },
-    { snippet: 'Width ${1:[operator]} ${2:width}' },
-    { snippet: 'SocketGroup ${1:group}' }
+    { displayText: "BaseType", snippet: 'BaseType ${1:type}' },
+    { displayText: "Class", snippet: 'Class ${1:class}' },
+    { displayText: "Rarity", snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
+    { displayText: "Identified", snippet: 'Identified ${1:True|False}' },
+    { displayText: "Corrupted", snippet: 'Corrupted ${1:True|False}' },
+    { displayText: "ItemLevel", snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
+    { displayText: "DropLevel", snippet: 'DropLevel ${1:[operator]} ${2:level}' },
+    { displayText: "Quality", snippet: 'Quality ${1:[operator]} ${2:quality}' },
+    { displayText: "Sockets", snippet: 'Sockets ${1:[operator]} ${2:sockets}' },
+    { displayText: "LinkedSockets", snippet: 'LinkedSockets ${1:[operator]} ${2:links}' },
+    { displayText: "Height", snippet: 'Height ${1:[operator]} ${2:height}' },
+    { displayText: "Width", snippet: 'Width ${1:[operator]} ${2:width}' },
+    { displayText: "SocketGroup", snippet: 'SocketGroup ${1:group}' }
 ];
 var actions = [
-    { snippet: 'SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-    { snippet: 'SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-    { snippet: 'SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-    { snippet: 'PlayAlertSound ${1:id} ${2:[volume]}' },
-    { snippet: 'SetFontSize ${1:size}' }
+    { displayText: "SetBackgroundColor", snippet: 'SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
+    { displayText: "SetBorderColor", snippet: 'SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
+    { displayText: "SetTextColor", snippet: 'SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
+    { displayText: "PlayAlertSound", snippet: 'PlayAlertSound ${1:id} ${2:[volume]}' },
+    { displayText: "SetFontSize", snippet: 'SetFontSize ${1:size}' }
 ];
 var rarities = [
-    { text: 'Normal' },
-    { text: 'Magic' },
-    { text: 'Rare' },
-    { text: 'Unique' }
+    { text: 'Normal', _itemRarity: true },
+    { text: 'Magic', _itemRarity: true },
+    { text: 'Rare', _itemRarity: true },
+    { text: 'Unique', _itemRarity: true }
 ];
 var operators = [
     { text: '>' },
@@ -53,6 +49,28 @@ var operators = [
 var booleans = [
     { text: 'True' },
     { text: 'False' }
+];
+var extraBlockCompletions = [
+    {
+        displayText: '## Heading ##',
+        snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2'
+    },
+    { displayText: "Maps - Tier 1", text: "\n# Maps - Tier 1\nShow\n\tClass Maps\n\tDropLevel <= 68" },
+    { displayText: "Maps - Tier 2", text: "\n# Maps - Tier 2\nShow\n\tClass Maps\n\tDropLevel = 69" },
+    { displayText: "Maps - Tier 3", text: "\n# Maps - Tier 3\nShow\n\tClass Maps\n\tDropLevel = 70" },
+    { displayText: "Maps - Tier 4", text: "\n# Maps - Tier 4\nShow\n\tClass Maps\n\tDropLevel = 71" },
+    { displayText: "Maps - Tier 5", text: "\n# Maps - Tier 5\nShow\n\tClass Maps\n\tDropLevel = 72" },
+    { displayText: "Maps - Tier 6", text: "\n# Maps - Tier 6\nShow\n\tClass Maps\n\tDropLevel = 73" },
+    { displayText: "Maps - Tier 7", text: "\n# Maps - Tier 7\nShow\n\tClass Maps\n\tDropLevel = 74" },
+    { displayText: "Maps - Tier 8", text: "\n# Maps - Tier 8\nShow\n\tClass Maps\n\tDropLevel = 75" },
+    { displayText: "Maps - Tier 9", text: "\n# Maps - Tier 9\nShow\n\tClass Maps\n\tDropLevel = 76" },
+    { displayText: "Maps - Tier 10", text: "\n# Maps - Tier 10\nShow\n\tClass Maps\n\tDropLevel = 77" },
+    { displayText: "Maps - Tier 11", text: "\n# Maps - Tier 11\nShow\n\tClass Maps\n\tDropLevel = 78" },
+    { displayText: "Maps - Tier 12", text: "\n# Maps - Tier 12\nShow\n\tClass Maps\n\tDropLevel = 79" },
+    { displayText: "Maps - Tier 13", text: "\n# Maps - Tier 13\nShow\n\tClass Maps\n\tDropLevel = 80" },
+    { displayText: "Maps - Tier 14", text: "\n# Maps - Tier 14\nShow\n\tClass Maps\n\tDropLevel = 81" },
+    { displayText: "Maps - Tier 15", text: "\n# Maps - Tier 15\nShow\n\tClass Maps\n\tDropLevel = 82" },
+    { displayText: "Maps - Tier 16", text: "\n# Maps - Tier 16\nShow\n\tClass Maps\n\tDropLevel >= 83" }
 ];
 function updateItemData(externalCall) {
     if (externalCall === void 0) { externalCall = true; }
@@ -231,10 +249,14 @@ function pruneSuggestions(prefix, suggestions) {
         return suggestions;
     var upperPrefix = prefix.toUpperCase();
     var prunedSuggestions = new Array();
+    var firstChar = prefix.charAt(0);
     for (var _i = 0, suggestions_2 = suggestions; _i < suggestions_2.length; _i++) {
         var s = suggestions_2[_i];
         var text;
-        if (s.snippet) {
+        if (s.displayText && firstChar != '"') {
+            text = s.displayText.toUpperCase();
+        }
+        else if (s.snippet) {
             text = s.snippet.toUpperCase();
         }
         else if (s.text) {
@@ -267,6 +289,9 @@ function getSuggestions(args) {
             }
             else {
                 suggestions = suggestions.concat(blocks, actions, filters);
+                if (settings.config.completionSettings.enableExtraSuggestions.get()) {
+                    suggestions = suggestions.concat(extraBlockCompletions);
+                }
             }
         }
     }
@@ -375,33 +400,18 @@ function insertedSuggestion(params) {
         var cursorPosition_1 = params.editor.getCursorBufferPosition();
         removeConsecutiveQuotes(params.editor, cursorPosition_1);
     }
-    var wasRarity = false;
-    for (var _a = 0, rarities_1 = rarities; _a < rarities_1.length; _a++) {
-        var r = rarities_1[_a];
-        var suggestion = params.suggestion;
-        if (suggestion.text && r.text) {
-            if (suggestion.text == r.text) {
-                wasRarity = true;
-                break;
+    if (params.suggestion._itemRarity) {
+        if (params.editor.hasMultipleCursors()) {
+            var cursorPositions = params.editor.getCursorBufferPositions();
+            for (var _a = 0, cursorPositions_2 = cursorPositions; _a < cursorPositions_2.length; _a++) {
+                var cursorPosition = cursorPositions_2[_a];
+                removeRarityPlaceholder(params.editor, cursorPosition);
             }
         }
-        else if (suggestion.snippet && r.snippet) {
-            if (suggestion.snippet == r.snippet) {
-                wasRarity = true;
-                break;
-            }
+        else {
+            var cursorPosition_2 = params.editor.getCursorBufferPosition();
+            removeRarityPlaceholder(params.editor, cursorPosition_2);
         }
-    }
-    if (wasRarity && params.editor.hasMultipleCursors()) {
-        var cursorPositions = params.editor.getCursorBufferPositions();
-        for (var _b = 0, cursorPositions_2 = cursorPositions; _b < cursorPositions_2.length; _b++) {
-            var cursorPosition = cursorPositions_2[_b];
-            removeRarityPlaceholder(params.editor, cursorPosition);
-        }
-    }
-    else if (wasRarity) {
-        var cursorPosition_2 = params.editor.getCursorBufferPosition();
-        removeRarityPlaceholder(params.editor, cursorPosition_2);
     }
 }
 exports.provider = {

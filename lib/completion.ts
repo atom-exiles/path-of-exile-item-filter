@@ -54,6 +54,10 @@ interface Suggestion {
   /** A url to the documentation or more information about this suggestion. When
    *  specified, a More.. link will be displayed in the description area. */
   descriptionMoreURL?: string
+
+  // Custom Properties ========================================================
+  /** Set whenever the suggestion is one of the item rarities. */
+  _itemRarity?: boolean
   /** Stores the unmodified rightLabel for the suggestion. Depending on user
    *  configuration, the rightLabel field may be set to undefined. This property
    *  allows us to restore it when necessary. */
@@ -72,43 +76,39 @@ interface TextSuggestion extends Suggestion {
 }
 
 const blocks: Array<TextSuggestion|SnippetSuggestion> = [
-  {
-    snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2',
-    displayText: '## Heading ##'
-  },
-  { snippet: 'Show\n  ${1:Rule}' },
-  { snippet: 'Hide\n  ${1:Rule}' }
+  { displayText: "Show", snippet: 'Show\n  ${1:Rule}' },
+  { displayText: "Hide", snippet: 'Hide\n  ${1:Rule}' }
 ]
 
 const filters: Array<TextSuggestion|SnippetSuggestion> = [
-  { snippet: 'BaseType ${1:type}' },
-  { snippet: 'Class ${1:class}' },
-  { snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
-  { snippet: 'Identified ${1:True|False}' },
-  { snippet: 'Corrupted ${1:True|False}' },
-  { snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
-  { snippet: 'DropLevel ${1:[operator]} ${2:level}' },
-  { snippet: 'Quality ${1:[operator]} ${2:quality}' },
-  { snippet: 'Sockets ${1:[operator]} ${2:sockets}' },
-  { snippet: 'LinkedSockets ${1:[operator]} ${2:links}' },
-  { snippet: 'Height ${1:[operator]} ${2:height}' },
-  { snippet: 'Width ${1:[operator]} ${2:width}' },
-  { snippet: 'SocketGroup ${1:group}' }
+  { displayText: "BaseType", snippet: 'BaseType ${1:type}' },
+  { displayText: "Class", snippet: 'Class ${1:class}' },
+  { displayText: "Rarity", snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
+  { displayText: "Identified", snippet: 'Identified ${1:True|False}' },
+  { displayText: "Corrupted", snippet: 'Corrupted ${1:True|False}' },
+  { displayText: "ItemLevel", snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
+  { displayText: "DropLevel", snippet: 'DropLevel ${1:[operator]} ${2:level}' },
+  { displayText: "Quality", snippet: 'Quality ${1:[operator]} ${2:quality}' },
+  { displayText: "Sockets", snippet: 'Sockets ${1:[operator]} ${2:sockets}' },
+  { displayText: "LinkedSockets", snippet: 'LinkedSockets ${1:[operator]} ${2:links}' },
+  { displayText: "Height", snippet: 'Height ${1:[operator]} ${2:height}' },
+  { displayText: "Width", snippet: 'Width ${1:[operator]} ${2:width}' },
+  { displayText: "SocketGroup", snippet: 'SocketGroup ${1:group}' }
 ]
 
 const actions: Array<TextSuggestion|SnippetSuggestion> = [
-  { snippet: 'SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-  { snippet: 'SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-  { snippet: 'SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-  { snippet: 'PlayAlertSound ${1:id} ${2:[volume]}' },
-  { snippet: 'SetFontSize ${1:size}' }
+  { displayText: "SetBackgroundColor", snippet: 'SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
+  { displayText: "SetBorderColor", snippet: 'SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
+  { displayText: "SetTextColor", snippet: 'SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
+  { displayText: "PlayAlertSound", snippet: 'PlayAlertSound ${1:id} ${2:[volume]}' },
+  { displayText: "SetFontSize", snippet: 'SetFontSize ${1:size}' }
 ]
 
 const rarities: Array<TextSuggestion|SnippetSuggestion> = [
-  { text: 'Normal' },
-  { text: 'Magic' },
-  { text: 'Rare' },
-  { text: 'Unique' }
+  { text: 'Normal', _itemRarity: true },
+  { text: 'Magic', _itemRarity: true },
+  { text: 'Rare', _itemRarity: true },
+  { text: 'Unique', _itemRarity: true }
 ]
 
 const operators: Array<TextSuggestion|SnippetSuggestion> = [
@@ -122,6 +122,29 @@ const operators: Array<TextSuggestion|SnippetSuggestion> = [
 const booleans: Array<TextSuggestion|SnippetSuggestion> = [
   { text: 'True'},
   { text: 'False'}
+]
+
+const extraBlockCompletions: Array<TextSuggestion|SnippetSuggestion> = [
+  {
+    displayText: '## Heading ##',
+    snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2'
+  },
+  { displayText: "Maps - Tier 1", text: "\n# Maps - Tier 1\nShow\n\tClass Maps\n\tDropLevel <= 68" },
+  { displayText: "Maps - Tier 2", text: "\n# Maps - Tier 2\nShow\n\tClass Maps\n\tDropLevel = 69" },
+  { displayText: "Maps - Tier 3", text: "\n# Maps - Tier 3\nShow\n\tClass Maps\n\tDropLevel = 70" },
+  { displayText: "Maps - Tier 4", text: "\n# Maps - Tier 4\nShow\n\tClass Maps\n\tDropLevel = 71" },
+  { displayText: "Maps - Tier 5", text: "\n# Maps - Tier 5\nShow\n\tClass Maps\n\tDropLevel = 72" },
+  { displayText: "Maps - Tier 6", text: "\n# Maps - Tier 6\nShow\n\tClass Maps\n\tDropLevel = 73" },
+  { displayText: "Maps - Tier 7", text: "\n# Maps - Tier 7\nShow\n\tClass Maps\n\tDropLevel = 74" },
+  { displayText: "Maps - Tier 8", text: "\n# Maps - Tier 8\nShow\n\tClass Maps\n\tDropLevel = 75" },
+  { displayText: "Maps - Tier 9", text: "\n# Maps - Tier 9\nShow\n\tClass Maps\n\tDropLevel = 76" },
+  { displayText: "Maps - Tier 10", text: "\n# Maps - Tier 10\nShow\n\tClass Maps\n\tDropLevel = 77" },
+  { displayText: "Maps - Tier 11", text: "\n# Maps - Tier 11\nShow\n\tClass Maps\n\tDropLevel = 78" },
+  { displayText: "Maps - Tier 12", text: "\n# Maps - Tier 12\nShow\n\tClass Maps\n\tDropLevel = 79" },
+  { displayText: "Maps - Tier 13", text: "\n# Maps - Tier 13\nShow\n\tClass Maps\n\tDropLevel = 80" },
+  { displayText: "Maps - Tier 14", text: "\n# Maps - Tier 14\nShow\n\tClass Maps\n\tDropLevel = 81" },
+  { displayText: "Maps - Tier 15", text: "\n# Maps - Tier 15\nShow\n\tClass Maps\n\tDropLevel = 82" },
+  { displayText: "Maps - Tier 16", text: "\n# Maps - Tier 16\nShow\n\tClass Maps\n\tDropLevel >= 83" }
 ]
 
 /** Transforms the base item data into the format used by this completion provider. */
@@ -322,10 +345,13 @@ function pruneSuggestions(prefix: string, suggestions:
 
   const upperPrefix = prefix.toUpperCase();
   const prunedSuggestions = new Array<TextSuggestion|SnippetSuggestion>();
+  const firstChar = prefix.charAt(0);
 
   for(var s of suggestions) {
     var text: string;
-    if((<SnippetSuggestion>s).snippet) {
+    if(s.displayText && firstChar != '"') {
+      text = s.displayText.toUpperCase();
+    } else if((<SnippetSuggestion>s).snippet) {
       text = (<SnippetSuggestion>s).snippet.toUpperCase();
     } else if((<TextSuggestion>s).text) {
       text = (<TextSuggestion>s).text.toUpperCase();
@@ -357,6 +383,9 @@ function getSuggestions(args: SuggestionParams) {
         shouldPruneSuggestions = false;
       } else {
         suggestions = suggestions.concat(blocks, actions, filters);
+        if(settings.config.completionSettings.enableExtraSuggestions.get()) {
+          suggestions = suggestions.concat(extraBlockCompletions);
+        }
       }
     }
   } else {
@@ -474,30 +503,16 @@ function insertedSuggestion(params: TextInsertionParams) {
   //    Rarity Normal rarity
   // We need to detect this case and automatically remove ' rarity' from the
   // buffer.
-  var wasRarity = false;
-  for(var r of rarities) {
-    const suggestion = params.suggestion;
-    if((<TextSuggestion>suggestion).text && (<TextSuggestion>r).text) {
-      if((<TextSuggestion>suggestion).text == (<TextSuggestion>r).text) {
-        wasRarity = true;
-        break;
+  if(params.suggestion._itemRarity) {
+    if(params.editor.hasMultipleCursors()) {
+      const cursorPositions = params.editor.getCursorBufferPositions();
+      for(var cursorPosition of cursorPositions) {
+        removeRarityPlaceholder(params.editor, cursorPosition);
       }
-    } else if((<SnippetSuggestion>suggestion).snippet && (<SnippetSuggestion>r).snippet) {
-      if((<SnippetSuggestion>suggestion).snippet == (<SnippetSuggestion>r).snippet) {
-        wasRarity = true;
-        break;
-      }
-    }
-  }
-
-  if(wasRarity && params.editor.hasMultipleCursors()) {
-    const cursorPositions = params.editor.getCursorBufferPositions();
-    for(var cursorPosition of cursorPositions) {
+    } else {
+      const cursorPosition = params.editor.getCursorBufferPosition();
       removeRarityPlaceholder(params.editor, cursorPosition);
     }
-  } else if(wasRarity) {
-    const cursorPosition = params.editor.getCursorBufferPosition();
-    removeRarityPlaceholder(params.editor, cursorPosition);
   }
 }
 

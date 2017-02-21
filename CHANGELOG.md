@@ -46,3 +46,4 @@
 * Action rules can now have a trailing comment
 * Changed the placeholder value for Boolean rules (like Identified)
 * Stopped syntax highlighting the placeholder value for SocketGroups
+* Added completions for Map tiers, each of which inserts a new Show block
