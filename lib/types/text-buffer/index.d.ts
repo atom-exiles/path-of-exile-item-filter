@@ -1,11 +1,11 @@
-// Type definitions for text-buffer v9.3.0
-// Project: https://github.com/atom/text-buffer/tree/v9.3.0
+// Type definitions for text-buffer v10.2.16
+// Project: https://github.com/atom/text-buffer/tree/v10.2.16
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
 /// <reference path="../event-kit/index.d.ts" />
 /// <reference path="../pathwatcher/index.d.ts" />
 
-// API Documentation: https://atom.io/docs/api/v1.12.6/
+// API Documentation: https://atom.io/docs/api/v1.14.3/
 //
 // These definitions are written to ultimately be used within a global 'atom'
 // module, with each of these submodules being a direct dependency of that

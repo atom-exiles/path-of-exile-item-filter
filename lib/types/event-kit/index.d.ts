@@ -2,7 +2,7 @@
 // Project: https://github.com/atom/event-kit/tree/v2.2.0
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
-// API Documentation: https://atom.io/docs/api/v1.12.6/
+// API Documentation: https://atom.io/docs/api/v1.14.3/
 //
 // These definitions are written to ultimately be used within a global "atom"
 // module, with each of these submodules being a direct dependency of that

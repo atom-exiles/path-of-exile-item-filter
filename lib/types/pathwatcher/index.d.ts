@@ -1,11 +1,11 @@
-// Type definitions for pathwatcher v6.5.0
-// Project: https://github.com/atom/node-pathwatcher/tree/v6.5.0
+// Type definitions for pathwatcher v6.8.0
+// Project: https://github.com/atom/node-pathwatcher/tree/v6.8.0
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
 /// <reference types="node" />
 /// <reference path="../event-kit/index.d.ts" />
 
-// API Documentation: https://atom.io/docs/api/v1.12.6/
+// API Documentation: https://atom.io/docs/api/v1.14.3/
 //
 // These definitions are written to ultimately be used within a global "atom"
 // module, with each of these submodules being a direct dependency of that
@@ -123,11 +123,11 @@ declare namespace PathWatcher {
     /** Overwrites the file with the given text. */
     write(text: string): Promise<undefined>;
 
-    /** Overwrites the file with the given text. */
-    writeSync(text: string): undefined;
-
     /** Returns a stream to write content to the file. */
     createWriteStream(): WriteStream;
+
+    /** Overwrites the file with the given text. */
+    writeSync(text: string): undefined;
   }
 
   /** Represents a directory on disk that can be watched for changes. */

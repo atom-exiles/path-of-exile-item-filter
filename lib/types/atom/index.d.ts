@@ -1,5 +1,5 @@
-// Type definitions for Atom v1.12.6
-// Project: https://github.com/atom/atom/tree/v1.12.6
+// Type definitions for Atom v1.14.3
+// Project: https://github.com/atom/atom/tree/v1.14.3
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
 // NOTE: these typings contain only what is used by the packages that I maintain
@@ -9,7 +9,7 @@
 /// <reference path="../text-buffer/index.d.ts" />
 /// <reference path="../event-kit/index.d.ts" />
 
-// API Documentation: https://atom.io/docs/api/v1.12.6/
+// API Documentation: https://atom.io/docs/api/v1.14.3/
 //
 // The goal of these type definitions is to provide full coverage of the public
 // Atom API. These definitions are not exhaustive, and aim to only define class
