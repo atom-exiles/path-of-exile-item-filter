@@ -3,7 +3,6 @@
  *  updated in place, with events being emitted for modules where this isn't
  *  adequate. */
 import { Emitter, CompositeDisposable } from "atom";
-import { assert } from "chai";
 
 import * as settings from "./settings";
 
