@@ -209,7 +209,7 @@ function isFirstValue(editor: AtomCore.TextEditor, position: Point,
   }
 }
 
-/** Returns a prefix tailored towards loot filters, with support for things
+/** Returns a prefix tailored towards item filters, with support for things
  *  like value strings. */
 function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
   // The previous position in the editor is often a lot more useful than the

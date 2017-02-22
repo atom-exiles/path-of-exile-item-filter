@@ -24,7 +24,8 @@ var SettingValue = (function () {
 }());
 exports.config = {
     generalSettings: {
-        enableCompletion: new SettingValue("generalSettings.enableCompletion")
+        enableCompletion: new SettingValue("generalSettings.enableCompletion"),
+        enableLinter: new SettingValue("generalSettings.enableLinter")
     },
     dataSettings: {
         enableLeague: new SettingValue("dataSettings.enableLeague"),
@@ -37,5 +38,9 @@ exports.config = {
         enableExtraSuggestions: new SettingValue("completionSettings.enableExtraSuggestions"),
         enableRightLabel: new SettingValue("completionSettings.enableRightLabel"),
         enableIcon: new SettingValue("completionSettings.enableIcon")
+    },
+    linterSettings: {
+        enableWarnings: new SettingValue("linterSettings.enableWarnings"),
+        method: new SettingValue("linterSettings.method")
     }
 };

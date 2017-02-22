@@ -36,7 +36,8 @@ class SettingValue<T> {
 
 export const config = {
   generalSettings: {
-    enableCompletion: new SettingValue<boolean>("generalSettings.enableCompletion")
+    enableCompletion: new SettingValue<boolean>("generalSettings.enableCompletion"),
+    enableLinter: new SettingValue<boolean>("generalSettings.enableLinter")
   },
 
   dataSettings: {
@@ -51,5 +52,10 @@ export const config = {
     enableExtraSuggestions: new SettingValue<boolean>("completionSettings.enableExtraSuggestions"),
     enableRightLabel: new SettingValue<boolean>("completionSettings.enableRightLabel"),
     enableIcon: new SettingValue<boolean>("completionSettings.enableIcon")
+  },
+
+  linterSettings: {
+    enableWarnings: new SettingValue<boolean>("linterSettings.enableWarnings"),
+    method: new SettingValue<string>("linterSettings.method")
   }
 }

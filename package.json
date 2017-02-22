@@ -22,6 +22,11 @@
       "versions": {
         "2.0.0": "provideCompletion"
       }
+    },
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
     }
   }
 }

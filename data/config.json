@@ -6,10 +6,17 @@
     "properties": {
       "enableCompletion": {
         "title": "Enable Autocompletion",
-        "description": "Enable autocompletion within loot filters.",
+        "description": "Enable autocompletion within item filters.",
         "type": "boolean",
         "default": true,
         "order": 1
+      },
+      "enableLinter": {
+        "title": "Enable Linter",
+        "description": "Enable error checking for item filters.",
+        "type": "boolean",
+        "default": true,
+        "order": 2
       }
     }
   },
@@ -20,7 +27,7 @@
     "properties": {
       "enableLeague": {
         "title": "League-specific Items",
-        "description": "Allow the use of league-specific items within loot filters.",
+        "description": "Allow the use of league-specific items within item filters.",
         "type": "boolean",
         "default": true,
         "order": 1
@@ -82,6 +89,31 @@
         "type": "boolean",
         "default": true,
         "order": 3
+      }
+    }
+  },
+  "linterSettings": {
+    "title": "Linter",
+    "type": "object",
+    "order": 4,
+    "properties": {
+      "enableWarnings": {
+        "title": "Warnings",
+        "description": "Enable linter warnings within the editor.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "method": {
+        "title": "Method",
+        "description": "Determines when filter files will be processed by the linter.",
+        "type": "string",
+        "default": "onEdit",
+        "order": 3,
+        "enum": [
+          { "value": "onEdit", "description": "On Edit: process item filters as they are modified." },
+          { "value": "onSave", "description": "On Save: only process item filters on save and load." }
+        ]
       }
     }
   }
