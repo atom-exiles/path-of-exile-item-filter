@@ -1,15 +1,10 @@
 import { Emitter, CompositeDisposable, Range } from "atom";
 
-import * as path from "path";
-
 import * as data from "./data";
 import * as completion from "./completion";
 
 export const config = require('../data/config.json');
 const packageName = require('../package.json').name
-
-interface PackageState {
-}
 
 function readyToActivate() {
   data.setupSubscriptions();

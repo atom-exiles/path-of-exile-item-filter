@@ -2,76 +2,12 @@
 var atom_1 = require("atom");
 var settings = require("./settings");
 var data = require("./data");
+var suggestionsData = require("../data/suggestions.json");
 var validBases = new Array();
 var validClasses = new Array();
 var injectedBases = new Array();
 var injectedClasses = new Array();
 var subscriptions = new atom_1.CompositeDisposable;
-var blocks = [
-    { displayText: "Show", snippet: 'Show\n  ${1:Rule}' },
-    { displayText: "Hide", snippet: 'Hide\n  ${1:Rule}' }
-];
-var filters = [
-    { displayText: "BaseType", snippet: 'BaseType ${1:type}' },
-    { displayText: "Class", snippet: 'Class ${1:class}' },
-    { displayText: "Rarity", snippet: 'Rarity ${1:[operator]} ${2:rarity}' },
-    { displayText: "Identified", snippet: 'Identified ${1:True|False}' },
-    { displayText: "Corrupted", snippet: 'Corrupted ${1:True|False}' },
-    { displayText: "ItemLevel", snippet: 'ItemLevel ${1:[operator]} ${2:level}' },
-    { displayText: "DropLevel", snippet: 'DropLevel ${1:[operator]} ${2:level}' },
-    { displayText: "Quality", snippet: 'Quality ${1:[operator]} ${2:quality}' },
-    { displayText: "Sockets", snippet: 'Sockets ${1:[operator]} ${2:sockets}' },
-    { displayText: "LinkedSockets", snippet: 'LinkedSockets ${1:[operator]} ${2:links}' },
-    { displayText: "Height", snippet: 'Height ${1:[operator]} ${2:height}' },
-    { displayText: "Width", snippet: 'Width ${1:[operator]} ${2:width}' },
-    { displayText: "SocketGroup", snippet: 'SocketGroup ${1:group}' }
-];
-var actions = [
-    { displayText: "SetBackgroundColor", snippet: 'SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-    { displayText: "SetBorderColor", snippet: 'SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-    { displayText: "SetTextColor", snippet: 'SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}' },
-    { displayText: "PlayAlertSound", snippet: 'PlayAlertSound ${1:id} ${2:[volume]}' },
-    { displayText: "SetFontSize", snippet: 'SetFontSize ${1:size}' }
-];
-var rarities = [
-    { text: 'Normal', _itemRarity: true },
-    { text: 'Magic', _itemRarity: true },
-    { text: 'Rare', _itemRarity: true },
-    { text: 'Unique', _itemRarity: true }
-];
-var operators = [
-    { text: '>' },
-    { text: '>=' },
-    { text: '=' },
-    { text: '<=' },
-    { text: '<' }
-];
-var booleans = [
-    { text: 'True' },
-    { text: 'False' }
-];
-var extraBlockCompletions = [
-    {
-        displayText: '## Heading ##',
-        snippet: '##############################\n##  ${1:        Heading       }  ##\n##############################\n$2'
-    },
-    { displayText: "Maps - Tier 1", text: "\n# Maps - Tier 1\nShow\n\tClass Maps\n\tDropLevel <= 68" },
-    { displayText: "Maps - Tier 2", text: "\n# Maps - Tier 2\nShow\n\tClass Maps\n\tDropLevel = 69" },
-    { displayText: "Maps - Tier 3", text: "\n# Maps - Tier 3\nShow\n\tClass Maps\n\tDropLevel = 70" },
-    { displayText: "Maps - Tier 4", text: "\n# Maps - Tier 4\nShow\n\tClass Maps\n\tDropLevel = 71" },
-    { displayText: "Maps - Tier 5", text: "\n# Maps - Tier 5\nShow\n\tClass Maps\n\tDropLevel = 72" },
-    { displayText: "Maps - Tier 6", text: "\n# Maps - Tier 6\nShow\n\tClass Maps\n\tDropLevel = 73" },
-    { displayText: "Maps - Tier 7", text: "\n# Maps - Tier 7\nShow\n\tClass Maps\n\tDropLevel = 74" },
-    { displayText: "Maps - Tier 8", text: "\n# Maps - Tier 8\nShow\n\tClass Maps\n\tDropLevel = 75" },
-    { displayText: "Maps - Tier 9", text: "\n# Maps - Tier 9\nShow\n\tClass Maps\n\tDropLevel = 76" },
-    { displayText: "Maps - Tier 10", text: "\n# Maps - Tier 10\nShow\n\tClass Maps\n\tDropLevel = 77" },
-    { displayText: "Maps - Tier 11", text: "\n# Maps - Tier 11\nShow\n\tClass Maps\n\tDropLevel = 78" },
-    { displayText: "Maps - Tier 12", text: "\n# Maps - Tier 12\nShow\n\tClass Maps\n\tDropLevel = 79" },
-    { displayText: "Maps - Tier 13", text: "\n# Maps - Tier 13\nShow\n\tClass Maps\n\tDropLevel = 80" },
-    { displayText: "Maps - Tier 14", text: "\n# Maps - Tier 14\nShow\n\tClass Maps\n\tDropLevel = 81" },
-    { displayText: "Maps - Tier 15", text: "\n# Maps - Tier 15\nShow\n\tClass Maps\n\tDropLevel = 82" },
-    { displayText: "Maps - Tier 16", text: "\n# Maps - Tier 16\nShow\n\tClass Maps\n\tDropLevel >= 83" }
-];
 function updateItemData(externalCall) {
     if (externalCall === void 0) { externalCall = true; }
     validBases = new Array();
@@ -94,9 +30,11 @@ function updateItemData(externalCall) {
         value.forEach(function (v) {
             if (v.indexOf(' ') != -1)
                 validBases.push({ text: '"' + v + '"',
-                    displayText: v, _rightLabel: key });
+                    displayText: v, custom: { backupRightLabel: key } });
             else
-                validBases.push({ text: v, displayText: v, _rightLabel: key });
+                validBases.push({ text: v, displayText: v, custom: {
+                        backupRightLabel: key
+                    } });
         });
     });
     if (externalCall)
@@ -113,17 +51,21 @@ function updateWhitelists(externalCall) {
         var c = classes_1[_i];
         if (c.indexOf(' ') != -1)
             injectedClasses.push({ text: '"' + c + '"',
-                displayText: c, _rightLabel: labelText });
+                displayText: c, custom: { backupRightLabel: labelText } });
         else
-            injectedClasses.push({ text: c, displayText: c, _rightLabel: labelText });
+            injectedClasses.push({ text: c, displayText: c, custom: {
+                    backupRightLabel: labelText
+                } });
     }
     for (var _a = 0, bases_1 = bases; _a < bases_1.length; _a++) {
         var b = bases_1[_a];
         if (b.indexOf(' ') != -1)
             injectedBases.push({ text: '"' + b + '"',
-                displayText: b, _rightLabel: labelText });
+                displayText: b, custom: { backupRightLabel: labelText } });
         else
-            injectedBases.push({ text: b, displayText: b, _rightLabel: labelText });
+            injectedBases.push({ text: b, displayText: b, custom: {
+                    backupRightLabel: labelText
+                } });
     }
     if (externalCall)
         updateDecorations();
@@ -132,15 +74,21 @@ function updateDecorations() {
     var enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
     var enableIcon = settings.config.completionSettings.enableIcon.get();
     var action = function (s) {
-        if (enableRightLabel)
-            s.rightLabel = s._rightLabel;
-        else
+        if (enableRightLabel && s.custom && s.custom.backupRightLabel) {
+            s.rightLabel = s.custom.backupRightLabel;
+        }
+        else {
             s.rightLabel = undefined;
+        }
         if (enableIcon) { }
     };
     validBases.forEach(action);
     injectedClasses.forEach(action);
     injectedBases.forEach(action);
+    for (var key in suggestionsData) {
+        var sb = suggestionsData[key];
+        sb.forEach(action);
+    }
 }
 function setupSubscriptions() {
     subscriptions = new atom_1.CompositeDisposable;
@@ -221,8 +169,8 @@ function setReplacementPrefix(editor, position, prefix, suggestions) {
     for (var _i = 0, suggestions_1 = suggestions; _i < suggestions_1.length; _i++) {
         var suggestion = suggestions_1[_i];
         var blockElement = false;
-        for (var _a = 0, blocks_1 = blocks; _a < blocks_1.length; _a++) {
-            var block = blocks_1[_a];
+        for (var _a = 0, _b = suggestionsData.blocks; _a < _b.length; _a++) {
+            var block = _b[_a];
             if (suggestion.snippet && block.snippet) {
                 if (suggestion.snippet == block.snippet) {
                     blockElement = true;
@@ -279,18 +227,18 @@ function getSuggestions(args) {
     var cursorScopes = args.scopeDescriptor.scopes;
     var topScope = cursorScopes[cursorScopes.length - 1];
     if (topScope == 'source.poe') {
-        suggestions = suggestions.concat(blocks);
+        suggestions = suggestions.concat(suggestionsData.blocks);
     }
     else if (topScope == 'line.empty.poe' || topScope == 'line.unknown.poe') {
         if (cursorScopes.indexOf('block.poe') != -1) {
             if (prefix == 'Rule') {
-                suggestions = suggestions.concat(actions, filters);
+                suggestions = suggestions.concat(suggestionsData.actions, suggestionsData.filters);
                 shouldPruneSuggestions = false;
             }
             else {
-                suggestions = suggestions.concat(blocks, actions, filters);
+                suggestions = suggestions.concat(suggestionsData.blocks, suggestionsData.actions, suggestionsData.filters);
                 if (settings.config.completionSettings.enableExtraSuggestions.get()) {
-                    suggestions = suggestions.concat(extraBlockCompletions);
+                    suggestions = suggestions.concat(suggestionsData.extraBlocks);
                 }
             }
         }
@@ -298,36 +246,36 @@ function getSuggestions(args) {
     else {
         if (cursorScopes.indexOf('filter.rarity.poe') != -1) {
             if (prefix == '[operator]') {
-                suggestions = suggestions.concat(operators, rarities);
+                suggestions = suggestions.concat(suggestionsData.operators, suggestionsData.rarities);
                 shouldPruneSuggestions = false;
             }
             else if (prefix == 'rarity') {
-                suggestions = suggestions.concat(rarities);
+                suggestions = suggestions.concat(suggestionsData.rarities);
                 shouldPruneSuggestions = false;
             }
             else if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                suggestions = suggestions.concat(rarities);
+                suggestions = suggestions.concat(suggestionsData.rarities);
             }
         }
         else if (cursorScopes.indexOf('filter.identified.poe') != -1) {
             if (prefix == 'True|False') {
-                suggestions = suggestions.concat(booleans);
+                suggestions = suggestions.concat(suggestionsData.booleans);
                 shouldPruneSuggestions = false;
             }
             else if (!(prefix == "Identified")) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(booleans);
+                    suggestions = suggestions.concat(suggestionsData.booleans);
                 }
             }
         }
         else if (cursorScopes.indexOf('filter.corrupted.poe') != -1) {
             if (prefix == 'True|False') {
-                suggestions = suggestions.concat(booleans);
+                suggestions = suggestions.concat(suggestionsData.booleans);
                 shouldPruneSuggestions = false;
             }
             else if (!(prefix == "Corrupted")) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(booleans);
+                    suggestions = suggestions.concat(suggestionsData.booleans);
                 }
             }
         }
@@ -348,6 +296,9 @@ function getSuggestions(args) {
             else if (!(prefix == "BaseType")) {
                 suggestions = suggestions.concat(validBases, injectedBases);
             }
+            if (settings.config.completionSettings.enableExtraSuggestions.get()) {
+                suggestions = suggestions.concat(suggestionsData.extraBases);
+            }
         }
         else {
             var numberValueRule = cursorScopes.indexOf('filter.item-level.poe') != 1 ||
@@ -359,7 +310,7 @@ function getSuggestions(args) {
                 cursorScopes.indexOf('filter.width.poe') != 1;
             if (numberValueRule) {
                 if (prefix == "[operator]") {
-                    suggestions = suggestions.concat(operators);
+                    suggestions = suggestions.concat(suggestionsData.operators);
                     shouldPruneSuggestions = false;
                 }
             }
@@ -400,7 +351,7 @@ function insertedSuggestion(params) {
         var cursorPosition_1 = params.editor.getCursorBufferPosition();
         removeConsecutiveQuotes(params.editor, cursorPosition_1);
     }
-    if (params.suggestion._itemRarity) {
+    if (params.suggestion.custom && params.suggestion.custom.itemRarity) {
         if (params.editor.hasMultipleCursors()) {
             var cursorPositions = params.editor.getCursorBufferPositions();
             for (var _a = 0, cursorPositions_2 = cursorPositions; _a < cursorPositions_2.length; _a++) {

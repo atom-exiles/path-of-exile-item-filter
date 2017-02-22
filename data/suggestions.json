@@ -1,0 +1,246 @@
+{
+  "blocks": [
+    {
+      "displayText": "Show",
+      "snippet": "Show\n  ${1:Rule}",
+      "custom": { "backupRightLabel": "Block" }
+    },
+    {
+      "displayText": "Hide",
+      "snippet": "Hide\n  ${1:Rule}",
+      "custom": { "backupRightLabel": "Block" }
+    }
+  ],
+  "filters": [
+    {
+      "displayText": "BaseType",
+      "snippet": "BaseType ${1:type}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Class",
+      "snippet": "Class ${1:class}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Rarity",
+      "snippet": "Rarity ${1:[operator]} ${2:rarity}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Identified",
+      "snippet": "Identified ${1:True|False}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Corrupted",
+      "snippet": "Corrupted ${1:True|False}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "ItemLevel",
+      "snippet": "ItemLevel ${1:[operator]} ${2:level}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "DropLevel",
+      "snippet": "DropLevel ${1:[operator]} ${2:level}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Quality",
+      "snippet": "Quality ${1:[operator]} ${2:quality}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Sockets",
+      "snippet": "Sockets ${1:[operator]} ${2:sockets}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "LinkedSockets",
+      "snippet": "LinkedSockets ${1:[operator]} ${2:links}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Height",
+      "snippet": "Height ${1:[operator]} ${2:height}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "Width",
+      "snippet": "Width ${1:[operator]} ${2:width}",
+      "custom": { "backupRightLabel": "Filter" }
+    },
+    {
+      "displayText": "SocketGroup",
+      "snippet": "SocketGroup ${1:group}",
+      "custom": { "backupRightLabel": "Filter" }
+    }
+  ],
+  "actions": [
+    {
+      "displayText": "SetBackgroundColor",
+      "snippet": "SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}",
+      "custom": { "backupRightLabel": "Action" }
+    },
+    {
+      "displayText": "SetBorderColor",
+      "snippet": "SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}",
+      "custom": { "backupRightLabel": "Action" }
+    },
+    {
+      "displayText": "SetTextColor",
+      "snippet": "SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}",
+      "custom": { "backupRightLabel": "Action" }
+    },
+    {
+      "displayText": "PlayAlertSound",
+      "snippet": "PlayAlertSound ${1:id} ${2:[volume]}",
+      "custom": { "backupRightLabel": "Action" }
+    },
+    {
+      "displayText": "SetFontSize",
+      "snippet": "SetFontSize ${1:size}",
+      "custom": { "backupRightLabel": "Action" }
+    }
+  ],
+  "rarities": [
+    {
+      "text": "Normal",
+      "custom": { "backupRightLabel": "Rarity", "itemRarity": true }
+    },
+    {
+      "text": "Magic",
+      "custom": { "backupRightLabel": "Rarity", "itemRarity": true }
+    },
+    {
+      "text": "Rare",
+      "custom": { "backupRightLabel": "Rarity", "itemRarity": true }
+    },
+    {
+      "text": "Unique",
+      "custom": { "backupRightLabel": "Rarity", "itemRarity": true }
+    }
+  ],
+  "operators": [
+    { "text": ">", "custom": { "backupRightLabel": "Operator" }},
+    { "text": ">=", "custom": { "backupRightLabel": "Operator" }},
+    { "text": "=", "custom": { "backupRightLabel": "Operator" }},
+    { "text": "<=", "custom": { "backupRightLabel": "Operator" }},
+    { "text": "<", "custom": { "backupRightLabel": "Operator" }}
+  ],
+  "booleans": [
+    { "text": "True", "custom": { "backupRightLabel": "Boolean" }},
+    { "text": "False", "custom": { "backupRightLabel": "Boolean" }}
+  ],
+  "extraBlocks": [
+    {
+      "displayText": "## Heading ##",
+      "snippet": "##############################\n##  ${1:        Heading       }  ##\n##############################\n$2",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 1",
+      "text": "\n# Maps - Tier 1\nShow\n\tClass Maps\n\tDropLevel <= 68",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 2",
+      "text": "\n# Maps - Tier 2\nShow\n\tClass Maps\n\tDropLevel = 69",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 3",
+      "text": "\n# Maps - Tier 3\nShow\n\tClass Maps\n\tDropLevel = 70",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 4",
+      "text": "\n# Maps - Tier 4\nShow\n\tClass Maps\n\tDropLevel = 71",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 5",
+      "text": "\n# Maps - Tier 5\nShow\n\tClass Maps\n\tDropLevel = 72",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 6",
+      "text": "\n# Maps - Tier 6\nShow\n\tClass Maps\n\tDropLevel = 73",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 7",
+      "text": "\n# Maps - Tier 7\nShow\n\tClass Maps\n\tDropLevel = 74",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 8",
+      "text": "\n# Maps - Tier 8\nShow\n\tClass Maps\n\tDropLevel = 75",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 9",
+      "text": "\n# Maps - Tier 9\nShow\n\tClass Maps\n\tDropLevel = 76",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 10",
+      "text": "\n# Maps - Tier 10\nShow\n\tClass Maps\n\tDropLevel = 77",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 11",
+      "text": "\n# Maps - Tier 11\nShow\n\tClass Maps\n\tDropLevel = 78",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 12",
+      "text": "\n# Maps - Tier 12\nShow\n\tClass Maps\n\tDropLevel = 79",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 13",
+      "text": "\n# Maps - Tier 13\nShow\n\tClass Maps\n\tDropLevel = 80",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 14",
+      "text": "\n# Maps - Tier 14\nShow\n\tClass Maps\n\tDropLevel = 81",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 15",
+      "text": "\n# Maps - Tier 15\nShow\n\tClass Maps\n\tDropLevel = 82",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Maps - Tier 16",
+      "text": "\n# Maps - Tier 16\nShow\n\tClass Maps\n\tDropLevel >= 83",
+      "custom": { "backupRightLabel": "Extra" }
+    }
+  ],
+  "extraBases": [
+    {
+      "displayText": "Bases - Atlas of Worlds",
+      "text": "\"Blue Pearl Amulet\" \"Bone Helmet\" \"Crystal Belt\" \"Fingerless Silk Gloves\" \"Gripped Gloves\" \"Marble Amulet\" \"Opal Ring\" \"Spiked Gloves\" \"Steel Ring\" \"Two-Toned Boots\" \"Vanguard Belt\"",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Bases - Maraketh - Low Level",
+      "text": "\"Pagan Wand\" \"Curved Blade\" Smallsword \"Hook Sword\" \"Crescent Staff\" \"Morning Star\" \"Horned Sceptre\" \"Wyrm Mace\" \"Prong Dagger\" \"Double Claw\" \"Reflex Bow\" \"Dagger Axe\" \"Etched Hatchet\"",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Bases - Maraketh - Mid Level",
+      "text": "\"Engraved Hatchet\" \"Talon Axe\" \"Steelwood Bow\" \"Twin Claw\" Trisula \"Dragon Mace\" \"Stag Sceptre\" \"Solar Maul\" \"Moon Staff\" Grappler \"Courtesan Sword\" \"Lithe Blade\" \"Heathen Wand\"",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Bases - Maraketh - High Level",
+      "text": "\"Runic Hatchet\" Fleshripper \"Maraketh Bow\" \"Gemini Claw\" Sai \"Behemoth Mace\" \"Sambar Sceptre \" \"Coronal Maul\" \"Eclipse Staff\" \"Tiger Hook\" \"Dragoon Sword\" \"Exquisite Blade\" \"Profane Wand\"",
+      "custom": { "backupRightLabel": "Extra" }
+    }
+  ]
+}
