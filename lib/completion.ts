@@ -3,8 +3,6 @@ import { Point, Range, CompositeDisposable } from "atom";
 import * as settings from "./settings";
 import * as data from "./data";
 
-const suggestionsData: SuggestionsData = require("../data/suggestions.json");
-
 interface SuggestionParams {
   editor: AtomCore.TextEditor
   bufferPosition: Point
@@ -82,6 +80,8 @@ interface SuggestionsData {
   extraBlocks: Array<TextSuggestion|SnippetSuggestion>
   extraBases: Array<TextSuggestion|SnippetSuggestion>
 }
+
+const suggestionsData: SuggestionsData = require("../data/suggestions.json");
 
 var validBases = new Array<TextSuggestion>();
 var validClasses = new Array<TextSuggestion>();

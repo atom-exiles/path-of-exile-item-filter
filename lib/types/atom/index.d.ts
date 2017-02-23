@@ -2086,4 +2086,8 @@ declare module "atom" {
 
   /** Represents a directory on disk that can be watched for changes. */
   export class Directory extends PathWatcher.Directory {}
+
+  /** This class represents all essential editing state for a single TextBuffer,
+   *  including cursor and selection positions, folds, and soft wraps. */
+  export class TextEditor extends AtomCore.TextEditor {}
 }

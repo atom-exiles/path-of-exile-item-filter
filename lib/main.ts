@@ -1,4 +1,4 @@
-import { Emitter, CompositeDisposable, Range } from "atom";
+import { Emitter, CompositeDisposable, Range, TextEditor } from "atom";
 
 import * as data from "./data";
 import * as completion from "./completion";
@@ -6,11 +6,12 @@ import * as linter from "./linter";
 
 export const config = require('../data/config.json');
 const packageName = require('../package.json').name
+var linterRegister: LinterRegister;
 
 function readyToActivate() {
   data.setupSubscriptions();
   completion.setupSubscriptions();
-  linter.setupSubscriptions();
+  linter.setupSubscriptions(linterRegister);
 }
 
 export function activate() {
@@ -29,6 +30,7 @@ export function provideCompletion() {
   return [completion.provider];
 }
 
-export function provideLinter() {
-  return linter.provider;
+export function consumeLinter(registry: LinterRegistry): void {
+  const register = registry.register({ name: packageName });
+  linterRegister = register;
 }

@@ -1,119 +1,110 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t;
-    return { next: verb(0), "throw": verb(1), "return": verb(2) };
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 var atom_1 = require("atom");
 var path = require("path");
-var settings = require("./settings");
-var knownBuffers = new Map();
-function setupSubscriptions() {
+var data = require("./data");
+var BufferData = (function () {
+    function BufferData(editor) {
+        var _this = this;
+        this.editor = editor;
+        this.subscriptions = new atom_1.CompositeDisposable;
+        this.subscriptions.add(editor.onDidChangePath(function (newPath) {
+            if (_this.isFilter())
+                _this.registerFilter();
+            else if (_this.filterSubs)
+                _this.filterSubs.dispose();
+        }));
+        if (this.isFilter())
+            this.registerFilter();
+        else if (this.filterSubs)
+            this.filterSubs.dispose();
+    }
+    BufferData.prototype.destructor = function () {
+        if (this.filterSubs)
+            this.filterSubs.dispose();
+        this.subscriptions.dispose();
+    };
+    BufferData.prototype.mimickChangeData = function () {
+        return [{
+                oldRange: new atom_1.Range([0, 0], [0, 0]),
+                newRange: this.editor.buffer.getRange(),
+                oldText: "",
+                newText: this.editor.buffer.getText()
+            }];
+    };
+    BufferData.prototype.isFilter = function () {
+        if (path.extname(this.editor.buffer.getPath()) == '.filter')
+            return true;
+        else
+            return false;
+    };
+    BufferData.prototype.registerFilter = function () {
+        var _this = this;
+        if (!this.filterSubs)
+            this.filterSubs = new atom_1.CompositeDisposable();
+        this.processFilter(this.mimickChangeData());
+        this.filterSubs.add(this.editor.buffer.onDidChange(function (event) {
+            if (!_this.changes)
+                _this.changes = [];
+            _this.changes.push(event);
+        }));
+        this.filterSubs.add(this.editor.buffer.onDidStopChanging(function () {
+            _this.filterData.then(function (fd) {
+                _this.processFilter(_this.changes);
+            });
+        }));
+    };
+    BufferData.prototype.reprocessFilter = function () {
+        if (this.isFilter()) {
+            this.processFilter(this.mimickChangeData());
+        }
+    };
+    BufferData.prototype.processFilter = function (changes) {
+        var _this = this;
+        if (!changes || changes.length == 0) {
+            this.changes = [];
+            return this.filterData;
+        }
+        this.filterData = new Promise(function (resolve, reject) {
+            var fd = {};
+            emitter.emit('poe-did-process-filter', _this.filterData);
+            resolve(fd);
+        });
+    };
+    return BufferData;
+}());
+var subscriptions;
+var emitter;
+function setupSubscriptions(registry) {
+    if (!registry)
+        throw new Error("PoEItemFilter: expected registry to be initialized.");
+    if (subscriptions)
+        subscriptions.dispose();
+    if (emitter)
+        emitter.dispose();
+    emitter = new atom_1.Emitter;
+    subscriptions = new atom_1.CompositeDisposable;
+    var currentBuffer;
+    subscriptions.add(atom.workspace.observeActivePaneItem(function (item) {
+        if (item instanceof require('atom').TextEditor) {
+            if (currentBuffer)
+                currentBuffer.destructor();
+            currentBuffer = new BufferData(item);
+        }
+        else {
+            if (currentBuffer)
+                currentBuffer.destructor();
+        }
+    }));
+    subscriptions.add(data.emitter.on("poe-did-update-item-data", function () {
+        currentBuffer.reprocessFilter();
+    }));
+    subscriptions.add(data.emitter.on("poe-did-update-injected-data", function () {
+        currentBuffer.reprocessFilter();
+    }));
 }
 exports.setupSubscriptions = setupSubscriptions;
 function removeSubscriptions() {
+    subscriptions.dispose();
+    emitter.dispose();
 }
 exports.removeSubscriptions = removeSubscriptions;
-function processBuffer(editor, bufferData) {
-}
-function updateBuffer(editor, bufferData, event) {
-}
-function mergeBufferMessages(bufferData) {
-    var result = bufferData.then(function (bd) {
-        var messages = [];
-        bd.lineInfo.forEach(function (line) {
-            if (line.messages)
-                messages = messages.concat(line.messages);
-        });
-        return messages;
-    });
-    return result;
-}
-function lint(editor) {
-    var _this = this;
-    if (!settings.config.generalSettings.enableLinter.get())
-        return [];
-    var result;
-    if (knownBuffers.has(editor.buffer.id)) {
-        var bufferData = knownBuffers.get(editor.buffer.id);
-        if (bufferData)
-            result = mergeBufferMessages(bufferData);
-        else
-            result = [];
-    }
-    else {
-        var subscriptions_1 = new atom_1.CompositeDisposable;
-        var bufferData_1 = new Promise(function (resolve, reject) {
-            var lines = editor.buffer.getLines();
-            var bd = {
-                subscriptions: subscriptions_1,
-                lines: lines,
-                lineInfo: []
-            };
-            processBuffer(editor, bd);
-            resolve(bd);
-        });
-        knownBuffers.set(editor.buffer.id, bufferData_1);
-        subscriptions_1.add(editor.buffer.onDidChange(function (event) { return __awaiter(_this, void 0, void 0, function () {
-            var processedData;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, bufferData_1];
-                    case 1:
-                        processedData = _a.sent();
-                        updateBuffer(editor, processedData, event);
-                        return [2 /*return*/];
-                }
-            });
-        }); }));
-        subscriptions_1.add(editor.buffer.onDidDestroy(function () {
-            subscriptions_1.dispose();
-            knownBuffers.delete(editor.buffer.id);
-        }));
-        subscriptions_1.add(editor.buffer.onDidChangePath(function (newPath) {
-            if (!(path.extname(newPath) == '.filter')) {
-                subscriptions_1.dispose();
-                knownBuffers.delete(editor.buffer.id);
-            }
-        }));
-        result = mergeBufferMessages(bufferData_1);
-    }
-    return result;
-}
-exports.provider = {
-    name: 'POE Item Filter',
-    scope: 'file',
-    lintOnFly: true,
-    grammarScopes: ['source.poe'],
-    lint: lint
-};

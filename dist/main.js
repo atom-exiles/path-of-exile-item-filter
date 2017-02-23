@@ -4,10 +4,11 @@ var completion = require("./completion");
 var linter = require("./linter");
 exports.config = require('../data/config.json');
 var packageName = require('../package.json').name;
+var linterRegister;
 function readyToActivate() {
     data.setupSubscriptions();
     completion.setupSubscriptions();
-    linter.setupSubscriptions();
+    linter.setupSubscriptions(linterRegister);
 }
 function activate() {
     require("atom-package-deps")
@@ -25,7 +26,8 @@ function provideCompletion() {
     return [completion.provider];
 }
 exports.provideCompletion = provideCompletion;
-function provideLinter() {
-    return linter.provider;
+function consumeLinter(registry) {
+    var register = registry.register({ name: packageName });
+    linterRegister = register;
 }
-exports.provideLinter = provideLinter;
+exports.consumeLinter = consumeLinter;
