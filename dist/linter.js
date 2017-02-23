@@ -32,7 +32,7 @@ var BufferData = (function () {
             }];
     };
     BufferData.prototype.isFilter = function () {
-        if (path.extname(this.editor.buffer.getPath()) == '.filter')
+        if (path.extname(this.editor.buffer.getPath()) == ".filter")
             return true;
         else
             return false;
@@ -66,7 +66,7 @@ var BufferData = (function () {
         }
         this.filterData = new Promise(function (resolve, reject) {
             var fd = {};
-            emitter.emit('poe-did-process-filter', _this.filterData);
+            emitter.emit("poe-did-process-filter", _this.filterData);
             resolve(fd);
         });
     };
@@ -85,7 +85,7 @@ function setupSubscriptions(registry) {
     subscriptions = new atom_1.CompositeDisposable;
     var currentBuffer;
     subscriptions.add(atom.workspace.observeActivePaneItem(function (item) {
-        if (item instanceof require('atom').TextEditor) {
+        if (item instanceof require("atom").TextEditor) {
             if (currentBuffer)
                 currentBuffer.destructor();
             currentBuffer = new BufferData(item);

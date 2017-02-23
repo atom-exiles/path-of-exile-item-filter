@@ -4,8 +4,8 @@ import * as data from "./data";
 import * as completion from "./completion";
 import * as linter from "./linter";
 
-export const config = require('../data/config.json');
-const packageName = require('../package.json').name
+export const config = require("../data/config.json");
+const packageName = require("../package.json").name
 var linterRegister: LinterRegister;
 
 function readyToActivate() {

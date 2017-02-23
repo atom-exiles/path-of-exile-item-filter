@@ -2,8 +2,8 @@
 var data = require("./data");
 var completion = require("./completion");
 var linter = require("./linter");
-exports.config = require('../data/config.json');
-var packageName = require('../package.json').name;
+exports.config = require("../data/config.json");
+var packageName = require("../package.json").name;
 var linterRegister;
 function readyToActivate() {
     data.setupSubscriptions();

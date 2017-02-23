@@ -651,28 +651,28 @@ declare namespace AtomCore {
 
     /** Set the text in the given Range in buffer coordinates. */
     setTextInBufferRange(range: TextBuffer.IRange, text: string, options?: {
-        normalizeLineEndings?: boolean, undo?: 'skip' }): void;
+        normalizeLineEndings?: boolean, undo?: "skip" }): void;
     /** Set the text in the given Range in buffer coordinates. */
     setTextInBufferRange(range: [TextBuffer.IPoint, TextBuffer.IPoint],
         text: string, options?: { normalizeLineEndings?: boolean,
-        undo?: 'skip' }):void;
+        undo?: "skip" }):void;
     /** Set the text in the given Range in buffer coordinates. */
     setTextInBufferRange(range: [[number, number], [number, number]],
         text: string, options?: { normalizeLineEndings?: boolean,
-        undo?: 'skip' }): void;
+        undo?: "skip" }): void;
     /** Set the text in the given Range in buffer coordinates. */
     setTextInBufferRange(range: [TextBuffer.IPoint, [number, number]],
         text: string, options?: { normalizeLineEndings?: boolean,
-        undo?: 'skip' }): void;
+        undo?: "skip" }): void;
     /** Set the text in the given Range in buffer coordinates. */
     setTextInBufferRange(range: [[number, number], TextBuffer.IPoint],
         text: string, options?: { normalizeLineEndings?: boolean,
-        undo?: 'skip' }): void;
+        undo?: "skip" }): void;
 
     /* For each selection, replace the selected text with the given text. */
     insertText(text: string, options?: { select?: boolean, autoIndent?: boolean,
         autoIndentNewline?: boolean, autoDecreaseIndent?: boolean,
-        normalizeLineEndings?: boolean, undo?: 'skip' }): TextBuffer.Range|false;
+        normalizeLineEndings?: boolean, undo?: "skip" }): TextBuffer.Range|false;
 
     /** For each selection, replace the selected text with a newline. */
     insertNewline(): void;
@@ -991,7 +991,7 @@ declare namespace AtomCore {
 
     // Managing Syntax Scopes =================================================
     /** Returns a ScopeDescriptor that includes this editor's language.
-     *  e.g. ['.source.ruby'], or ['.source.coffee']. */
+     *  e.g. [".source.ruby"], or [".source.coffee"]. */
     getRootScopeDescriptor(): AtomCore.ScopeDescriptor;
 
     /** Get the syntactic scopeDescriptor for the given position in buffer coordinates. */

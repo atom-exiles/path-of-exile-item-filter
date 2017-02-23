@@ -103,12 +103,12 @@ function updateItemData(externalCall = true) {
     }
 
     if(!knownClass) {
-      if(key.indexOf(' ') != -1) validClasses.push({ text: '"' + key + '"',
+      if(key.indexOf(" ") != -1) validClasses.push({ text: '"' + key + '"',
           displayText: key });
       else validClasses.push({ text: key, displayText: key });
     }
     value.forEach((v) => {
-      if(v.indexOf(' ') != -1) validBases.push({ text: '"' + v + '"',
+      if(v.indexOf(" ") != -1) validBases.push({ text: '"' + v + '"',
           displayText: v, custom: { backupRightLabel: key }});
       else validBases.push({ text: v, displayText: v, custom: {
           backupRightLabel: key }});
@@ -126,14 +126,14 @@ function updateWhitelists(externalCall = true) {
   const labelText = "Whitelisted";
 
   for(var c of classes) {
-    if(c.indexOf(' ') != -1) injectedClasses.push({ text: '"' + c + '"',
+    if(c.indexOf(" ") != -1) injectedClasses.push({ text: '"' + c + '"',
         displayText: c, custom: { backupRightLabel: labelText }});
     else injectedClasses.push({ text: c, displayText: c, custom: {
         backupRightLabel: labelText }});
   }
 
   for(var b of bases) {
-    if(b.indexOf(' ') != -1) injectedBases.push({ text: '"' + b + '"',
+    if(b.indexOf(" ") != -1) injectedBases.push({ text: '"' + b + '"',
         displayText: b, custom: { backupRightLabel: labelText }});
     else injectedBases.push({ text: b, displayText: b, custom: {
         backupRightLabel: labelText }});
@@ -194,9 +194,9 @@ function isFirstValue(editor: AtomCore.TextEditor, position: Point,
   const line = editor.lineTextForBufferRow(position.row);
   var regex: RegExp;
   if(hasOperator) {
-    regex = new RegExp('^\\s*\\S+\\s*(>=|<=|>|<|=)?\\s*\\S*(.*)');
+    regex = /^\s*\S+\s*(>=|<=|>|<|=)?\s*\S*(.*)/
   } else {
-    regex = new RegExp('^\\s*\\S+\\s*\\S*(.*)');
+    regex = /^\s*\S+\s*\S*(.*)/
   }
 
   const result = regex.exec(line);
@@ -225,16 +225,16 @@ function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
   const previousText = editor.getTextInBufferRange([[position.row, 0], position]);
   var prefix: string|undefined;
   if(previousPositionScopes && previousPositionScopes.indexOf(
-      'string.partial-quotation.poe') != -1) {
+      "string.partial-quotation.poe") != -1) {
     const prefixRegex = /(\"[^"]*)$/;
     const result = prefixRegex.exec(previousText);
     if(result) prefix = result[1];
 
   } else if(previousPositionScopes && previousPositionScopes.indexOf(
-      'string.quotation.poe') != -1) {
+      "string.quotation.poe") != -1) {
     // The closing quotation mark might be further in on the line, which
     // requires a different regex.
-    const stringRange = editor.bufferRangeForScopeAtCursor('string.quotation.poe');
+    const stringRange = editor.bufferRangeForScopeAtCursor("string.quotation.poe");
     if(stringRange.end.column > position.column) {
       const prefixRegex = /(\"[^"]*)$/;
       const result = prefixRegex.exec(previousText);
@@ -253,7 +253,7 @@ function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
     if(result) prefix = result[2];
   }
 
-  if(prefix == undefined) prefix = '';
+  if(prefix == undefined) prefix = "";
   return prefix;
 }
 
@@ -325,11 +325,11 @@ function getSuggestions(args: SuggestionParams) {
   const cursorScopes = args.scopeDescriptor.scopes;
   const topScope = cursorScopes[cursorScopes.length - 1];
 
-  if(topScope == 'source.poe') {
+  if(topScope == "source.poe") {
     suggestions = suggestions.concat(suggestionsData.blocks);
-  } else if(topScope == 'line.empty.poe' || topScope == 'line.unknown.poe') {
-    if(cursorScopes.indexOf('block.poe') != -1) {
-      if(prefix == 'Rule') {
+  } else if(topScope == "line.empty.poe" || topScope == "line.unknown.poe") {
+    if(cursorScopes.indexOf("block.poe") != -1) {
+      if(prefix == "Rule") {
         suggestions = suggestions.concat(suggestionsData.actions,
             suggestionsData.filters);
         shouldPruneSuggestions = false;
@@ -342,19 +342,19 @@ function getSuggestions(args: SuggestionParams) {
       }
     }
   } else {
-    if(cursorScopes.indexOf('filter.rarity.poe') != -1) {
-      if(prefix == '[operator]') {
+    if(cursorScopes.indexOf("filter.rarity.poe") != -1) {
+      if(prefix == "[operator]") {
         suggestions = suggestions.concat(suggestionsData.operators,
             suggestionsData.rarities);
         shouldPruneSuggestions = false;
-      } else if(prefix == 'rarity') {
+      } else if(prefix == "rarity") {
         suggestions = suggestions.concat(suggestionsData.rarities);
         shouldPruneSuggestions = false;
       } else if(isFirstValue(args.editor, args.bufferPosition, true)) {
         suggestions = suggestions.concat(suggestionsData.rarities);
       }
-    } else if(cursorScopes.indexOf('filter.identified.poe') != -1) {
-      if(prefix == 'True|False') {
+    } else if(cursorScopes.indexOf("filter.identified.poe") != -1) {
+      if(prefix == "True|False") {
         suggestions = suggestions.concat(suggestionsData.booleans);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Identified")) {
@@ -362,8 +362,8 @@ function getSuggestions(args: SuggestionParams) {
           suggestions = suggestions.concat(suggestionsData.booleans);
         }
       }
-    } else if(cursorScopes.indexOf('filter.corrupted.poe') != -1) {
-      if(prefix == 'True|False') {
+    } else if(cursorScopes.indexOf("filter.corrupted.poe") != -1) {
+      if(prefix == "True|False") {
         suggestions = suggestions.concat(suggestionsData.booleans);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Corrupted")) {
@@ -371,14 +371,14 @@ function getSuggestions(args: SuggestionParams) {
           suggestions = suggestions.concat(suggestionsData.booleans);
         }
       }
-    } else if(cursorScopes.indexOf('filter.class.poe') != -1) {
+    } else if(cursorScopes.indexOf("filter.class.poe") != -1) {
       if(prefix == "class") {
         suggestions = suggestions.concat(validClasses, injectedClasses);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Class")) {
         suggestions = suggestions.concat(validClasses, injectedClasses);
       }
-    } else if(cursorScopes.indexOf('filter.base-type.poe') != -1) {
+    } else if(cursorScopes.indexOf("filter.base-type.poe") != -1) {
       if(prefix == "type") {
         suggestions = suggestions.concat(validBases, injectedBases);
         shouldPruneSuggestions = false;
@@ -389,13 +389,13 @@ function getSuggestions(args: SuggestionParams) {
         suggestions = suggestions.concat(suggestionsData.extraBases);
       }
     } else {
-      const numberValueRule = cursorScopes.indexOf('filter.item-level.poe') != 1 ||
-          cursorScopes.indexOf('filter.drop-level.poe') != 1 ||
-          cursorScopes.indexOf('filter.quality.poe') != 1 ||
-          cursorScopes.indexOf('filter.socket.poe') != 1 ||
-          cursorScopes.indexOf('filter.linked-sockets.poe') != 1 ||
-          cursorScopes.indexOf('filter.height.poe') != 1 ||
-          cursorScopes.indexOf('filter.width.poe') != 1;
+      const numberValueRule = cursorScopes.indexOf("filter.item-level.poe") != 1 ||
+          cursorScopes.indexOf("filter.drop-level.poe") != 1 ||
+          cursorScopes.indexOf("filter.quality.poe") != 1 ||
+          cursorScopes.indexOf("filter.socket.poe") != 1 ||
+          cursorScopes.indexOf("filter.linked-sockets.poe") != 1 ||
+          cursorScopes.indexOf("filter.height.poe") != 1 ||
+          cursorScopes.indexOf("filter.width.poe") != 1;
       if(numberValueRule) {
         if(prefix == "[operator]") {
           suggestions = suggestions.concat(suggestionsData.operators);
@@ -423,17 +423,17 @@ function removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
   const rightChar = editor.getTextInBufferRange(rightCharLocation);
 
   if(leftChar == '"' && rightChar == '"') {
-    editor.setTextInBufferRange(rightCharLocation, "", { undo: 'skip' });
+    editor.setTextInBufferRange(rightCharLocation, "", { undo: "skip" });
   }
 }
 
-/** Removes the trailing Rarity placeholder value 'rarity' if it exists
+/** Removes the trailing Rarity placeholder value "rarity" if it exists
  *  following the given position in the buffer. */
 function removeRarityPlaceholder(editor: AtomCore.TextEditor, startPosition: Point) {
   const endPosition = new Point(startPosition.row, startPosition.column + 7);
   const text = editor.getTextInBufferRange([startPosition, endPosition]);
-  if(text == ' rarity') {
-    editor.setTextInBufferRange([startPosition, endPosition], '', { undo: 'skip' });
+  if(text == " rarity") {
+    editor.setTextInBufferRange([startPosition, endPosition], "", { undo: "skip" });
   }
 }
 
@@ -458,7 +458,7 @@ function insertedSuggestion(params: TextInsertionParams) {
   // user were to choose to insert one of the rarity suggestions while the
   // prefix is the operator placeholder, they would end up with a line like this:
   //    Rarity Normal rarity
-  // We need to detect this case and automatically remove ' rarity' from the
+  // We need to detect this case and automatically remove " rarity" from the
   // buffer.
   if(params.suggestion.custom && params.suggestion.custom.itemRarity) {
     if(params.editor.hasMultipleCursors()) {
@@ -474,8 +474,8 @@ function insertedSuggestion(params: TextInsertionParams) {
 }
 
 export const provider = {
-  selector: '.source.poe',
-  disableForSelector: '.source.poe .comment',
+  selector: ".source.poe",
+  disableForSelector: ".source.poe .comment",
   inclusionPriority: 1,
   excludeLowerPriority: true,
   getSuggestions: getSuggestions,

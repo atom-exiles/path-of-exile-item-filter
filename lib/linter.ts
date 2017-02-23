@@ -47,7 +47,7 @@ class BufferData {
 
   /** Determines whether or not the given buffer is an item filter. */
   private isFilter() {
-    if(path.extname(this.editor.buffer.getPath()) == '.filter') return true;
+    if(path.extname(this.editor.buffer.getPath()) == ".filter") return true;
     else return false;
   }
 
@@ -88,7 +88,7 @@ class BufferData {
 
     this.filterData = new Promise<ItemFilterData>((resolve, reject) => {
       const fd: ItemFilterData = {};
-      emitter.emit('poe-did-process-filter', this.filterData);
+      emitter.emit("poe-did-process-filter", this.filterData);
       resolve(fd);
     });
   }
@@ -107,7 +107,7 @@ export function setupSubscriptions(registry: LinterRegister) {
   var currentBuffer: BufferData;
 
   subscriptions.add(atom.workspace.observeActivePaneItem((item) => {
-		if(item instanceof require('atom').TextEditor) {
+		if(item instanceof require("atom").TextEditor) {
       if(currentBuffer) currentBuffer.destructor();
       currentBuffer = new BufferData((<AtomCore.TextEditor>item));
     } else {
