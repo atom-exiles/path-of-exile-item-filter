@@ -3,189 +3,8 @@ import { Point, Range, CompositeDisposable } from "atom";
 import * as settings from "./settings";
 import * as data from "./data";
 
-interface SuggestionParams {
-  editor: AtomCore.TextEditor
-  bufferPosition: Point
-  scopeDescriptor: AtomCore.ScopeDescriptor
-  prefix: string
-  activatedManually: boolean
-}
-
-interface TextInsertionParams {
-  editor: AtomCore.TextEditor
-  triggerPosition: Point
-  suggestion: TextSuggestion|SnippetSuggestion
-}
-
-interface Suggestion {
-  /** A string that will show in the UI for this suggestion. When not set,
-   *  snippet || text is displayed. */
-  displayText?: string
-  /** The text immediately preceding the cursor, which will be replaced by the
-   *  text. */
-  replacementPrefix?: string
-  /** The suggestion type. It will be converted into an icon shown against the
-   *  suggestion. */
-  type?: string
-  /** This is shown before the suggestion. Useful for return values. */
-  leftLabel?:  string
-  /** Use this instead of leftLabel if you want to use html for the left label. */
-  leftLabelHTML?: string
-  /** An indicator (e.g. function, variable) denoting the "kind" of suggestion
-   *  this represents. */
-  rightLabel?: string
-  /** Use this instead of rightLabel if you want to use html for the right label. */
-  rightLabelHTML?: string
-  /** Class name for the suggestion in the suggestion list. Allows you to style
-   *  your suggestion via CSS, if desired. */
-  className?: string
-  /** If you want complete control over the icon shown against the suggestion.
-   *  e.g. iconHTML: '<i class="icon-move-right"></i>' */
-  iconHTML?: string
-  /** A doc-string summary or short description of the suggestion. When specified,
-   *  it will be displayed at the bottom of the suggestions list. */
-  description?: string
-  /** A url to the documentation or more information about this suggestion. When
-   *  specified, a More.. link will be displayed in the description area. */
-  descriptionMoreURL?: string
-
-  custom?: {
-    /** Set whenever the suggestion is one of the item rarities. */
-    itemRarity?: boolean
-    /** Stores the unmodified rightLabel for the suggestion. Depending on user
-     *  configuration, the rightLabel field may be set to undefined. This
-     *  property allows us to restore it when necessary. */
-    backupRightLabel?: string
-  }
-}
-
-interface SnippetSuggestion extends Suggestion {
-  /** A snippet string. This will allow users to tab through function arguments
-   *  or other options. */
-  snippet: string
-}
-
-interface TextSuggestion extends Suggestion {
-  /** The text which will be inserted into the editor, in place of the prefix. */
-  text: string
-}
-
-interface SuggestionsData {
-  blocks: Array<TextSuggestion|SnippetSuggestion>
-  filters: Array<TextSuggestion|SnippetSuggestion>
-  actions: Array<TextSuggestion|SnippetSuggestion>
-  rarities: Array<TextSuggestion|SnippetSuggestion>
-  operators: Array<TextSuggestion|SnippetSuggestion>
-  booleans: Array<TextSuggestion|SnippetSuggestion>
-  extraBlocks: Array<TextSuggestion|SnippetSuggestion>
-  extraBases: Array<TextSuggestion|SnippetSuggestion>
-}
-
-const suggestionsData: SuggestionsData = require("../data/suggestions.json");
-
-var validBases = new Array<TextSuggestion>();
-var validClasses = new Array<TextSuggestion>();
-var injectedBases = new Array<TextSuggestion>();
-var injectedClasses = new Array<TextSuggestion>();
-var subscriptions = new CompositeDisposable;
-
-/** Transforms the base item data into the format used by this completion provider. */
-function updateItemData(externalCall = true) {
-  validBases = new Array<TextSuggestion>();
-  validClasses = new Array<TextSuggestion>();
-
-  data.itemData.forEach((value, key) => {
-    var knownClass = false;
-    for(var c of validClasses) {
-      if(c.text == key) {
-        knownClass = true;
-      }
-    }
-
-    if(!knownClass) {
-      if(key.indexOf(" ") != -1) validClasses.push({ text: '"' + key + '"',
-          displayText: key });
-      else validClasses.push({ text: key, displayText: key });
-    }
-    value.forEach((v) => {
-      if(v.indexOf(" ") != -1) validBases.push({ text: '"' + v + '"',
-          displayText: v, custom: { backupRightLabel: key }});
-      else validBases.push({ text: v, displayText: v, custom: {
-          backupRightLabel: key }});
-    });
-  });
-  if(externalCall) updateDecorations();
-}
-
-function updateWhitelists(externalCall = true) {
-  injectedBases = new Array<TextSuggestion>();
-  injectedClasses = new Array<TextSuggestion>();
-
-  const bases = settings.config.dataSettings.baseWhitelist.get();
-  const classes = settings.config.dataSettings.classWhitelist.get();
-  const labelText = "Whitelisted";
-
-  for(var c of classes) {
-    if(c.indexOf(" ") != -1) injectedClasses.push({ text: '"' + c + '"',
-        displayText: c, custom: { backupRightLabel: labelText }});
-    else injectedClasses.push({ text: c, displayText: c, custom: {
-        backupRightLabel: labelText }});
-  }
-
-  for(var b of bases) {
-    if(b.indexOf(" ") != -1) injectedBases.push({ text: '"' + b + '"',
-        displayText: b, custom: { backupRightLabel: labelText }});
-    else injectedBases.push({ text: b, displayText: b, custom: {
-        backupRightLabel: labelText }});
-  }
-  if(externalCall) updateDecorations();
-}
-
-/** Manages the decoration data for each of the item data suggestions. */
-function updateDecorations() {
-  const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
-  const enableIcon = settings.config.completionSettings.enableIcon.get();
-
-  // In order to allow specific decorations to be disabled, we store backup values
-  // under the same name, except prefixed by an underscore.
-  const action = (s: TextSuggestion): void => {
-    if(enableRightLabel && s.custom && s.custom.backupRightLabel) {
-      s.rightLabel = s.custom.backupRightLabel;
-    } else {
-      s.rightLabel = undefined;
-    }
-
-    if(enableIcon) {} // no-op until icons are implemented.
-  }
-
-  validBases.forEach(action);
-  injectedClasses.forEach(action);
-  injectedBases.forEach(action);
-  for(var key in suggestionsData) {
-    const sb: Array<TextSuggestion|SnippetSuggestion> = suggestionsData[key];
-    sb.forEach(action);
-  }
-}
-
-export function setupSubscriptions() {
-  subscriptions = new CompositeDisposable;
-
-  data.emitter.on("poe-did-update-item-data", updateItemData);
-  data.emitter.on("poe-did-update-injected-data", updateWhitelists);
-
-  subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange(
-      updateDecorations));
-  subscriptions.add(settings.config.completionSettings.enableIcon.onDidChange(
-      updateDecorations));
-
-  updateItemData(false);
-  updateWhitelists(false);
-  updateDecorations();
-}
-
-export function removeSubscriptions() {
-  subscriptions.dispose();
-}
+export function activate() {}
+export function deactivate() {}
 
 /** Determines whether or text entered at the given position in the editor
  *  would be the first value for the filter rule which precedes that position.*/
@@ -261,19 +80,18 @@ function getPrefix(editor: AtomCore.TextEditor, position: Point): string {
  *  For example, block elements will have the whitespace prepended onto the prefix,
  *  so that they are left aligned on column #0 on text insertion. */
 function setReplacementPrefix(editor: AtomCore.TextEditor, position: Point,
-    prefix: string, suggestions: Array<TextSuggestion|SnippetSuggestion>):
-    Array<TextSuggestion|SnippetSuggestion> {
+    prefix: string, suggestions: Completion.Suggestions): Completion.Suggestions {
 
   for(var suggestion of suggestions) {
     var blockElement = false;
 
-    for(var block of suggestionsData.blocks) {
-      if((<SnippetSuggestion>suggestion).snippet && (<SnippetSuggestion>block).snippet) {
-        if((<SnippetSuggestion>suggestion).snippet == (<SnippetSuggestion>block).snippet) {
+    for(var block of data.files.suggestions.blocks) {
+      if((<Completion.SnippetSuggestion>suggestion).snippet && (<Completion.SnippetSuggestion>block).snippet) {
+        if((<Completion.SnippetSuggestion>suggestion).snippet == (<Completion.SnippetSuggestion>block).snippet) {
           blockElement = true;
         }
-      } else if((<TextSuggestion>suggestion).text && (<TextSuggestion>block).text) {
-        if((<TextSuggestion>suggestion).text == (<TextSuggestion>block).text) {
+      } else if((<Completion.TextSuggestion>suggestion).text && (<Completion.TextSuggestion>block).text) {
+        if((<Completion.TextSuggestion>suggestion).text == (<Completion.TextSuggestion>block).text) {
           blockElement = true;
         }
       }
@@ -291,21 +109,21 @@ function setReplacementPrefix(editor: AtomCore.TextEditor, position: Point,
 
 /** Removes suggestions that do not contain the prefix. */
 function pruneSuggestions(prefix: string, suggestions:
-    Array<TextSuggestion|SnippetSuggestion>): Array<TextSuggestion|SnippetSuggestion> {
+    Completion.Suggestions): Completion.Suggestions {
   if(prefix.length == 0) return suggestions;
 
   const upperPrefix = prefix.toUpperCase();
-  const prunedSuggestions = new Array<TextSuggestion|SnippetSuggestion>();
+  const prunedSuggestions: Completion.Suggestions = [];
   const firstChar = prefix.charAt(0);
 
   for(var s of suggestions) {
     var text: string;
     if(s.displayText && firstChar != '"') {
       text = s.displayText.toUpperCase();
-    } else if((<SnippetSuggestion>s).snippet) {
-      text = (<SnippetSuggestion>s).snippet.toUpperCase();
-    } else if((<TextSuggestion>s).text) {
-      text = (<TextSuggestion>s).text.toUpperCase();
+    } else if((<Completion.SnippetSuggestion>s).snippet) {
+      text = (<Completion.SnippetSuggestion>s).snippet.toUpperCase();
+    } else if((<Completion.TextSuggestion>s).text) {
+      text = (<Completion.TextSuggestion>s).text.toUpperCase();
     } else continue;
 
     if(text.indexOf(upperPrefix) != -1) prunedSuggestions.push(s);
@@ -314,79 +132,82 @@ function pruneSuggestions(prefix: string, suggestions:
 }
 
 /** A callback which we provide to the autocompletion engine for Atom. */
-function getSuggestions(args: SuggestionParams) {
+async function getSuggestions(args: Completion.Params.SuggestionRequest):
+    Promise<Completion.Suggestions> {
   if(!settings.config.generalSettings.enableCompletion.get()) {
     return [];
   }
 
-  var suggestions = new Array<TextSuggestion|SnippetSuggestion>();
+  const cd = await data.completionData;
+
+  var suggestions: Completion.Suggestions = [];
   var shouldPruneSuggestions = true;
   const prefix = getPrefix(args.editor, args.bufferPosition);
   const cursorScopes = args.scopeDescriptor.scopes;
   const topScope = cursorScopes[cursorScopes.length - 1];
 
   if(topScope == "source.poe") {
-    suggestions = suggestions.concat(suggestionsData.blocks);
+    suggestions = suggestions.concat(data.files.suggestions.blocks);
   } else if(topScope == "line.empty.poe" || topScope == "line.unknown.poe") {
     if(cursorScopes.indexOf("block.poe") != -1) {
       if(prefix == "Rule") {
-        suggestions = suggestions.concat(suggestionsData.actions,
-            suggestionsData.filters);
+        suggestions = suggestions.concat(data.files.suggestions.actions,
+            data.files.suggestions.filters);
         shouldPruneSuggestions = false;
       } else {
-        suggestions = suggestions.concat(suggestionsData.blocks,
-            suggestionsData.actions, suggestionsData.filters);
+        suggestions = suggestions.concat(data.files.suggestions.blocks,
+            data.files.suggestions.actions, data.files.suggestions.filters);
         if(settings.config.completionSettings.enableExtraSuggestions.get()) {
-          suggestions = suggestions.concat(suggestionsData.extraBlocks);
+          suggestions = suggestions.concat(data.files.suggestions.extraBlocks);
         }
       }
     }
   } else {
     if(cursorScopes.indexOf("filter.rarity.poe") != -1) {
       if(prefix == "[operator]") {
-        suggestions = suggestions.concat(suggestionsData.operators,
-            suggestionsData.rarities);
+        suggestions = suggestions.concat(data.files.suggestions.operators,
+            data.files.suggestions.rarities);
         shouldPruneSuggestions = false;
       } else if(prefix == "rarity") {
-        suggestions = suggestions.concat(suggestionsData.rarities);
+        suggestions = suggestions.concat(data.files.suggestions.rarities);
         shouldPruneSuggestions = false;
       } else if(isFirstValue(args.editor, args.bufferPosition, true)) {
-        suggestions = suggestions.concat(suggestionsData.rarities);
+        suggestions = suggestions.concat(data.files.suggestions.rarities);
       }
     } else if(cursorScopes.indexOf("filter.identified.poe") != -1) {
       if(prefix == "True|False") {
-        suggestions = suggestions.concat(suggestionsData.booleans);
+        suggestions = suggestions.concat(data.files.suggestions.booleans);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Identified")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
-          suggestions = suggestions.concat(suggestionsData.booleans);
+          suggestions = suggestions.concat(data.files.suggestions.booleans);
         }
       }
     } else if(cursorScopes.indexOf("filter.corrupted.poe") != -1) {
       if(prefix == "True|False") {
-        suggestions = suggestions.concat(suggestionsData.booleans);
+        suggestions = suggestions.concat(data.files.suggestions.booleans);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Corrupted")) {
         if(isFirstValue(args.editor, args.bufferPosition, true)) {
-          suggestions = suggestions.concat(suggestionsData.booleans);
+          suggestions = suggestions.concat(data.files.suggestions.booleans);
         }
       }
     } else if(cursorScopes.indexOf("filter.class.poe") != -1) {
       if(prefix == "class") {
-        suggestions = suggestions.concat(validClasses, injectedClasses);
+        suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "Class")) {
-        suggestions = suggestions.concat(validClasses, injectedClasses);
+        suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
       }
     } else if(cursorScopes.indexOf("filter.base-type.poe") != -1) {
       if(prefix == "type") {
-        suggestions = suggestions.concat(validBases, injectedBases);
+        suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
         shouldPruneSuggestions = false;
       } else if(!(prefix == "BaseType")) {
-        suggestions = suggestions.concat(validBases, injectedBases);
+        suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
       }
       if(settings.config.completionSettings.enableExtraSuggestions.get()) {
-        suggestions = suggestions.concat(suggestionsData.extraBases);
+        suggestions = suggestions.concat(data.files.suggestions.extraBases);
       }
     } else {
       const numberValueRule = cursorScopes.indexOf("filter.item-level.poe") != 1 ||
@@ -398,7 +219,7 @@ function getSuggestions(args: SuggestionParams) {
           cursorScopes.indexOf("filter.width.poe") != 1;
       if(numberValueRule) {
         if(prefix == "[operator]") {
-          suggestions = suggestions.concat(suggestionsData.operators);
+          suggestions = suggestions.concat(data.files.suggestions.operators);
           shouldPruneSuggestions = false;
         }
       }
@@ -438,7 +259,7 @@ function removeRarityPlaceholder(editor: AtomCore.TextEditor, startPosition: Poi
 }
 
 /** Performs the buffer manipulations necessary following a suggestion insertion. */
-function insertedSuggestion(params: TextInsertionParams) {
+function insertedSuggestion(params: Completion.Params.SuggestionInserted) {
   // Whenever the user opens with quotation marks and accepts a suggestion,
   // two closing quotation marks will be left at the end:
   //    BaseType "Cha" -> accepts "Chaos Orb"

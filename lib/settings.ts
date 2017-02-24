@@ -55,7 +55,6 @@ export const config = {
   },
 
   linterSettings: {
-    enableWarnings: new SettingValue<boolean>("linterSettings.enableWarnings"),
-    method: new SettingValue<string>("linterSettings.method")
+    enableWarnings: new SettingValue<boolean>("linterSettings.enableWarnings")
   }
 }

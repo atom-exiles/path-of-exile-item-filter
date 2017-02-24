@@ -1,27 +1,26 @@
 "use strict";
 exports.packageName = require("../package.json").name;
 exports.schema = require("../data/config.json");
-var SettingValue = (function () {
-    function SettingValue(key) {
+class SettingValue {
+    constructor(key) {
         this.key = key;
     }
-    SettingValue.prototype.get = function () {
+    get() {
         return atom.config.get(exports.packageName + "." + this.key);
-    };
-    SettingValue.prototype.set = function (value) {
+    }
+    set(value) {
         atom.config.set(exports.packageName + "." + this.key, value);
-    };
-    SettingValue.prototype.unset = function () {
+    }
+    unset() {
         atom.config.unset(exports.packageName + "." + this.key);
-    };
-    SettingValue.prototype.observe = function (callback) {
+    }
+    observe(callback) {
         return atom.config.observe(exports.packageName + "." + this.key, callback);
-    };
-    SettingValue.prototype.onDidChange = function (callback) {
+    }
+    onDidChange(callback) {
         return atom.config.onDidChange(exports.packageName + "." + this.key, callback);
-    };
-    return SettingValue;
-}());
+    }
+}
 exports.config = {
     generalSettings: {
         enableCompletion: new SettingValue("generalSettings.enableCompletion"),
@@ -40,7 +39,6 @@ exports.config = {
         enableIcon: new SettingValue("completionSettings.enableIcon")
     },
     linterSettings: {
-        enableWarnings: new SettingValue("linterSettings.enableWarnings"),
-        method: new SettingValue("linterSettings.method")
+        enableWarnings: new SettingValue("linterSettings.enableWarnings")
     }
 };

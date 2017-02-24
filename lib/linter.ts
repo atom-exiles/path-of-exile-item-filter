@@ -96,35 +96,54 @@ class BufferData {
 
 var subscriptions: CompositeDisposable;
 var emitter: Emitter;
+var validBases = new Array<string>();
+var validClasses = new Array<string>();
+var injectedBases = new Array<string>();
+var injectedClasses = new Array<string>();
 
-export function setupSubscriptions(registry: LinterRegister) {
+export function activate(registry: Linter.Register) {
   if(!registry) throw new Error("PoEItemFilter: expected registry to be initialized.");
   if(subscriptions) subscriptions.dispose();
   if(emitter) emitter.dispose();
+
   emitter = new Emitter;
   subscriptions = new CompositeDisposable;
-
   var currentBuffer: BufferData;
 
-  subscriptions.add(atom.workspace.observeActivePaneItem((item) => {
-		if(item instanceof require("atom").TextEditor) {
+  const startupAction = (item: any) => {
+    if(!settings.config.generalSettings.enableLinter.get()) return;
+
+    if(item instanceof require("atom").TextEditor) {
       if(currentBuffer) currentBuffer.destructor();
       currentBuffer = new BufferData((<AtomCore.TextEditor>item));
     } else {
       if(currentBuffer) currentBuffer.destructor();
     }
-	}));
+  }
+
+  subscriptions.add(atom.workspace.observeActivePaneItem(startupAction));
+
+  subscriptions.add(settings.config.generalSettings.enableLinter.onDidChange(
+      (newValue) => {
+    const item = atom.workspace.getActivePaneItem();
+    if(item) startupAction(item);
+  }));
 
   subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
+    // updateItemData();
     currentBuffer.reprocessFilter();
   }));
 
   subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
+    // updateWhitelists();
     currentBuffer.reprocessFilter();
   }));
+
+  // updateItemData();
+  // updateWhitelists();
 }
 
-export function removeSubscriptions() {
+export function deactivate() {
   subscriptions.dispose();
   emitter.dispose();
 }

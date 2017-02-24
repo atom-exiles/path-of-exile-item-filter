@@ -6,12 +6,12 @@ import * as linter from "./linter";
 
 export const config = require("../data/config.json");
 const packageName = require("../package.json").name
-var linterRegister: LinterRegister;
+var linterRegister: Linter.Register;
 
 function readyToActivate() {
-  data.setupSubscriptions();
-  completion.setupSubscriptions();
-  linter.setupSubscriptions(linterRegister);
+  data.activate();
+  completion.activate();
+  linter.activate(linterRegister);
 }
 
 export function activate() {
@@ -21,16 +21,16 @@ export function activate() {
 }
 
 export function deactivate() {
-  linter.removeSubscriptions();
-  completion.removeSubscriptions();
-  data.removeSubscriptions();
+  linter.deactivate();
+  completion.deactivate();
+  data.deactivate();
 }
 
 export function provideCompletion() {
   return [completion.provider];
 }
 
-export function consumeLinter(registry: LinterRegistry): void {
+export function consumeLinter(registry: Linter.Registry): void {
   const register = registry.register({ name: packageName });
   linterRegister = register;
 }
