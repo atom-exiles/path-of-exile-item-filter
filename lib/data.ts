@@ -6,37 +6,7 @@ import { Emitter, CompositeDisposable } from "atom";
 
 import * as settings from "./settings";
 
-interface ItemDataLayout {
-  [index: string]: Array<string>
-}
-
-interface SuggestionsDataLayout {
-  blocks: Completion.Suggestions
-  filters: Completion.Suggestions
-  actions: Completion.Suggestions
-  rarities: Completion.Suggestions
-  operators: Completion.Suggestions
-  booleans: Completion.Suggestions
-  extraBlocks: Completion.Suggestions
-  extraBases: Completion.Suggestions
-}
-
-interface FileData {
-  items: {
-    core:       ItemDataLayout
-    league:     ItemDataLayout
-    legacy:     ItemDataLayout
-    recipe:     ItemDataLayout
-  },
-  suggestions: SuggestionsDataLayout
-}
-
-interface ProcessedData {
-  completion: Data.Completion
-  linter: Data.Linter
-}
-
-export const files: FileData = {
+export const files: Data.FileData = {
   items: {
     core: require("../data/items/core.json"),
     league: require("../data/items/league.json"),
@@ -53,8 +23,8 @@ export var completionData: Promise<Data.Completion>;
 export var linterData: Promise<Data.Linter>;
 
 /** Shapes the item data into the format expected by each module. */
-function mergeItemData(container: ProcessedData,
-    itemList: ItemDataLayout): ProcessedData {
+function mergeItemData(container: Data.ProcessedData,
+    itemList: Data.ItemDataLayout): Data.ProcessedData {
   const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
 
   for(var itemClass in itemList) {
@@ -103,8 +73,8 @@ function mergeItemData(container: ProcessedData,
   return container;
 }
 
-async function processItemData(): Promise<ProcessedData> {
-  var result: ProcessedData = {
+async function processItemData(): Promise<Data.ProcessedData> {
+  var result: Data.ProcessedData = {
     completion: {
       classes: [],
       bases: [],
@@ -133,7 +103,7 @@ async function processItemData(): Promise<ProcessedData> {
   return result;
 }
 
-function updateWhitelists(itemData: ProcessedData) {
+function updateWhitelists(itemData: Data.ProcessedData) {
   const bases = settings.config.dataSettings.baseWhitelist.get();
   const classes = settings.config.dataSettings.classWhitelist.get();
   const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
@@ -204,7 +174,7 @@ export function activate() {
     updateWhitelists(values[0]);
   });
 
-  const action = async (itemList: ItemDataLayout, event: { oldValue: boolean,
+  const action = async (itemList: Data.ItemDataLayout, event: { oldValue: boolean,
       newValue: boolean }) => {
     if(event.newValue) {
       const id = await itemData;

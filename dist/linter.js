@@ -1,35 +1,56 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 const atom_1 = require("atom");
 const path = require("path");
 const settings = require("./settings");
 const data = require("./data");
-class BufferData {
+class ItemFilter {
+    constructor(editor) {
+        this.editor = editor;
+        this.lineInfo = this.parseBuffer();
+    }
+    destructor() { }
+    parseBuffer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const linterData = yield data.linterData;
+            return [];
+        });
+    }
+    reparseBufferRanges(modifiedRanges) {
+        return __awaiter(this, void 0, void 0, function* () {
+        });
+    }
+}
+class BufferManager {
     constructor(editor) {
         this.editor = editor;
         this.subscriptions = new atom_1.CompositeDisposable;
-        this.subscriptions.add(editor.onDidChangePath((newPath) => {
+        this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
             if (this.isFilter())
                 this.registerFilter();
             else if (this.filterSubs)
                 this.filterSubs.dispose();
         }));
-        if (this.isFilter())
+        if (this.isFilter()) {
             this.registerFilter();
+            this.processFilter();
+        }
         else if (this.filterSubs)
             this.filterSubs.dispose();
     }
     destructor() {
+        if (this.filter)
+            this.filter.destructor();
         if (this.filterSubs)
             this.filterSubs.dispose();
         this.subscriptions.dispose();
-    }
-    mimickChangeData() {
-        return [{
-                oldRange: new atom_1.Range([0, 0], [0, 0]),
-                newRange: this.editor.buffer.getRange(),
-                oldText: "",
-                newText: this.editor.buffer.getText()
-            }];
     }
     isFilter() {
         if (path.extname(this.editor.buffer.getPath()) == ".filter")
@@ -40,49 +61,43 @@ class BufferData {
     registerFilter() {
         if (!this.filterSubs)
             this.filterSubs = new atom_1.CompositeDisposable();
-        this.processFilter(this.mimickChangeData());
         this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
             if (!this.changes)
                 this.changes = [];
             this.changes.push(event);
         }));
         this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
-            this.filterData.then((fd) => {
-                this.processFilter(this.changes);
-            });
+            this.processFilterChanges();
         }));
     }
-    reprocessFilter() {
-        if (this.isFilter()) {
-            this.processFilter(this.mimickChangeData());
-        }
+    processIfFilter() {
+        if (this.isFilter())
+            this.processFilter;
     }
-    processFilter(changes) {
-        if (!changes || changes.length == 0) {
-            this.changes = [];
-            return this.filterData;
-        }
-        this.filterData = new Promise((resolve, reject) => {
-            const fd = {};
-            emitter.emit("poe-did-process-filter", this.filterData);
-            resolve(fd);
+    processFilter() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.filter)
+                this.filter.destructor();
+            this.filter = new ItemFilter(this.editor);
+            yield this.filter.lineInfo;
+            exports.emitter.emit("poe-did-process-filter", this.filter);
         });
     }
+    processFilterChanges() {
+        if (!this.changes || this.changes.length == 0)
+            return;
+        this.filter.reparseBufferRanges([]);
+    }
 }
+var registry;
 var subscriptions;
-var emitter;
-var validBases = new Array();
-var validClasses = new Array();
-var injectedBases = new Array();
-var injectedClasses = new Array();
-function activate(registry) {
-    if (!registry)
-        throw new Error("PoEItemFilter: expected registry to be initialized.");
+function activate(r) {
     if (subscriptions)
         subscriptions.dispose();
-    if (emitter)
-        emitter.dispose();
-    emitter = new atom_1.Emitter;
+    if (exports.emitter)
+        exports.emitter.dispose();
+    registry = r;
+    exports.emitter = new atom_1.Emitter;
     subscriptions = new atom_1.CompositeDisposable;
     var currentBuffer;
     const startupAction = (item) => {
@@ -91,7 +106,7 @@ function activate(registry) {
         if (item instanceof require("atom").TextEditor) {
             if (currentBuffer)
                 currentBuffer.destructor();
-            currentBuffer = new BufferData(item);
+            currentBuffer = new BufferManager(item);
         }
         else {
             if (currentBuffer)
@@ -105,15 +120,15 @@ function activate(registry) {
             startupAction(item);
     }));
     subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
-        currentBuffer.reprocessFilter();
+        currentBuffer.processIfFilter();
     }));
     subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
-        currentBuffer.reprocessFilter();
+        currentBuffer.processIfFilter();
     }));
 }
 exports.activate = activate;
 function deactivate() {
     subscriptions.dispose();
-    emitter.dispose();
+    exports.emitter.dispose();
 }
 exports.deactivate = deactivate;

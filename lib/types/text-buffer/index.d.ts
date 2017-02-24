@@ -23,7 +23,7 @@ export = TextBuffer;
 declare namespace TextBuffer {
   /** Objects that appear as parameters to callbacks, broken off for easy
    *  callback definition (both here and in user code). */
-  namespace CallbackArgs {
+  namespace Params {
     interface MarkerChangeEvent {
       /** Point representing the former head position. */
       oldHeadPosition: Point
@@ -394,7 +394,7 @@ declare namespace TextBuffer {
     onDidDestroy(callback: () => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback when the state of the marker changes. */
-    onDidChange(callback: (event: CallbackArgs.MarkerChangeEvent) => void):
+    onDidChange(callback: (event: Params.MarkerChangeEvent) => void):
         AtomEventKit.Disposable;
 
     // Marker Details =========================================================
@@ -641,12 +641,12 @@ declare namespace TextBuffer {
     // Event Subscription =====================================================
     /** Invoke the given callback synchronously before the content of the buffer
      *  changes. */
-    onWillChange(callback: (event: CallbackArgs.BufferModifiedEvent) => void):
+    onWillChange(callback: (event: Params.BufferModifiedEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback synchronously when the content of the buffer
      *  changes. */
-    onDidChange(callback: (event: CallbackArgs.BufferModifiedEvent) => void):
+    onDidChange(callback: (event: Params.BufferModifiedEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback asynchronously following one or more changes after
@@ -679,7 +679,7 @@ declare namespace TextBuffer {
     onWillSave(callback: () => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback after the buffer is saved to disk. */
-    onDidSave(callback: (event: CallbackArgs.FileSaveEvent) => void):
+    onDidSave(callback: (event: Params.FileSaveEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback after the file backing the buffer is deleted. */
@@ -697,7 +697,7 @@ declare namespace TextBuffer {
     onDidDestroy(callback: () => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback when there is an error in watching the file. */
-    onWillThrowWatchError(callback: (errorObject: CallbackArgs.BufferWatchError) =>
+    onWillThrowWatchError(callback: (errorObject: Params.BufferWatchError) =>
         void): AtomEventKit.Disposable;
 
     /** Get the number of milliseconds that will elapse without a change before

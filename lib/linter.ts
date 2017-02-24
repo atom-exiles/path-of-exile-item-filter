@@ -5,44 +5,54 @@ import * as path from "path";
 import * as settings from "./settings";
 import * as data from "./data";
 
-interface ItemFilterData {}
+class ItemFilter {
+  private readonly editor: AtomCore.TextEditor;
+  lineInfo: Promise<Filter.Line[]>;
 
-class BufferData {
+  constructor(editor: AtomCore.TextEditor) {
+    this.editor = editor;
+    this.lineInfo = this.parseBuffer();
+  }
+
+  destructor() {}
+
+  async parseBuffer() {
+    const linterData = await data.linterData;
+    return [];
+  }
+
+  async reparseBufferRanges(modifiedRanges: TextBuffer.IRange[]) {
+  }
+}
+
+class BufferManager {
   private readonly editor: AtomCore.TextEditor;
   private subscriptions: CompositeDisposable;
   private filterSubs: CompositeDisposable;
-  private changes: Array<TextBuffer.CallbackArgs.BufferModifiedEvent>;
+  private changes: Linter.BufferChanges;
 
-  public filterData: Promise<ItemFilterData>;
+  filter: ItemFilter;
 
   constructor(editor: AtomCore.TextEditor) {
     this.editor = editor;
     this.subscriptions = new CompositeDisposable;
 
-    this.subscriptions.add(editor.onDidChangePath((newPath) => {
+    this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
       if(this.isFilter()) this.registerFilter();
       else if(this.filterSubs) this.filterSubs.dispose();
     }));
 
-    if(this.isFilter()) this.registerFilter();
-    else if(this.filterSubs) this.filterSubs.dispose();
+    if(this.isFilter()) {
+      this.registerFilter();
+      this.processFilter();
+    } else if(this.filterSubs) this.filterSubs.dispose();
   }
 
   /** Removes all event subscriptions for the buffer. */
   destructor() {
+    if(this.filter) this.filter.destructor();
     if(this.filterSubs) this.filterSubs.dispose();
     this.subscriptions.dispose();
-  }
-
-  /** Creates a changes object spanning the buffer's entire contents, allowing
-   *  the initial processing to function identically to the reprocessing. */
-  private mimickChangeData(): TextBuffer.CallbackArgs.BufferModifiedEvent[] {
-    return [{
-      oldRange: new Range([0, 0], [0, 0]),
-      newRange: this.editor.buffer.getRange(),
-      oldText: "",
-      newText: this.editor.buffer.getText()
-    }]
   }
 
   /** Determines whether or not the given buffer is an item filter. */
@@ -51,12 +61,9 @@ class BufferData {
     else return false;
   }
 
-  /** Register the buffer for the filter-specific events, kicking off the filter
-   *  processing afterwards.*/
+  /** Register the buffer for the filter-specific events. */
   private registerFilter() {
     if(!this.filterSubs) this.filterSubs = new CompositeDisposable();
-
-    this.processFilter(this.mimickChangeData());
 
     this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
       if(!this.changes) this.changes = [];
@@ -64,58 +71,54 @@ class BufferData {
     }));
 
     this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
-      this.filterData.then((fd) =>  {
-        this.processFilter(this.changes);
-      });
+      this.processFilterChanges();
     }));
+  }
+
+  /** Ensures that the buffer contains a filter before calling processFilter. */
+  public processIfFilter() {
+    if(this.isFilter()) this.processFilter;
   }
 
   /** If the buffer is an item filter, causes all item filter data to be reset
    *  and reprocessed. */
-  public reprocessFilter() {
-    if(this.isFilter()) {
-      this.processFilter(this.mimickChangeData());
-    }
+  private async processFilter() {
+    if(this.filter) this.filter.destructor();
+
+    this.filter = new ItemFilter(this.editor);
+    await this.filter.lineInfo;
+    emitter.emit("poe-did-process-filter", this.filter);
   }
 
   /** A wrapper for processFilter in order to manage some internal data on each
    *  call to it. */
-  private processFilter(changes: Array<TextBuffer.CallbackArgs.BufferModifiedEvent>) {
-    if(!changes || changes.length == 0) {
-      this.changes = [];
-      return this.filterData;
-    }
+  private processFilterChanges() {
+    if(!this.changes || this.changes.length == 0) return;
 
-    this.filterData = new Promise<ItemFilterData>((resolve, reject) => {
-      const fd: ItemFilterData = {};
-      emitter.emit("poe-did-process-filter", this.filterData);
-      resolve(fd);
-    });
+    // TODO(glen): perform work to transform the change data here.
+    this.filter.reparseBufferRanges([]);
   }
 }
 
+var registry: Linter.Register;
 var subscriptions: CompositeDisposable;
-var emitter: Emitter;
-var validBases = new Array<string>();
-var validClasses = new Array<string>();
-var injectedBases = new Array<string>();
-var injectedClasses = new Array<string>();
+export var emitter: Emitter;
 
-export function activate(registry: Linter.Register) {
-  if(!registry) throw new Error("PoEItemFilter: expected registry to be initialized.");
+export function activate(r: Linter.Register) {
   if(subscriptions) subscriptions.dispose();
   if(emitter) emitter.dispose();
 
+  registry = r;
   emitter = new Emitter;
   subscriptions = new CompositeDisposable;
-  var currentBuffer: BufferData;
+  var currentBuffer: BufferManager;
 
   const startupAction = (item: any) => {
     if(!settings.config.generalSettings.enableLinter.get()) return;
 
     if(item instanceof require("atom").TextEditor) {
       if(currentBuffer) currentBuffer.destructor();
-      currentBuffer = new BufferData((<AtomCore.TextEditor>item));
+      currentBuffer = new BufferManager((<AtomCore.TextEditor>item));
     } else {
       if(currentBuffer) currentBuffer.destructor();
     }
@@ -130,17 +133,12 @@ export function activate(registry: Linter.Register) {
   }));
 
   subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
-    // updateItemData();
-    currentBuffer.reprocessFilter();
+    currentBuffer.processIfFilter();
   }));
 
   subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
-    // updateWhitelists();
-    currentBuffer.reprocessFilter();
+    currentBuffer.processIfFilter();
   }));
-
-  // updateItemData();
-  // updateWhitelists();
 }
 
 export function deactivate() {

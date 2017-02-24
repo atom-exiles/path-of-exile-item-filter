@@ -24,7 +24,7 @@ export = PathWatcher;
 declare namespace PathWatcher {
   /** Objects that appear as parameters to callbacks, broken off for easy
    *  callback definition (both here and in user code). */
-  namespace CallbackArgs {
+  namespace Params {
     interface BufferWatchError {
       /** The error object. */
       error: Error,
@@ -63,7 +63,7 @@ declare namespace PathWatcher {
     /** Invoke the given callback when there is an error with the watch. When
      *  your callback has been invoked, the file will have unsubscribed from the
      *  file watches. */
-    onWillThrowWatchError(callback: (errorObject: CallbackArgs.BufferWatchError) =>
+    onWillThrowWatchError(callback: (errorObject: Params.BufferWatchError) =>
         void): AtomEventKit.Disposable;
 
     // File Metadata ==========================================================

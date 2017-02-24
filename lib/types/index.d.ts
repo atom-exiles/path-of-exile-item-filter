@@ -12,6 +12,36 @@ declare namespace Data {
     whitelistClasses: string[]
     whitelistBases: string[]
   }
+
+  interface ItemDataLayout {
+    [index: string]: Array<string>
+  }
+
+  interface SuggestionsDataLayout {
+    blocks: Completion.Suggestions
+    filters: Completion.Suggestions
+    actions: Completion.Suggestions
+    rarities: Completion.Suggestions
+    operators: Completion.Suggestions
+    booleans: Completion.Suggestions
+    extraBlocks: Completion.Suggestions
+    extraBases: Completion.Suggestions
+  }
+
+  interface FileData {
+    items: {
+      core:       ItemDataLayout
+      league:     ItemDataLayout
+      legacy:     ItemDataLayout
+      recipe:     ItemDataLayout
+    },
+    suggestions: SuggestionsDataLayout
+  }
+
+  interface ProcessedData {
+    completion: Data.Completion
+    linter: Data.Linter
+  }
 }
 
 declare namespace Completion {
@@ -78,12 +108,10 @@ declare namespace Completion {
      *  or other options. */
     snippet: string
   }
-
   interface TextSuggestion extends Suggestion {
     /** The text which will be inserted into the editor, in place of the prefix. */
     text: string
   }
-
   type Suggestions = Array<TextSuggestion|SnippetSuggestion>;
 }
 
@@ -104,16 +132,7 @@ declare namespace Linter {
 
   interface TextMessage extends Message { text: string }
   interface HTMLMessage extends Message { html: string }
-
-  interface Provider {
-    name: string
-    scope: string
-    lintOnFly: boolean
-    grammarScopes: Array<string>
-    lint: (textEditor: AtomCore.TextEditor) => Result
-  }
-
-  type Result = Array<TextMessage|HTMLMessage>|
+  type Messages = Array<TextMessage|HTMLMessage>|
       Promise<Array<TextMessage|HTMLMessage>>;
 
   interface Registry {
@@ -122,6 +141,41 @@ declare namespace Linter {
 
   interface Register extends AtomEventKit.IDisposable {
     deleteMessages(): void;
-    setMessages(messages: Result): void;
+    setMessages(messages: Messages): void;
   }
+
+  interface Provider {
+    name: string
+    scope: string
+    lintOnFly: boolean
+    grammarScopes: Array<string>
+    lint: (textEditor: AtomCore.TextEditor) => Messages
+  }
+
+  type BufferChanges = Array<TextBuffer.Params.BufferModifiedEvent>;
+}
+
+declare namespace Filter {
+  interface Block {
+
+  }
+
+  interface Condition {
+
+  }
+
+  interface Action {
+
+  }
+
+  interface Comment {
+
+  }
+
+  interface Line {
+    type?: Block|Condition|Action|Comment
+    messages?: Linter.Messages
+  }
+
+  // interface ItemData {}
 }

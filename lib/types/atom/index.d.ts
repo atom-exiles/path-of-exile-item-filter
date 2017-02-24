@@ -22,7 +22,7 @@
 declare namespace AtomCore {
   /** Objects that appear as parameters to callbacks, broken off for easy
    *  callback definition (both here and in user code). */
-  namespace CallbackArgs {
+  namespace Params {
     interface KMMatchedBinding {
       keystrokes: string,
       binding: KeyBinding,
@@ -197,7 +197,7 @@ declare namespace AtomCore {
     // Event Subscription =====================================================
     /** Invoke the given callback when a specific file's status has changed. When
      *  a file is updated, reloaded, etc, and the status changes, this will be fired. */
-    onDidChangeStatus(callback: (event: CallbackArgs.GRChangeEvent) => void):
+    onDidChangeStatus(callback: (event: Params.GRChangeEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when a multiple files' statuses have changed. */
@@ -377,19 +377,19 @@ declare namespace AtomCore {
     observeActive(callback: (active: boolean) => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback when an item is added to the pane. */
-    onDidAddItem(callback: (event: CallbackArgs.PaneItemListEvent) => void):
+    onDidAddItem(callback: (event: Params.PaneItemListEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when an item is removed from the pane. */
-    onDidRemoveItem(callback: (event: CallbackArgs.PaneItemListEvent) => void):
+    onDidRemoveItem(callback: (event: Params.PaneItemListEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback before an item is removed from the pane. */
-    onWillRemoveItem(callback: (event: CallbackArgs.PaneItemListEvent) => void):
+    onWillRemoveItem(callback: (event: Params.PaneItemListEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when an item is moved within the pane. */
-    onDidMoveItem(callback: (event: CallbackArgs.PaneItemMoveEvent) => void):
+    onDidMoveItem(callback: (event: Params.PaneItemMoveEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback with all current and future items. */
@@ -403,7 +403,7 @@ declare namespace AtomCore {
     observeActiveItem(callback: (activeItem: Object) => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback before items are destroyed. */
-    onWillDestroyItem(callback: (event: CallbackArgs.PaneItemListEvent) => void):
+    onWillDestroyItem(callback: (event: Params.PaneItemListEvent) => void):
         AtomEventKit.Disposable;
 
     // Items ==================================================================
@@ -555,13 +555,13 @@ declare namespace AtomCore {
 
     /** Invoke the given callback synchronously when the content of the buffer
      *  changes. */
-    onDidChange(callback: (event: Array<CallbackArgs.TEDidChange>) => void):
+    onDidChange(callback: (event: Array<Params.TEDidChange>) => void):
         AtomEventKit.Disposable;
 
     /** Invoke callback when the buffer's contents change. It is emit
      *  asynchronously 300ms after the last buffer change. This is a good place
      *  to handle changes to the buffer without compromising typing performance. */
-    onDidStopChanging(callback: (event: CallbackArgs.TEStoppedChangesEvent) => void):
+    onDidStopChanging(callback: (event: Params.TEStoppedChangesEvent) => void):
         AtomEventKit.Disposable;
 
     // onDidChangeCursorPosition(callback): AtomEventKit.Disposable;
@@ -1240,19 +1240,19 @@ declare namespace AtomCore {
 
     // Event Subscription =====================================================
     /** Invoke the given callback when one or more keystrokes completely match a key binding. */
-    onDidMatchBinding(callback: (event: CallbackArgs.KMMatchedBinding) => void):
+    onDidMatchBinding(callback: (event: Params.KMMatchedBinding) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when one or more keystrokes partially match a binding. */
-    onDidPartiallyMatchBindings(callback: (event: CallbackArgs.KMPartiallyMatchBinds) =>
+    onDidPartiallyMatchBindings(callback: (event: Params.KMPartiallyMatchBinds) =>
         void): AtomEventKit.Disposable;
 
     /** Invoke the given callback when one or more keystrokes fail to match any bindings. */
-    onDidFailToMatchBinding(callback: (event: CallbackArgs.KMFailedMatchBinding) =>
+    onDidFailToMatchBinding(callback: (event: Params.KMFailedMatchBinding) =>
         void): AtomEventKit.Disposable;
 
     /** Invoke the given callback when a keymap file not able to be loaded. */
-    onDidFailToReadFile(callback: (error: CallbackArgs.KMFileReadFailure) => void):
+    onDidFailToReadFile(callback: (error: Params.KMFileReadFailure) => void):
         AtomEventKit.Disposable;
 
     // Adding and Removing Bindings ===========================================
@@ -1605,11 +1605,11 @@ declare namespace AtomCore {
   class StyleManager {
     // Event Subscription =====================================================
     /** Invoke callback for all current and future style elements. */
-    observeStyleElements(callback: (styleElement: CallbackArgs.SMHTMLStyleElement) =>
+    observeStyleElements(callback: (styleElement: Params.SMHTMLStyleElement) =>
         void): AtomEventKit.Disposable;
 
     /** Invoke callback when a style element is added. */
-    onDidAddStyleElement(callback: (styleElement: CallbackArgs.SMHTMLStyleElement) =>
+    onDidAddStyleElement(callback: (styleElement: Params.SMHTMLStyleElement) =>
         void): AtomEventKit.Disposable;
 
     /** Invoke callback when a style element is removed. */
@@ -1617,7 +1617,7 @@ declare namespace AtomCore {
         AtomEventKit.Disposable;
 
     /** Invoke callback when an existing style element is updated. */
-    onDidUpdateStyleElement(callback: (styleElement: CallbackArgs.SMHTMLStyleElement) =>
+    onDidUpdateStyleElement(callback: (styleElement: Params.SMHTMLStyleElement) =>
         void): AtomEventKit.Disposable;
 
     // Reading Style Elements =================================================
@@ -1683,19 +1683,19 @@ declare namespace AtomCore {
     /** Invoke the given callback whenever an item is opened. Unlike ::onDidAddPaneItem,
      *  observers will be notified for items that are already present in the workspace
      *  when they are reopened. */
-    onDidOpen(callback: (event: CallbackArgs.WSPaneItemOpenEvent) => void):
+    onDidOpen(callback: (event: Params.WSPaneItemOpenEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when a pane is added to the workspace. */
-    onDidAddPane(callback: (event: CallbackArgs.WSPaneEvent) => void):
+    onDidAddPane(callback: (event: Params.WSPaneEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback before a pane is destroyed in the workspace. */
-    onWillDestroyPane(callback: (event: CallbackArgs.WSPaneEvent) => void):
+    onWillDestroyPane(callback: (event: Params.WSPaneEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when a pane is destroyed in the workspace. */
-    onDidDestroyPane(callback: (event: CallbackArgs.WSPaneEvent) => void):
+    onDidDestroyPane(callback: (event: Params.WSPaneEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback with all current and future panes in the workspace. */
@@ -1709,20 +1709,20 @@ declare namespace AtomCore {
     observeActivePane(callback: (event: Pane) => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback when a pane item is added to the workspace. */
-    onDidAddPaneItem(callback: (event: CallbackArgs.WSPaneItemEvent) => void):
+    onDidAddPaneItem(callback: (event: Params.WSPaneItemEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when a pane item is about to be destroyed,
      *  before the user is prompted to save it. */
-    onWillDestroyPaneItem(callback: (event: CallbackArgs.WSPaneItemEvent) => void):
+    onWillDestroyPaneItem(callback: (event: Params.WSPaneItemEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when a pane item is destroyed. */
-    onDidDestroyPaneItem(callback: (event: CallbackArgs.WSPaneItemEvent) => void):
+    onDidDestroyPaneItem(callback: (event: Params.WSPaneItemEvent) => void):
         AtomEventKit.Disposable;
 
     /** Invoke the given callback when a text editor is added to the workspace. */
-    onDidAddTextEditor(callback: (event: CallbackArgs.WSTextEditorEvent) => void):
+    onDidAddTextEditor(callback: (event: Params.WSTextEditorEvent) => void):
         AtomEventKit.Disposable;
 
     // Opening ================================================================
@@ -1938,11 +1938,11 @@ declare namespace AtomCore {
 
     /** Invoke the given callback when there is an unhandled error, but before
      *  the devtools pop open. */
-    onWillThrowError(callback: (event: CallbackArgs.AEPreventableThrownError) =>
+    onWillThrowError(callback: (event: Params.AEPreventableThrownError) =>
         void): AtomEventKit.Disposable;
 
     /** Invoke the given callback whenever there is an unhandled error. */
-    onDidThrowError(callback: (event: CallbackArgs.AEThrownError) => void):
+    onDidThrowError(callback: (event: Params.AEThrownError) => void):
         AtomEventKit.Disposable;
 
     // Atom Details ===========================================================
