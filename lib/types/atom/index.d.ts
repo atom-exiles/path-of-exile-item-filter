@@ -2,8 +2,8 @@
 // Project: https://github.com/atom/atom/tree/v1.14.3
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
-// NOTE: these typings contain only what is used by the packages that I maintain
-//    due to the size of the Atom API.
+// NOTE: these typings are currently incomplete. Missing chunks are being
+//    written over time.
 
 /// <reference types="node" />
 /// <reference path="../text-buffer/index.d.ts" />

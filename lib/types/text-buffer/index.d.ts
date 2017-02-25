@@ -2,6 +2,9 @@
 // Project: https://github.com/atom/text-buffer/tree/v10.2.16
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
+// NOTE: these typings are currently incomplete. Missing chunks are being
+//    written over time.
+
 /// <reference path="../event-kit/index.d.ts" />
 /// <reference path="../pathwatcher/index.d.ts" />
 

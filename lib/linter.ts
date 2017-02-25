@@ -103,6 +103,7 @@ class BufferManager {
 var registry: Linter.Register;
 var subscriptions: CompositeDisposable;
 export var emitter: Emitter;
+export var currentBuffer: BufferManager|undefined;
 
 export function activate(r: Linter.Register) {
   if(subscriptions) subscriptions.dispose();
@@ -111,7 +112,6 @@ export function activate(r: Linter.Register) {
   registry = r;
   emitter = new Emitter;
   subscriptions = new CompositeDisposable;
-  var currentBuffer: BufferManager;
 
   const startupAction = (item: any) => {
     if(!settings.config.generalSettings.enableLinter.get()) return;
@@ -120,7 +120,10 @@ export function activate(r: Linter.Register) {
       if(currentBuffer) currentBuffer.destructor();
       currentBuffer = new BufferManager((<AtomCore.TextEditor>item));
     } else {
-      if(currentBuffer) currentBuffer.destructor();
+      if(currentBuffer) {
+        currentBuffer.destructor();
+        currentBuffer = undefined;
+      }
     }
   }
 
@@ -133,15 +136,16 @@ export function activate(r: Linter.Register) {
   }));
 
   subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
-    currentBuffer.processIfFilter();
+    if(currentBuffer) currentBuffer.processIfFilter();
   }));
 
   subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
-    currentBuffer.processIfFilter();
+    if(currentBuffer)currentBuffer.processIfFilter();
   }));
 }
 
 export function deactivate() {
+  currentBuffer = undefined;
   subscriptions.dispose();
   emitter.dispose();
 }

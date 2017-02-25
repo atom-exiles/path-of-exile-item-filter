@@ -99,18 +99,19 @@ function activate(r) {
     registry = r;
     exports.emitter = new atom_1.Emitter;
     subscriptions = new atom_1.CompositeDisposable;
-    var currentBuffer;
     const startupAction = (item) => {
         if (!settings.config.generalSettings.enableLinter.get())
             return;
         if (item instanceof require("atom").TextEditor) {
-            if (currentBuffer)
-                currentBuffer.destructor();
-            currentBuffer = new BufferManager(item);
+            if (exports.currentBuffer)
+                exports.currentBuffer.destructor();
+            exports.currentBuffer = new BufferManager(item);
         }
         else {
-            if (currentBuffer)
-                currentBuffer.destructor();
+            if (exports.currentBuffer) {
+                exports.currentBuffer.destructor();
+                exports.currentBuffer = undefined;
+            }
         }
     };
     subscriptions.add(atom.workspace.observeActivePaneItem(startupAction));
@@ -120,14 +121,17 @@ function activate(r) {
             startupAction(item);
     }));
     subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
-        currentBuffer.processIfFilter();
+        if (exports.currentBuffer)
+            exports.currentBuffer.processIfFilter();
     }));
     subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
-        currentBuffer.processIfFilter();
+        if (exports.currentBuffer)
+            exports.currentBuffer.processIfFilter();
     }));
 }
 exports.activate = activate;
 function deactivate() {
+    exports.currentBuffer = undefined;
     subscriptions.dispose();
     exports.emitter.dispose();
 }
