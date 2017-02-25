@@ -3,9 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "noLib": false,
-    "lib": [
-      "es6", "dom", "es2015.promise", "es2015.collection", "es2016.array.include"
-    ],
+    "lib": [ "es6" ],
     "declaration": false,
     "preserveConstEnums": true,
     "strictNullChecks": true,

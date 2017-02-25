@@ -44,6 +44,15 @@ declare namespace Data {
   }
 }
 
+declare namespace Sound {
+  namespace Params {
+    interface PlayAlertSound {
+      id: number
+      volume?: number
+    }
+  }
+}
+
 declare namespace Completion {
   namespace Params {
     interface SuggestionRequest {

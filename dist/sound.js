@@ -11,12 +11,24 @@ function setupAlertSounds(container) {
 function activate() {
     const alertMapping = new Map();
     setupAlertSounds(alertMapping);
-    exports.emitter.on('play-alert-sound', (id) => {
-        if (id < 1 || id > 9)
+    exports.emitter.on("play-alert-sound", (params) => {
+        if (params.id < 1 || params.id > 9)
             return;
-        const audio = alertMapping.get(id);
-        if (audio)
+        var volume;
+        if (params.volume) {
+            if (params.volume > 0 || params.volume <= 300)
+                volume = params.volume / 300;
+            else
+                return;
+        }
+        else {
+            volume = 100 / 300;
+        }
+        const audio = alertMapping.get(params.id);
+        if (audio) {
+            audio.volume = volume;
             audio.play();
+        }
     });
 }
 exports.activate = activate;
