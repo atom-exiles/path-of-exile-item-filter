@@ -1,36 +1,18 @@
-import { CompositeDisposable, Emitter } from "atom";
+import { Range, CompositeDisposable, Emitter } from "atom";
 import * as path from "path";
 import * as assert from "assert";
 
 import * as data from "./data";
 
-class ItemFilter {
-  private readonly editor: AtomCore.TextEditor;
-  lineInfo: Promise<Filter.Line[]>;
-
-  constructor(editor: AtomCore.TextEditor) {
-    this.editor = editor;
-    this.lineInfo = this.parseBuffer();
-  }
-
-  destructor() {}
-
-  async parseBuffer() {
-    const linterData = await data.linterData;
-    return [];
-  }
-
-  async reparseBufferRanges(modifiedRanges: TextBuffer.IRange[]) {
-  }
-}
-
-class BufferManager {
+/** Handles subscriptions for every buffer, while also managing the data for
+ *  item filters. */
+class FilterManager {
   private readonly editor: AtomCore.TextEditor;
   private subscriptions: CompositeDisposable;
   private filterSubs: CompositeDisposable;
-  private changes: Linter.BufferChanges;
+  private changes?: Filter.BufferChanges;
 
-  filter?: ItemFilter;
+  filter?: Promise<Filter.ItemFilter>;
 
   constructor(editor: AtomCore.TextEditor) {
     this.editor = editor;
@@ -63,12 +45,9 @@ class BufferManager {
     } else if(this.filterSubs) this.filterSubs.dispose();
   }
 
-  /** Removes all subscriptions and destroys any filter data. */
+  /** Removes all subscriptions and destroys any data on the item filter. */
   destructor() {
-    if(this.filter) {
-      this.filter.destructor();
-      this.filter = undefined;
-    }
+    this.filter = undefined;
     if(this.filterSubs) this.filterSubs.dispose();
     this.subscriptions.dispose();
     buffers.delete(this.editor.buffer.id);
@@ -86,8 +65,12 @@ class BufferManager {
     if(!this.filterSubs) this.filterSubs = new CompositeDisposable();
 
     this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
-      if(!this.changes) this.changes = [];
-      this.changes.push(event);
+      if(this.changes) {
+        this.changes.oldRange = event.oldRange.union(this.changes.oldRange);
+        this.changes.newRange = event.newRange.union(this.changes.newRange);
+      } else {
+        this.changes = { oldRange: event.oldRange.copy(), newRange: event.newRange.copy()};
+      }
     }));
 
     this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
@@ -95,37 +78,46 @@ class BufferManager {
     }));
   }
 
-  /** Ensures that the buffer contains a filter before calling processFilter. */
+  /** Ensures that the buffer contains a filter prior to processing it.. */
   public processIfFilter() {
     if(this.isFilter()) this.processFilter;
   }
 
-  /** Resets the item filter data and reprocsses it. */
+  /** Processes the entire item filter from scratch. */
   private async processFilter() {
-    if(this.filter) this.filter.destructor();
+    const oldRange = new Range([0, 0], [0, 0]);
 
-    this.filter = new ItemFilter(this.editor);
-    const lines = await this.filter.lineInfo;
+    const lastRow = this.editor.getLastBufferRow();
+    const lastRowText = this.editor.lineTextForBufferRow(lastRow);
+    const lastColumn = lastRowText.length - 1;
+    const newRange = new Range([0, 0], [lastRow, lastColumn]);
+
+    this.filter = this.getLineInfo({ oldRange: oldRange, newRange: newRange });
+
+    const lines = await this.filter;
     emitter.emit<Filter.Params.DataUpdate>("poe-did-process-filter",
         { editorID: this.editor.buffer.id, lines: lines });
   }
 
-  /** A wrapper for processFilter in order to manage some internal data on each
-   *  call to it. */
+  /** Processes only the recent changes to the item filter. */
   private async processFilterChanges() {
-    if(!this.changes || !this.filter || this.changes.length == 0) return;
+    if(!this.changes || !this.filter) return;
 
-    // TODO(glen): perform work to transform the change data here.
-    this.filter.reparseBufferRanges([]);
-    const lines = await this.filter.lineInfo;
+    this.filter = this.getLineInfo(this.changes);
+    const lines = await this.filter;
     emitter.emit<Filter.Params.DataUpdate>("poe-did-process-filter",
         { editorID: this.editor.buffer.id, lines: lines });
+  }
+
+  private async getLineInfo(change: Filter.BufferChanges) {
+    const linterData = await data.linterData;
+    return [];
   }
 }
 
 var subscriptions: CompositeDisposable;
 export var emitter: Emitter;
-export const buffers = new Map<string, BufferManager>();
+export const buffers = new Map<string, FilterManager>();
 
 export function activate() {
   assert(buffers.size == 0, "activation called unexpectedly.");
@@ -138,12 +130,12 @@ export function activate() {
   // Process the active text editor first, prior to observing the others.
   const editor = atom.workspace.getActiveTextEditor();
   if(editor) {
-    buffers.set(editor.buffer.id, new BufferManager(editor));
+    buffers.set(editor.buffer.id, new FilterManager(editor));
   }
 
   subscriptions.add(atom.workspace.observeTextEditors((editor) => {
     if(buffers.has(editor.buffer.id)) return;
-    buffers.set(editor.buffer.id, new BufferManager(editor));
+    buffers.set(editor.buffer.id, new FilterManager(editor));
   }));
 }
 

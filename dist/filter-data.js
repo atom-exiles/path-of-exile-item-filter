@@ -11,24 +11,7 @@ const atom_1 = require("atom");
 const path = require("path");
 const assert = require("assert");
 const data = require("./data");
-class ItemFilter {
-    constructor(editor) {
-        this.editor = editor;
-        this.lineInfo = this.parseBuffer();
-    }
-    destructor() { }
-    parseBuffer() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const linterData = yield data.linterData;
-            return [];
-        });
-    }
-    reparseBufferRanges(modifiedRanges) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
-    }
-}
-class BufferManager {
+class FilterManager {
     constructor(editor) {
         this.editor = editor;
         this.subscriptions = new atom_1.CompositeDisposable;
@@ -59,10 +42,7 @@ class BufferManager {
             this.filterSubs.dispose();
     }
     destructor() {
-        if (this.filter) {
-            this.filter.destructor();
-            this.filter = undefined;
-        }
+        this.filter = undefined;
         if (this.filterSubs)
             this.filterSubs.dispose();
         this.subscriptions.dispose();
@@ -79,9 +59,13 @@ class BufferManager {
         if (!this.filterSubs)
             this.filterSubs = new atom_1.CompositeDisposable();
         this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
-            if (!this.changes)
-                this.changes = [];
-            this.changes.push(event);
+            if (this.changes) {
+                this.changes.oldRange = event.oldRange.union(this.changes.oldRange);
+                this.changes.newRange = event.newRange.union(this.changes.newRange);
+            }
+            else {
+                this.changes = { oldRange: event.oldRange.copy(), newRange: event.newRange.copy() };
+            }
         }));
         this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
             this.processFilterChanges();
@@ -93,20 +77,29 @@ class BufferManager {
     }
     processFilter() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.filter)
-                this.filter.destructor();
-            this.filter = new ItemFilter(this.editor);
-            const lines = yield this.filter.lineInfo;
+            const oldRange = new atom_1.Range([0, 0], [0, 0]);
+            const lastRow = this.editor.getLastBufferRow();
+            const lastRowText = this.editor.lineTextForBufferRow(lastRow);
+            const lastColumn = lastRowText.length - 1;
+            const newRange = new atom_1.Range([0, 0], [lastRow, lastColumn]);
+            this.filter = this.getLineInfo({ oldRange: oldRange, newRange: newRange });
+            const lines = yield this.filter;
             exports.emitter.emit("poe-did-process-filter", { editorID: this.editor.buffer.id, lines: lines });
         });
     }
     processFilterChanges() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.changes || !this.filter || this.changes.length == 0)
+            if (!this.changes || !this.filter)
                 return;
-            this.filter.reparseBufferRanges([]);
-            const lines = yield this.filter.lineInfo;
+            this.filter = this.getLineInfo(this.changes);
+            const lines = yield this.filter;
             exports.emitter.emit("poe-did-process-filter", { editorID: this.editor.buffer.id, lines: lines });
+        });
+    }
+    getLineInfo(change) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const linterData = yield data.linterData;
+            return [];
         });
     }
 }
@@ -122,12 +115,12 @@ function activate() {
     subscriptions = new atom_1.CompositeDisposable;
     const editor = atom.workspace.getActiveTextEditor();
     if (editor) {
-        exports.buffers.set(editor.buffer.id, new BufferManager(editor));
+        exports.buffers.set(editor.buffer.id, new FilterManager(editor));
     }
     subscriptions.add(atom.workspace.observeTextEditors((editor) => {
         if (exports.buffers.has(editor.buffer.id))
             return;
-        exports.buffers.set(editor.buffer.id, new BufferManager(editor));
+        exports.buffers.set(editor.buffer.id, new FilterManager(editor));
     }));
 }
 exports.activate = activate;

@@ -159,8 +159,6 @@ declare namespace Linter {
     grammarScopes: Array<string>
     lint: (textEditor: AtomCore.TextEditor) => Messages
   }
-
-  type BufferChanges = Array<TextBuffer.Params.BufferModifiedEvent>;
 }
 
 declare namespace Filter {
@@ -192,5 +190,10 @@ declare namespace Filter {
     messages?: (Linter.TextMessage|Linter.HTMLMessage)[]
   }
 
-  // interface ItemData {}
+  interface BufferChanges {
+    oldRange: TextBuffer.Range
+    newRange: TextBuffer.Range
+  }
+
+  type ItemFilter = Line[];
 }
