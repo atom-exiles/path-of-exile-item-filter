@@ -104,6 +104,6 @@ declare namespace AtomEventKit {
     /** Invoke handlers registered via ::on for the given event name. */
     emit(eventName: string): void;
     /** Invoke handlers registered via ::on for the given event name. */
-    emit(eventName: string, value: any): void;
+    emit<T>(eventName: string, value: T): void;
   }
 }

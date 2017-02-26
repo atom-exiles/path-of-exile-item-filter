@@ -1,5 +1,3 @@
-import { Disposable } from "atom";
-
 export const packageName = require("../package.json").name;
 export const schema = require("../data/config.json");
 
@@ -24,12 +22,12 @@ class SettingValue<T> {
     atom.config.unset(packageName + "." + this.key);
   }
 
-  observe(callback: (value: T) => void): Disposable {
+  observe(callback: (value: T) => void): AtomEventKit.Disposable {
     return atom.config.observe(packageName + "." + this.key, callback);
   }
 
   onDidChange(callback: (event: { oldValue: T, newValue: T }) => void):
-      Disposable {
+      AtomEventKit.Disposable {
     return atom.config.onDidChange(packageName + "." + this.key, callback);
   }
 }

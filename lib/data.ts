@@ -1,7 +1,7 @@
-/** Manages the JSON data, exporting the relevant data based on the package
- *  configuration. Changes to the configuration will result in the data being
- *  updated in place, with events being emitted for modules where this isn't
- *  adequate. */
+// Manages the JSON data, exporting the relevant data based on the package
+// configuration. Changes to the configuration will result in the data being
+// updated in place, with events being emitted for modules where this isn't
+// adequate.
 import { Emitter, CompositeDisposable } from "atom";
 
 import * as settings from "./settings";

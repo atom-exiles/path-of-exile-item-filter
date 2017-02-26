@@ -1,5 +1,6 @@
 "use strict";
 const data = require("./data");
+const filterData = require("./filter-data");
 const completion = require("./completion");
 const linter = require("./linter");
 exports.config = require("../data/config.json");
@@ -7,6 +8,7 @@ const packageName = require("../package.json").name;
 var linterRegister;
 function readyToActivate() {
     data.activate();
+    filterData.activate();
     completion.activate();
     linter.activate(linterRegister);
 }
@@ -19,6 +21,7 @@ exports.activate = activate;
 function deactivate() {
     linter.deactivate();
     completion.deactivate();
+    filterData.deactivate();
     data.deactivate();
 }
 exports.deactivate = deactivate;

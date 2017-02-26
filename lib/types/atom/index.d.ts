@@ -1766,7 +1766,7 @@ declare namespace AtomCore {
     /** Get all text editors in the workspace. */
     getTextEditors(): Array<TextEditor>;
 
-    /** Get all text editors in the workspace. */
+    /** Get the active item if it is an TextEditor. */
     getActiveTextEditor(): TextEditor|undefined;
 
     // Panes ==================================================================

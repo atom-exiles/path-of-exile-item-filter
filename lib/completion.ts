@@ -1,4 +1,4 @@
-import { Point, Range, CompositeDisposable } from "atom";
+import { Point, Range } from "atom";
 
 import * as settings from "./settings";
 import * as data from "./data";

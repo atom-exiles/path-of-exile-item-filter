@@ -141,8 +141,7 @@ declare namespace Linter {
 
   interface TextMessage extends Message { text: string }
   interface HTMLMessage extends Message { html: string }
-  type Messages = Array<TextMessage|HTMLMessage>|
-      Promise<Array<TextMessage|HTMLMessage>>;
+  type Messages = Array<TextMessage|HTMLMessage>;
 
   interface Registry {
     register(config: { name: string }): Register;
@@ -165,6 +164,13 @@ declare namespace Linter {
 }
 
 declare namespace Filter {
+  namespace Params {
+    interface DataUpdate {
+      editorID: string
+      lines: Line[]
+    }
+  }
+
   interface Block {
 
   }
@@ -183,7 +189,7 @@ declare namespace Filter {
 
   interface Line {
     type?: Block|Condition|Action|Comment
-    messages?: Linter.Messages
+    messages?: (Linter.TextMessage|Linter.HTMLMessage)[]
   }
 
   // interface ItemData {}

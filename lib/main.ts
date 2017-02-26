@@ -1,6 +1,5 @@
-import { Emitter, CompositeDisposable, Range, TextEditor } from "atom";
-
 import * as data from "./data";
+import * as filterData from "./filter-data";
 import * as completion from "./completion";
 import * as linter from "./linter";
 
@@ -10,6 +9,7 @@ var linterRegister: Linter.Register;
 
 function readyToActivate() {
   data.activate();
+  filterData.activate();
   completion.activate();
   linter.activate(linterRegister);
 }
@@ -23,6 +23,7 @@ export function activate() {
 export function deactivate() {
   linter.deactivate();
   completion.deactivate();
+  filterData.deactivate();
   data.deactivate();
 }
 
