@@ -6,7 +6,39 @@ import { Emitter, CompositeDisposable } from "atom";
 
 import * as settings from "./settings";
 
-export const files: Data.FileData = {
+
+
+interface ItemDataLayout {
+  [index: string]: Array<string>
+}
+
+interface SuggestionsDataLayout {
+  blocks: Completion.Suggestions
+  filters: Completion.Suggestions
+  actions: Completion.Suggestions
+  rarities: Completion.Suggestions
+  operators: Completion.Suggestions
+  booleans: Completion.Suggestions
+  extraBlocks: Completion.Suggestions
+  extraBases: Completion.Suggestions
+}
+
+interface FileData {
+  items: {
+    core:       ItemDataLayout
+    league:     ItemDataLayout
+    legacy:     ItemDataLayout
+    recipe:     ItemDataLayout
+  },
+  suggestions: SuggestionsDataLayout
+}
+
+interface ProcessedData {
+  completion: Data.Completion
+  linter: Data.Parser
+}
+
+export const files: FileData = {
   items: {
     core: require("../data/items/core.json"),
     league: require("../data/items/league.json"),
@@ -20,11 +52,11 @@ export var emitter: Emitter;
 var subscriptions: CompositeDisposable;
 
 export var completionData: Promise<Data.Completion>;
-export var linterData: Promise<Data.Linter>;
+export var filterItemData: Promise<Data.Parser>;
 
 /** Shapes the item data into the format expected by each module. */
-function mergeItemData(container: Data.ProcessedData,
-    itemList: Data.ItemDataLayout): Data.ProcessedData {
+function mergeItemData(container: ProcessedData,
+    itemList: ItemDataLayout): ProcessedData {
   const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
 
   for(var itemClass in itemList) {
@@ -73,8 +105,8 @@ function mergeItemData(container: Data.ProcessedData,
   return container;
 }
 
-async function processItemData(): Promise<Data.ProcessedData> {
-  var result: Data.ProcessedData = {
+async function processItemData(): Promise<ProcessedData> {
+  var result: ProcessedData = {
     completion: {
       classes: [],
       bases: [],
@@ -103,7 +135,7 @@ async function processItemData(): Promise<Data.ProcessedData> {
   return result;
 }
 
-function updateWhitelists(itemData: Data.ProcessedData) {
+function updateWhitelists(itemData: ProcessedData) {
   const bases = settings.config.dataSettings.baseWhitelist.get();
   const classes = settings.config.dataSettings.classWhitelist.get();
   const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
@@ -169,12 +201,12 @@ export function activate() {
 
   var itemData = processItemData();
   completionData = itemData.then((id) => { return id.completion; });
-  linterData = itemData.then((id) => { return id.linter; });
-  Promise.all([itemData, completionData, linterData]).then((values) => {
+  filterItemData = itemData.then((id) => { return id.linter; });
+  Promise.all([itemData, completionData, filterItemData]).then((values) => {
     updateWhitelists(values[0]);
   });
 
-  const action = async (itemList: Data.ItemDataLayout, event: { oldValue: boolean,
+  const action = async (itemList: ItemDataLayout, event: { oldValue: boolean,
       newValue: boolean }) => {
     if(event.newValue) {
       const id = await itemData;
@@ -183,8 +215,9 @@ export function activate() {
       itemData = processItemData();
       const id = await itemData;
       completionData = itemData.then((id) => { return id.completion; });
-      linterData = itemData.then((id) => { return id.linter; });
+      filterItemData = itemData.then((id) => { return id.linter; });
     }
+    emitter.emit("poe-did-update-item-data");
   };
 
   subscriptions.add(settings.config.dataSettings.enableLeague.onDidChange((event) => {

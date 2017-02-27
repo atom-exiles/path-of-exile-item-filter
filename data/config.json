@@ -36,14 +36,14 @@
         "title": "Legacy Items",
         "description": "Allow the use of items that are unobtainable in the current temporary leagues.",
         "type": "boolean",
-        "default": false,
+        "default": true,
         "order": 2
       },
       "enableRecipe": {
         "title": "Vendor Recipe Items",
         "description": "Allow the use of items which are only obtainable through vendor recipes.",
         "type": "boolean",
-        "default": false,
+        "default": true,
         "order": 3
       },
       "classWhitelist": {

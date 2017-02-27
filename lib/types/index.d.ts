@@ -6,41 +6,11 @@ declare namespace Data {
     whitelistBases: Array<Completion.TextSuggestion|Completion.SnippetSuggestion>
   }
 
-  interface Linter {
+  interface Parser {
     classes: string[]
     bases: string[]
     whitelistClasses: string[]
     whitelistBases: string[]
-  }
-
-  interface ItemDataLayout {
-    [index: string]: Array<string>
-  }
-
-  interface SuggestionsDataLayout {
-    blocks: Completion.Suggestions
-    filters: Completion.Suggestions
-    actions: Completion.Suggestions
-    rarities: Completion.Suggestions
-    operators: Completion.Suggestions
-    booleans: Completion.Suggestions
-    extraBlocks: Completion.Suggestions
-    extraBases: Completion.Suggestions
-  }
-
-  interface FileData {
-    items: {
-      core:       ItemDataLayout
-      league:     ItemDataLayout
-      legacy:     ItemDataLayout
-      recipe:     ItemDataLayout
-    },
-    suggestions: SuggestionsDataLayout
-  }
-
-  interface ProcessedData {
-    completion: Data.Completion
-    linter: Data.Linter
   }
 }
 
@@ -54,22 +24,6 @@ declare namespace Sound {
 }
 
 declare namespace Completion {
-  namespace Params {
-    interface SuggestionRequest {
-      editor: AtomCore.TextEditor
-      bufferPosition: TextBuffer.Point
-      scopeDescriptor: AtomCore.ScopeDescriptor
-      prefix: string
-      activatedManually: boolean
-    }
-
-    interface SuggestionInserted {
-      editor: AtomCore.TextEditor
-      triggerPosition: TextBuffer.IPoint
-      suggestion: TextSuggestion|SnippetSuggestion
-    }
-  }
-
   interface Suggestion {
     /** A string that will show in the UI for this suggestion. When not set,
      *  snippet || text is displayed. */
@@ -169,31 +123,52 @@ declare namespace Filter {
     }
   }
 
+  interface Value {
+    value: any
+    range: TextBuffer.Range
+  }
+
+  interface Operator {
+    type: string
+    range: TextBuffer.Range
+  }
+
+  interface Keyword {
+    type: string
+    range: TextBuffer.Range
+  }
+
   interface Block {
-
+    type: Keyword
+    scope: TextBuffer.Range
+    trailingComment?: Comment
   }
 
-  interface Condition {
-
-  }
-
-  interface Action {
-
+  interface Rule {
+    type: Keyword
+    category: "condition"|"action"
+    operator?: Operator
+    values: Value[]
+    trailingComment?: Comment
+    range: TextBuffer.Range
   }
 
   interface Comment {
-
+    text: string
+    range: TextBuffer.Range
   }
+
+  interface Unknown {
+    text: string
+    range: TextBuffer.Range
+  }
+
+  interface Empty {}
 
   interface Line {
-    type?: Block|Condition|Action|Comment
+    type: "Block"|"Comment"|"Rule"|"Unknown"|"Empty"
+    data: Block|Comment|Rule|Unknown|Empty
+    invalid: boolean
     messages?: (Linter.TextMessage|Linter.HTMLMessage)[]
   }
-
-  interface BufferChanges {
-    oldRange: TextBuffer.Range
-    newRange: TextBuffer.Range
-  }
-
-  type ItemFilter = Line[];
 }

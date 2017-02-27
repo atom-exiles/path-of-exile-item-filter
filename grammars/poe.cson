@@ -7,13 +7,13 @@
   { 'include': '#commented_line' }
   {
     'name': 'block.poe'
-    'begin': '^\\s*((Show)|(Hide))(\\s*(#.*)?)$'
+    'begin': "^\\s*((Show)|(Hide))((\\s+(#+.*))|\\s.*)$"
     'beginCaptures':
       '2':
         'name': 'keyword.block.show.poe'
       '3':
         'name': 'keyword.block.hide.poe'
-      '5':
+      '6':
         'name': 'comment.trailing.poe'
     'end': "(?=^\\s*(Show|Hide))"
     'patterns': [

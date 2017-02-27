@@ -1,4 +1,4 @@
-## 0.1.9 - Ninth Release
+## 1.0.0 - Ninth Release
 * Began using JSON files for our data
 * Added configuration settings
 * Autocompletion improvements and bug fixes
@@ -9,6 +9,8 @@
 * Changed the placeholder value for Boolean rules (like Identified)
 * Stopped syntax highlighting the placeholder value for SocketGroups
 * Added completions for Map tiers, each of which inserts a new Show block
+* Added a linter, which provides error checking outside of the game.
+* Support for 2.6 and Legacy league.
 
 ## 0.1.8 - Eighth Release
 * Added the 15 new divination cards from 2.5.1

@@ -143,8 +143,8 @@ function activate() {
     exports.emitter = new atom_1.Emitter;
     var itemData = processItemData();
     exports.completionData = itemData.then((id) => { return id.completion; });
-    exports.linterData = itemData.then((id) => { return id.linter; });
-    Promise.all([itemData, exports.completionData, exports.linterData]).then((values) => {
+    exports.filterItemData = itemData.then((id) => { return id.linter; });
+    Promise.all([itemData, exports.completionData, exports.filterItemData]).then((values) => {
         updateWhitelists(values[0]);
     });
     const action = (itemList, event) => __awaiter(this, void 0, void 0, function* () {
@@ -156,8 +156,9 @@ function activate() {
             itemData = processItemData();
             const id = yield itemData;
             exports.completionData = itemData.then((id) => { return id.completion; });
-            exports.linterData = itemData.then((id) => { return id.linter; });
+            exports.filterItemData = itemData.then((id) => { return id.linter; });
         }
+        exports.emitter.emit("poe-did-update-item-data");
     });
     subscriptions.add(settings.config.dataSettings.enableLeague.onDidChange((event) => {
         action(exports.files.items.league, event);

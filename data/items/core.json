@@ -419,7 +419,11 @@
     "The Valley of Steel Boxes",
     "The Wolven King's Bite",
     "The Wolverine",
-    "The Wretched"
+    "The Wretched",
+    "Atziri's Arsenal",
+    "Might is Right",
+    "Struck by Lightning",
+    "The Opulent"
   ],
   "Maps": [
     "Arcade Map",
@@ -1704,6 +1708,7 @@
   "Currency": [],
   "Card": [],
   "Microtransactions": [],
+  "Hideout Doodads": [],
   "Gems": [],
   "Skill Gems": [],
   "Swords": [],
