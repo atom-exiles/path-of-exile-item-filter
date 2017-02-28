@@ -20,8 +20,18 @@ interface SuggestionInserted {
 export function activate() {}
 export function deactivate() {}
 
-/** Determines whether or text entered at the given position in the editor
- *  would be the first value for the filter rule which precedes that position.*/
+/** Determines whether or not an operator could be inserted into the given position
+ *  in the buffer. */
+function isPotentialOperator(editor: AtomCore.TextEditor, position: Point): boolean {
+  const line = editor.lineTextForBufferRow(position.row);
+  const regex = /^\s*\S+\s*(>|<)?$/;
+  const result = regex.exec(line);
+  if(result) return true;
+  return false;
+}
+
+/** Determines whether or not text inserted at the given position in the editor
+ *  would be the first value for the filter rule. */
 function isFirstValue(editor: AtomCore.TextEditor, position: Point,
     hasOperator: boolean): boolean {
   const line = editor.lineTextForBufferRow(position.row);
@@ -153,97 +163,78 @@ async function getSuggestions(args: SuggestionRequest):
   }
 
   const cd = await data.completionData;
-
   var suggestions: Completion.Suggestions = [];
-  var shouldPruneSuggestions = true;
-  const prefix = getPrefix(args.editor, args.bufferPosition);
+  var prefix = getPrefix(args.editor, args.bufferPosition);
   const cursorScopes = args.scopeDescriptor.scopes;
   const topScope = cursorScopes[cursorScopes.length - 1];
+
+  var shouldPruneSuggestions = true;
+  const enableExtraSuggestions = settings.config.completionSettings.
+      enableExtraSuggestions.get();
 
   if(topScope == "source.poe") {
     suggestions = suggestions.concat(data.files.suggestions.blocks);
   } else if(topScope == "line.empty.poe" || topScope == "line.unknown.poe") {
     if(cursorScopes.indexOf("block.poe") != -1) {
-      if(prefix == "Rule") {
-        suggestions = suggestions.concat(data.files.suggestions.actions,
-            data.files.suggestions.filters);
-        shouldPruneSuggestions = false;
-      } else {
-        suggestions = suggestions.concat(data.files.suggestions.blocks,
-            data.files.suggestions.actions, data.files.suggestions.filters);
-        if(settings.config.completionSettings.enableExtraSuggestions.get()) {
-          suggestions = suggestions.concat(data.files.suggestions.extraBlocks);
-        }
+      suggestions = suggestions.concat(data.files.suggestions.blocks,
+          data.files.suggestions.actions, data.files.suggestions.filters);
+      if(enableExtraSuggestions) {
+        suggestions = suggestions.concat(data.files.suggestions.extraBlocks);
       }
     }
   } else {
     if(cursorScopes.indexOf("filter.rarity.poe") != -1) {
-      if(prefix == "[operator]") {
-        suggestions = suggestions.concat(data.files.suggestions.operators,
-            data.files.suggestions.rarities);
-        shouldPruneSuggestions = false;
-      } else if(prefix == "rarity") {
+      if(isFirstValue(args.editor, args.bufferPosition, true)) {
         suggestions = suggestions.concat(data.files.suggestions.rarities);
-        shouldPruneSuggestions = false;
-      } else if(isFirstValue(args.editor, args.bufferPosition, true)) {
-        suggestions = suggestions.concat(data.files.suggestions.rarities);
+      }
+      if(isPotentialOperator(args.editor, args.bufferPosition)) {
+        suggestions = suggestions.concat(data.files.suggestions.operators);
       }
     } else if(cursorScopes.indexOf("filter.identified.poe") != -1) {
-      if(prefix == "True|False") {
+      if(isFirstValue(args.editor, args.bufferPosition, true)) {
         suggestions = suggestions.concat(data.files.suggestions.booleans);
-        shouldPruneSuggestions = false;
-      } else if(!(prefix == "Identified")) {
-        if(isFirstValue(args.editor, args.bufferPosition, true)) {
-          suggestions = suggestions.concat(data.files.suggestions.booleans);
-        }
       }
     } else if(cursorScopes.indexOf("filter.corrupted.poe") != -1) {
-      if(prefix == "True|False") {
+      if(isFirstValue(args.editor, args.bufferPosition, true)) {
         suggestions = suggestions.concat(data.files.suggestions.booleans);
-        shouldPruneSuggestions = false;
-      } else if(!(prefix == "Corrupted")) {
-        if(isFirstValue(args.editor, args.bufferPosition, true)) {
-          suggestions = suggestions.concat(data.files.suggestions.booleans);
-        }
       }
     } else if(cursorScopes.indexOf("filter.class.poe") != -1) {
-      if(prefix == "class") {
-        suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
-        shouldPruneSuggestions = false;
-      } else if(!(prefix == "Class")) {
-        suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
+      suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
+      if(enableExtraSuggestions)  {
+        suggestions = suggestions.concat(data.files.suggestions.extraClasses);
       }
     } else if(cursorScopes.indexOf("filter.base-type.poe") != -1) {
-      if(prefix == "type") {
-        suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
-        shouldPruneSuggestions = false;
-      } else if(!(prefix == "BaseType")) {
-        suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
-      }
-      if(settings.config.completionSettings.enableExtraSuggestions.get()) {
+      suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
+      if(enableExtraSuggestions) {
         suggestions = suggestions.concat(data.files.suggestions.extraBases);
       }
+    } else if(cursorScopes.indexOf("filter.socket-group.poe") != -1) {
+      // Not pruning the suggestions, so this is necessary.
+      if(!(prefix == "SocketGroup")) {
+        shouldPruneSuggestions = false;
+        if(isFirstValue(args.editor, args.bufferPosition, true) && prefix.length < 6) {
+          prefix = "";
+          suggestions = suggestions.concat(data.files.suggestions.socketGroup);
+        }
+      }
     } else {
-      const numberValueRule = cursorScopes.indexOf("filter.item-level.poe") != 1 ||
-          cursorScopes.indexOf("filter.drop-level.poe") != 1 ||
-          cursorScopes.indexOf("filter.quality.poe") != 1 ||
-          cursorScopes.indexOf("filter.socket.poe") != 1 ||
-          cursorScopes.indexOf("filter.linked-sockets.poe") != 1 ||
-          cursorScopes.indexOf("filter.height.poe") != 1 ||
-          cursorScopes.indexOf("filter.width.poe") != 1;
+      const numberValueRule = cursorScopes.indexOf("filter.item-level.poe") != -1 ||
+          cursorScopes.indexOf("filter.drop-level.poe") != -1 ||
+          cursorScopes.indexOf("filter.quality.poe") != -1 ||
+          cursorScopes.indexOf("filter.socket.poe") != -1 ||
+          cursorScopes.indexOf("filter.linked-sockets.poe") != -1 ||
+          cursorScopes.indexOf("filter.height.poe") != -1 ||
+          cursorScopes.indexOf("filter.width.poe") != -1;
       if(numberValueRule) {
-        if(prefix == "[operator]") {
+        if(isPotentialOperator(args.editor, args.bufferPosition)) {
           suggestions = suggestions.concat(data.files.suggestions.operators);
-          shouldPruneSuggestions = false;
         }
       }
     }
   }
 
+  if(shouldPruneSuggestions) suggestions = pruneSuggestions(prefix, suggestions);
   setReplacementPrefix(args.editor, args.bufferPosition, prefix, suggestions);
-  if(shouldPruneSuggestions) {
-    suggestions = pruneSuggestions(prefix, suggestions);
-  }
   return suggestions;
 }
 
@@ -262,16 +253,6 @@ function removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
   }
 }
 
-/** Removes the trailing Rarity placeholder value "rarity" if it exists
- *  following the given position in the buffer. */
-function removeRarityPlaceholder(editor: AtomCore.TextEditor, startPosition: Point) {
-  const endPosition = new Point(startPosition.row, startPosition.column + 7);
-  const text = editor.getTextInBufferRange([startPosition, endPosition]);
-  if(text == " rarity") {
-    editor.setTextInBufferRange([startPosition, endPosition], "");
-  }
-}
-
 /** Performs the buffer manipulations necessary following a suggestion insertion. */
 function insertedSuggestion(params: SuggestionInserted) {
   // Whenever the user opens with quotation marks and accepts a suggestion,
@@ -286,25 +267,6 @@ function insertedSuggestion(params: SuggestionInserted) {
   } else {
     const cursorPosition = params.editor.getCursorBufferPosition();
     removeConsecutiveQuotes(params.editor, cursorPosition);
-  }
-
-  // The rarity rule is currently the only one with an operator that we also
-  // provide value completion for. That operator is also optional, so if the
-  // user were to choose to insert one of the rarity suggestions while the
-  // prefix is the operator placeholder, they would end up with a line like this:
-  //    Rarity Normal rarity
-  // We need to detect this case and automatically remove " rarity" from the
-  // buffer.
-  if(params.suggestion.custom && params.suggestion.custom.itemRarity) {
-    if(params.editor.hasMultipleCursors()) {
-      const cursorPositions = params.editor.getCursorBufferPositions();
-      for(var cursorPosition of cursorPositions) {
-        removeRarityPlaceholder(params.editor, cursorPosition);
-      }
-    } else {
-      const cursorPosition = params.editor.getCursorBufferPosition();
-      removeRarityPlaceholder(params.editor, cursorPosition);
-    }
   }
 }
 

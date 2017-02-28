@@ -27,7 +27,7 @@ interface LineInfo {
 }
 
 /** Parses data from a single line of a Path of Exile filter. */
-class LineParser {
+export class LineParser {
   readonly textStartIndex: number;
   readonly textEndIndex: number;
   readonly originalLength: number;

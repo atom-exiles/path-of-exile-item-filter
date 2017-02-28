@@ -2,106 +2,106 @@
   "blocks": [
     {
       "displayText": "Show",
-      "snippet": "Show\n  ${1:Rule}",
+      "text": "Show\n\t",
       "custom": { "backupRightLabel": "Block" }
     },
     {
       "displayText": "Hide",
-      "snippet": "Hide\n  ${1:Rule}",
+      "text": "Hide\n\t",
       "custom": { "backupRightLabel": "Block" }
     }
   ],
   "filters": [
     {
       "displayText": "BaseType",
-      "snippet": "BaseType ${1:type}",
+      "text": "BaseType",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Class",
-      "snippet": "Class ${1:class}",
+      "text": "Class",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Rarity",
-      "snippet": "Rarity ${1:[operator]} ${2:rarity}",
+      "text": "Rarity",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Identified",
-      "snippet": "Identified ${1:True|False}",
+      "text": "Identified",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Corrupted",
-      "snippet": "Corrupted ${1:True|False}",
+      "text": "Corrupted",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "ItemLevel",
-      "snippet": "ItemLevel ${1:[operator]} ${2:level}",
+      "text": "ItemLevel",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "DropLevel",
-      "snippet": "DropLevel ${1:[operator]} ${2:level}",
+      "text": "DropLevel",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Quality",
-      "snippet": "Quality ${1:[operator]} ${2:quality}",
+      "text": "Quality",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Sockets",
-      "snippet": "Sockets ${1:[operator]} ${2:sockets}",
+      "text": "Sockets",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "LinkedSockets",
-      "snippet": "LinkedSockets ${1:[operator]} ${2:links}",
+      "text": "LinkedSockets",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Height",
-      "snippet": "Height ${1:[operator]} ${2:height}",
+      "text": "Height",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "Width",
-      "snippet": "Width ${1:[operator]} ${2:width}",
+      "text": "Width",
       "custom": { "backupRightLabel": "Filter" }
     },
     {
       "displayText": "SocketGroup",
-      "snippet": "SocketGroup ${1:group}",
+      "text": "SocketGroup",
       "custom": { "backupRightLabel": "Filter" }
     }
   ],
   "actions": [
     {
       "displayText": "SetBackgroundColor",
-      "snippet": "SetBackgroundColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}",
+      "text": "SetBackgroundColor",
       "custom": { "backupRightLabel": "Action" }
     },
     {
       "displayText": "SetBorderColor",
-      "snippet": "SetBorderColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}",
+      "text": "SetBorderColor",
       "custom": { "backupRightLabel": "Action" }
     },
     {
       "displayText": "SetTextColor",
-      "snippet": "SetTextColor ${1:red} ${2:green} ${3:blue} ${4:[alpha]}",
+      "text": "SetTextColor",
       "custom": { "backupRightLabel": "Action" }
     },
     {
       "displayText": "PlayAlertSound",
-      "snippet": "PlayAlertSound ${1:id} ${2:[volume]}",
+      "text": "PlayAlertSound",
       "custom": { "backupRightLabel": "Action" }
     },
     {
       "displayText": "SetFontSize",
-      "snippet": "SetFontSize ${1:size}",
+      "text": "SetFontSize",
       "custom": { "backupRightLabel": "Action" }
     }
   ],
@@ -121,6 +121,28 @@
     {
       "text": "Unique",
       "custom": { "backupRightLabel": "Rarity", "itemRarity": true }
+    }
+  ],
+  "socketGroup": [
+    {
+      "displayText": "Red",
+      "text": "R",
+      "custom": { "backupRightLabel": "Socket" }
+    },
+    {
+      "displayText": "Green",
+      "text": "G",
+      "custom": { "backupRightLabel": "Socket" }
+    },
+    {
+      "displayText": "Blue",
+      "text": "B",
+      "custom": { "backupRightLabel": "Socket" }
+    },
+    {
+      "displayText": "White",
+      "text": "W",
+      "custom": { "backupRightLabel": "Socket" }
     }
   ],
   "operators": [
@@ -242,5 +264,6 @@
       "text": "\"Runic Hatchet\" Fleshripper \"Maraketh Bow\" \"Gemini Claw\" Sai \"Behemoth Mace\" \"Sambar Sceptre \" \"Coronal Maul\" \"Eclipse Staff\" \"Tiger Hook\" \"Dragoon Sword\" \"Exquisite Blade\" \"Profane Wand\"",
       "custom": { "backupRightLabel": "Extra" }
     }
-  ]
+  ],
+  "extraClasses": []
 }

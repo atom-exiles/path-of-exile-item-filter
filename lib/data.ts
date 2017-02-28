@@ -17,10 +17,12 @@ interface SuggestionsDataLayout {
   filters: Completion.Suggestions
   actions: Completion.Suggestions
   rarities: Completion.Suggestions
+  socketGroup: Completion.Suggestions
   operators: Completion.Suggestions
   booleans: Completion.Suggestions
   extraBlocks: Completion.Suggestions
   extraBases: Completion.Suggestions
+  extraClasses: Completion.Suggestions
 }
 
 interface FileData {
@@ -206,6 +208,7 @@ export function activate() {
   filterItemData = itemData.then((id) => { return id.linter; });
   Promise.all([itemData, completionData, filterItemData]).then((values) => {
     updateWhitelists(values[0]);
+    updateDecorations(values[1]);
   });
 
   const action = async (itemList: ItemDataLayout, event: { oldValue: boolean,

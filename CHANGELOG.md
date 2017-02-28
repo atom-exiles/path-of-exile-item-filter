@@ -1,16 +1,16 @@
 ## 1.0.0 - Ninth Release
-* Began using JSON files for our data
-* Added configuration settings
+* Support for 2.6 and Legacy league
+* Added a linter, which provides error checking outside of the game
+* Added configuration settings, including class and base whitelists
 * Autocompletion improvements and bug fixes
 * Added completion decorations, which can be turned off in settings
-* Improvements to the grammar, especially regarding blank lines
+* Improvements to the grammar
+* Began using JSON files for our data
 * Hide blocks can now have action rules, such as SetFontSize
-* Action rules can now have a trailing comment
-* Changed the placeholder value for Boolean rules (like Identified)
-* Stopped syntax highlighting the placeholder value for SocketGroups
+* Most action rules can now have a trailing comment
 * Added completions for Map tiers, each of which inserts a new Show block
-* Added a linter, which provides error checking outside of the game.
-* Support for 2.6 and Legacy league.
+* Automatic conversion of hex values for the rules taking an RGBA color value
+* Stopped using snippets for filter keywords
 
 ## 0.1.8 - Eighth Release
 * Added the 15 new divination cards from 2.5.1

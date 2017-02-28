@@ -138,6 +138,7 @@ class LineParser {
         return this.parseSingleValue(this.commentRegex);
     }
 }
+exports.LineParser = LineParser;
 function expectEqualityOp(parser, line) {
     var result = undefined;
     var operator = parser.nextOperator();

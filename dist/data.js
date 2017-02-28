@@ -147,6 +147,7 @@ function activate() {
     exports.filterItemData = itemData.then((id) => { return id.linter; });
     Promise.all([itemData, exports.completionData, exports.filterItemData]).then((values) => {
         updateWhitelists(values[0]);
+        updateDecorations(values[1]);
     });
     const action = (itemList, event) => __awaiter(this, void 0, void 0, function* () {
         if (event.newValue) {
