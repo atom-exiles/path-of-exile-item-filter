@@ -232,7 +232,7 @@ function expectEqualityOp(parser: LineParser, line: LineInfo):
     result = {
       type: "Error",
       text: "Invalid operator for \"" + line.keyword +
-          "\". Only the equality operator (=) is supported for this rule.",
+          "\". Only the '=' operator is supported for this rule.",
       filePath: line.file,
       range: new Range([ line.number, operator.startIndex ],
           [ line.number, operator.endIndex ])
@@ -471,8 +471,7 @@ function processMultiStringRule(parser: LineParser, line: LineInfo,
     if(!currentValue.found && result.values.length == 0 && result.messages.length == 0) {
       result.messages.push({
         type: "Error",
-        text: "Invalid format. Expected \"" + line.keyword +
-            " [Operator] <String>\".",
+        text: "Invalid format. Expected \"" + line.keyword + " <Text>...\".",
         filePath: line.file,
         range: new Range([ line.number, parser.textStartIndex ],
             [ line.number, parser.originalLength ])
@@ -651,7 +650,7 @@ function processStringRule(parser: LineParser, line: LineInfo,
     result.messages.push({
       type: "Error",
       text: "Invalid format. Expected \"" + line.keyword +
-          " [Operator] <String>\".",
+          " [Operator] <Text>\".",
       filePath: line.file,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
@@ -721,7 +720,7 @@ function processBooleanRule(parser: LineParser, line: LineInfo):
   if(!retVal.found) {
     result.messages.push({
       type: "Error",
-      text: "Invalid format. Expected \"" + line.keyword + " <True|False>\".",
+      text: "Invalid format. Expected \"" + line.keyword + " <Boolean>\".",
       filePath: line.file,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
@@ -978,7 +977,7 @@ export function parseLine(args: ParseLine): Filter.Line {
       lineType = "Rule";
       lineData = ld;
 
-      if(!parser.isEmpty()) {
+      if(!processResult.invalid && !parser.isEmpty()) {
         messages.push({
           text: "Trailing text for a filter rule.",
           type: "Error",
@@ -1008,7 +1007,7 @@ export function parseLine(args: ParseLine): Filter.Line {
   }
 
   if(processResult && processResult.messages.length > 0) {
-    invalid = processResult.invalid;
+    if(!invalid) invalid = processResult.invalid;
     if(processResult.messages) {
       processResult.messages.forEach((message) => messages.push(message));
     }
