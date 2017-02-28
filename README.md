@@ -2,23 +2,23 @@
 
 This package provides additional support for the creation of Path of Exile filters within Atom, making it easier to create item filters for the game.
 
-### Features
-#### Grammar
+## Features
+### Grammar
 ![Grammar Preview](media/syntax.png)
 
-Allowing Atom to understand item filter syntax.
+Allowing your color scheme to apply to item filters.
 
-#### Autocompletion
+### Autocompletion
 ![Completion Preview](media/completion.png)
 
-Giving Atom knowledge of items, rules, and more.
+Providing you with suggestions, including items from the game where appropriate, as you edit.
 
-#### Linting
+### Linting
 ![Syntax Preview](media/linter.png)
 
-Error checking item filters within Atom.
+Error checking for item filters within Atom.
 
-### Configuration
+## Configuration
 
 There are several configuration variables available, allowing you to turn off features that you don't personally like. These variables can be found in the Atom setting's panel for this package.
 
