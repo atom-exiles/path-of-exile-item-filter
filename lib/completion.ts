@@ -221,7 +221,7 @@ async function getSuggestions(args: SuggestionRequest):
       const numberValueRule = cursorScopes.indexOf("filter.item-level.poe") != -1 ||
           cursorScopes.indexOf("filter.drop-level.poe") != -1 ||
           cursorScopes.indexOf("filter.quality.poe") != -1 ||
-          cursorScopes.indexOf("filter.socket.poe") != -1 ||
+          cursorScopes.indexOf("filter.sockets.poe") != -1 ||
           cursorScopes.indexOf("filter.linked-sockets.poe") != -1 ||
           cursorScopes.indexOf("filter.height.poe") != -1 ||
           cursorScopes.indexOf("filter.width.poe") != -1;
