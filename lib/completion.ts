@@ -258,7 +258,7 @@ function removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
   const rightChar = editor.getTextInBufferRange(rightCharLocation);
 
   if(leftChar == '"' && rightChar == '"') {
-    editor.setTextInBufferRange(rightCharLocation, "", { undo: "skip" });
+    editor.setTextInBufferRange(rightCharLocation, "");
   }
 }
 
@@ -268,7 +268,7 @@ function removeRarityPlaceholder(editor: AtomCore.TextEditor, startPosition: Poi
   const endPosition = new Point(startPosition.row, startPosition.column + 7);
   const text = editor.getTextInBufferRange([startPosition, endPosition]);
   if(text == " rarity") {
-    editor.setTextInBufferRange([startPosition, endPosition], "", { undo: "skip" });
+    editor.setTextInBufferRange([startPosition, endPosition], "");
   }
 }
 

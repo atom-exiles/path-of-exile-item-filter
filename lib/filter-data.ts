@@ -180,8 +180,8 @@ class FilterManager {
       const row = changes.newRange.start.row + i;
       const currentLine = lines[row];
 
-      const result = parser.parseLine({itemData: itemData, lineText: currentLine,
-          row: row, filePath: this.editor.buffer.getPath()});
+      const result = parser.parseLine({editor: this.editor, itemData: itemData,
+          lineText: currentLine, row: row, filePath: this.editor.buffer.getPath()});
       assert(result, "parseLine should always return a Filter.Line");
       output.push(result);
     }

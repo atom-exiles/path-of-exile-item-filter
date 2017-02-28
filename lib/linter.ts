@@ -32,6 +32,7 @@ export function activate(r: Linter.Register) {
 
   subscriptions.add(filterData.emitter.on("poe-did-destroy-buffer", (id) => {
     filterMessages.delete(id);
+    setMessages();
   }));
 
   subscriptions.add(settings.config.generalSettings.enableLinter.onDidChange(setMessages));

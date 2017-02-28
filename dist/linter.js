@@ -28,6 +28,7 @@ function activate(r) {
     var activePaneID;
     subscriptions.add(filterData.emitter.on("poe-did-destroy-buffer", (id) => {
         filterMessages.delete(id);
+        setMessages();
     }));
     subscriptions.add(settings.config.generalSettings.enableLinter.onDidChange(setMessages));
     subscriptions.add(filterData.emitter.on("poe-did-process-filter", (args) => {

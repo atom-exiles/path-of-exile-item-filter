@@ -20,6 +20,7 @@ interface ProcessResult {
 }
 
 interface LineInfo {
+  editor: AtomCore.TextEditor
   number: number
   file: string
   keyword: string
@@ -44,6 +45,7 @@ class LineParser {
   private readonly operatorRegex = /^(\s*)(<=|>=|=|<|>){1}(\s+|$)/;
   private readonly quotationRegex = /^(")([^\"]*)(")$/;
   private readonly booleanRegex = /^(\s*)("true"|true|"false"|false)(\s+|$)/i;
+  private readonly colorHexRegex = /^(\s*)((#[A-F0-9]{8})|(#[A-F0-9]{6}))(\s|$)/i;
   private readonly surroundingWSRegex = /^(\s*)(.*\S)\s*$/;
 
   constructor(text: string) {
@@ -210,6 +212,10 @@ class LineParser {
     return result;
   }
 
+  nextHex(): ParseResult<string> {
+    return this.parseSingleValue(this.colorHexRegex);
+  }
+
   parseComment(): ParseResult<string> {
     return this.parseSingleValue(this.commentRegex);
   }
@@ -342,6 +348,23 @@ function processRGBARule(parser: LineParser, line: LineInfo):
     result.messages.push(operatorMessage);
     result.invalid = true;
     return result;
+  }
+
+  // If we detect a hex value, then we can convert it to RGBA automatically.
+  const hexResult = parser.nextHex();
+  if(hexResult.found && hexResult.value) {
+    const r = parseInt(hexResult.value.substr(1, 2), 16);
+    const g = parseInt(hexResult.value.substr(3, 2), 16);
+    const b = parseInt(hexResult.value.substr(5, 2), 16);
+
+    var replacement: string = r + " " + g + " " + b;
+    var replacementRange = new Range([line.number, hexResult.startIndex],
+        [line.number, hexResult.endIndex]);
+    if(hexResult.value.length == 9) {
+      const a = parseInt(hexResult.value.substr(7, 2), 16);
+      replacement = replacement + " " + a;
+    }
+    line.editor.setTextInBufferRange(replacementRange, replacement);
   }
 
   const red = parser.nextNumber();
@@ -803,6 +826,7 @@ function processBlock(parser: LineParser, line: LineInfo):
 }
 
 interface ParseLine {
+  editor: AtomCore.TextEditor
   itemData: Data.Parser
   lineText: string
   row: number
@@ -874,8 +898,8 @@ export function parseLine(args: ParseLine): Filter.Line {
 
   var processResult: ProcessResult = { invalid: false, messages: [],
       values: [] };
-  const lineInfo: LineInfo = { number: args.row, file: args.filePath,
-      keyword: keyword };
+  const lineInfo: LineInfo = { editor: args.editor, number: args.row,
+      file: args.filePath, keyword: keyword };
 
   var lineType: "Block"|"Comment"|"Rule"|"Empty"|"Unknown";
   var lineData: Filter.Block|Filter.Comment|Filter.Rule|Filter.Unknown|Filter.Empty;

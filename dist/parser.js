@@ -13,6 +13,7 @@ class LineParser {
         this.operatorRegex = /^(\s*)(<=|>=|=|<|>){1}(\s+|$)/;
         this.quotationRegex = /^(")([^\"]*)(")$/;
         this.booleanRegex = /^(\s*)("true"|true|"false"|false)(\s+|$)/i;
+        this.colorHexRegex = /^(\s*)((#[A-F0-9]{8})|(#[A-F0-9]{6}))(\s|$)/i;
         this.surroundingWSRegex = /^(\s*)(.*\S)\s*$/;
         assert(text != undefined, "fed undefined text");
         this.text = text;
@@ -130,6 +131,9 @@ class LineParser {
         }
         return result;
     }
+    nextHex() {
+        return this.parseSingleValue(this.colorHexRegex);
+    }
     parseComment() {
         return this.parseSingleValue(this.commentRegex);
     }
@@ -232,6 +236,19 @@ function processRGBARule(parser, line) {
         result.messages.push(operatorMessage);
         result.invalid = true;
         return result;
+    }
+    const hexResult = parser.nextHex();
+    if (hexResult.found && hexResult.value) {
+        const r = parseInt(hexResult.value.substr(1, 2), 16);
+        const g = parseInt(hexResult.value.substr(3, 2), 16);
+        const b = parseInt(hexResult.value.substr(5, 2), 16);
+        var replacement = r + " " + g + " " + b;
+        var replacementRange = new atom_1.Range([line.number, hexResult.startIndex], [line.number, hexResult.endIndex]);
+        if (hexResult.value.length == 9) {
+            const a = parseInt(hexResult.value.substr(7, 2), 16);
+            replacement = replacement + " " + a;
+        }
+        line.editor.setTextInBufferRange(replacementRange, replacement);
     }
     const red = parser.nextNumber();
     const green = parser.nextNumber();
@@ -672,8 +689,8 @@ function parseLine(args) {
     };
     var processResult = { invalid: false, messages: [],
         values: [] };
-    const lineInfo = { number: args.row, file: args.filePath,
-        keyword: keyword };
+    const lineInfo = { editor: args.editor, number: args.row,
+        file: args.filePath, keyword: keyword };
     var lineType;
     var lineData;
     var invalid = false;

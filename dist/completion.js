@@ -238,14 +238,14 @@ function removeConsecutiveQuotes(editor, position) {
     const leftChar = editor.getTextInBufferRange(leftCharLocation);
     const rightChar = editor.getTextInBufferRange(rightCharLocation);
     if (leftChar == '"' && rightChar == '"') {
-        editor.setTextInBufferRange(rightCharLocation, "", { undo: "skip" });
+        editor.setTextInBufferRange(rightCharLocation, "");
     }
 }
 function removeRarityPlaceholder(editor, startPosition) {
     const endPosition = new atom_1.Point(startPosition.row, startPosition.column + 7);
     const text = editor.getTextInBufferRange([startPosition, endPosition]);
     if (text == " rarity") {
-        editor.setTextInBufferRange([startPosition, endPosition], "", { undo: "skip" });
+        editor.setTextInBufferRange([startPosition, endPosition], "");
     }
 }
 function insertedSuggestion(params) {
