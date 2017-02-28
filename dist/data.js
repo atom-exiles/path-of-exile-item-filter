@@ -112,6 +112,7 @@ function updateWhitelists(itemData) {
     };
     action(classes, itemData.completion.whitelistClasses, itemData.linter.whitelistClasses);
     action(bases, itemData.completion.whitelistBases, itemData.linter.whitelistBases);
+    exports.emitter.emit("poe-did-update-injected-data");
 }
 function updateDecorations(cd) {
     const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();

@@ -162,6 +162,8 @@ function updateWhitelists(itemData: ProcessedData) {
 
   action(classes, itemData.completion.whitelistClasses, itemData.linter.whitelistClasses);
   action(bases, itemData.completion.whitelistBases, itemData.linter.whitelistBases);
+
+  emitter.emit("poe-did-update-injected-data");
 }
 
 /** Iterates over all completion suggestions and updates the decoration properties

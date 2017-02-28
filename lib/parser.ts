@@ -2,6 +2,7 @@ import { Range } from "atom";
 import * as assert from "assert";
 
 import * as data from "./data";
+import * as settings from "./settings";
 
 interface ParseResult<T> {
   value?: T
@@ -26,44 +27,44 @@ interface LineInfo {
 
 /** Parses data from a single line of a Path of Exile filter. */
 class LineParser {
-  readonly textStartIndex: number
-  readonly textEndIndex: number
-  readonly originalLength: number
+  readonly textStartIndex: number;
+  readonly textEndIndex: number;
+  readonly originalLength: number;
 
-  private empty: boolean
-  private currentIndex: number
-  private text: string
+  private empty: boolean;
+  private currentIndex: number;
+  private text: string;
 
-  private readonly numberRegex = new RegExp("^(\\s*)([-0-9]+)(\\s|$)")
-  private readonly wordRegex = new RegExp("^(\\s*)([A-Za-z\u00F6]+)(\\s|$)")
-  private readonly stringRegex = /^(\s*)("[^"]*"|[^\s\"\'><=]+)(\s|$)/
-  private readonly eolRegex = new RegExp("(\r|\n)")
-  private readonly commentRegex = /^(\s*)((#.*\S+)|(#\s*))(\s*)$/
-  private readonly textRegex = new RegExp("\\S+")
-  private readonly operatorRegex = new RegExp("^(\\s*)(<=|>=|=|<|>){1}(\\s+|$)")
-  private readonly quotationRegex = /^(")([^\"]*)(")$/
-  private readonly booleanRegex = new RegExp("^(\\s*)(\"true\"|true|\"false\"|false)(\\s+|$)", "i")
-  private readonly surroundingWSRegex = new RegExp("^(\\s*)(.*\\S)\\s*$")
+  private readonly numberRegex = /^(\s*)([-0-9]+)(\s|$)/;
+  private readonly wordRegex = /^(\s*)([A-Za-z\u00F6]+)(\s|$)/;
+  private readonly stringRegex = /^(\s*)("[^"]*"|[^\s\"\'><=]+)(\s|$)/;
+  private readonly eolRegex = /(\r|\n)/;
+  private readonly commentRegex = /^(\s*)((#.*\S+)|(#\s*))(\s*)$/;
+  private readonly textRegex = /\S+/;
+  private readonly operatorRegex = /^(\s*)(<=|>=|=|<|>){1}(\s+|$)/;
+  private readonly quotationRegex = /^(")([^\"]*)(")$/;
+  private readonly booleanRegex = /^(\s*)("true"|true|"false"|false)(\s+|$)/i;
+  private readonly surroundingWSRegex = /^(\s*)(.*\S)\s*$/;
 
   constructor(text: string) {
-    assert(text != undefined, "fed undefined text")
+    assert(text != undefined, "fed undefined text");
 
-    this.text = text
-    this.currentIndex = 0
-    this.originalLength = text.length
+    this.text = text;
+    this.currentIndex = 0;
+    this.originalLength = text.length;
 
     // Giving this parser string consisting of multiple lines is an outright
     // error.
     if(this.eolRegex.test(this.text))
     {
-      throw new Error("LineParser given string containing multiple lines.")
+      throw new Error("LineParser given string containing multiple lines.");
     }
 
     if(this.textRegex.test(this.text)) {
-      const surroundingResult = this.surroundingWSRegex.exec(this.text)
+      const surroundingResult = this.surroundingWSRegex.exec(this.text);
 
-      var leadingWS: string = ""
-      var payload: string = ""
+      var leadingWS: string = "";
+      var payload: string = "";
       if(surroundingResult !== null) {
         if(surroundingResult.length >= 3) {
           leadingWS = surroundingResult[1];
@@ -72,34 +73,34 @@ class LineParser {
       }
 
       if(leadingWS) {
-        this.textStartIndex = leadingWS.length
+        this.textStartIndex = leadingWS.length;
       } else {
-        this.textStartIndex = 0
+        this.textStartIndex = 0;
       }
 
-      this.textEndIndex = this.textStartIndex + payload.length - 1
-      this.empty = false
+      this.textEndIndex = this.textStartIndex + payload.length;
+      this.empty = false;
     } else {
-      this.textStartIndex = 0
-      this.textEndIndex = 0
-      this.empty = true
+      this.textStartIndex = 0;
+      this.textEndIndex = 0;
+      this.empty = true;
     }
   }
 
   /** Returns the current index of the parser on the original line. */
   getCurrentIndex(): number {
-    return this.currentIndex
+    return this.currentIndex;
   }
 
   /** Returns current internal text value.
       This string may have been modified since it was originally passsed in.*/
   getText(): string {
-    return this.text
+    return this.text;
   }
 
   /** Returns whether or not the internal text value is an empty string. */
   isEmpty(): boolean {
-    return this.empty
+    return this.empty;
   }
 
   /** Returns whether or not the internal text value would be considered a
@@ -203,10 +204,10 @@ class LineParser {
     // We store the value internally without quotation marks, so the regex only
     // captures whatever is enclosed by them.
     if(result.found && result.value) {
-      const quotationResult = this.quotationRegex.exec(result.value)
-      if(quotationResult) result.value = quotationResult[2]
+      const quotationResult = this.quotationRegex.exec(result.value);
+      if(quotationResult) result.value = quotationResult[2];
     }
-    return result
+    return result;
   }
 
   parseComment(): ParseResult<string> {
@@ -248,6 +249,7 @@ function processAlertSoundRule(parser: LineParser, line: LineInfo):
   const operatorMessage = expectEqualityOp(parser, line);
   if(operatorMessage) {
     result.messages.push(operatorMessage);
+    result.invalid = true;
     return result;
   }
 
@@ -261,6 +263,7 @@ function processAlertSoundRule(parser: LineParser, line: LineInfo):
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
     return result;
   }
 
@@ -308,6 +311,18 @@ function processAlertSoundRule(parser: LineParser, line: LineInfo):
       result.values.push(optional);
     }
   }
+
+  if(parser.isCommented()) {
+    const commentResult = parser.parseComment();
+    if(commentResult.found && commentResult.value) {
+      result.trailingComment = {
+        text: commentResult.value,
+        range: new Range([line.number, commentResult.startIndex],
+            [line.number, commentResult.endIndex])
+      };
+    }
+  }
+
   return result;
 }
 
@@ -325,6 +340,7 @@ function processRGBARule(parser: LineParser, line: LineInfo):
   const operatorMessage = expectEqualityOp(parser, line);
   if(operatorMessage) {
     result.messages.push(operatorMessage);
+    result.invalid = true;
     return result;
   }
 
@@ -341,6 +357,7 @@ function processRGBARule(parser: LineParser, line: LineInfo):
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
     return result;
   }
 
@@ -354,18 +371,22 @@ function processRGBARule(parser: LineParser, line: LineInfo):
     partialMessage.range = new Range([ line.number, red.startIndex],
         [ line.number, red.endIndex ]);
     result.messages.push(partialMessage);
+    result.invalid = true;
   } else if(green.value < 0 || green.value > 255) {
     partialMessage.range = new Range([ line.number, green.startIndex],
         [ line.number, green.endIndex ]);
     result.messages.push(partialMessage);
+    result.invalid = true;
   } else if(blue.value < 0 || blue.value > 255) {
     partialMessage.range = new Range([ line.number, blue.startIndex],
         [ line.number, blue.endIndex ]);
     result.messages.push(partialMessage);
+    result.invalid = true;
   } else if(alpha.found && (alpha.value < 0 || alpha.value > 255)) {
     partialMessage.range = new Range([ line.number, alpha.startIndex],
         [ line.number, alpha.endIndex ]);
     result.messages.push(partialMessage);
+    result.invalid = true;
   } else {
     const r: Filter.Value = {
       value: red.value,
@@ -388,6 +409,18 @@ function processRGBARule(parser: LineParser, line: LineInfo):
       result.values.push(a);
     }
   }
+
+  if(parser.isCommented()) {
+    const commentResult = parser.parseComment();
+    if(commentResult.found && commentResult.value) {
+      result.trailingComment = {
+        text: commentResult.value,
+        range: new Range([line.number, commentResult.startIndex],
+            [line.number, commentResult.endIndex])
+      };
+    }
+  }
+
   return result;
 }
 
@@ -406,6 +439,7 @@ function processMultiStringRule(parser: LineParser, line: LineInfo,
   const operatorMessage = expectEqualityOp(parser, line);
   if(operatorMessage) {
     result.messages.push(operatorMessage);
+    result.invalid = true;
     return result;
   }
 
@@ -420,6 +454,7 @@ function processMultiStringRule(parser: LineParser, line: LineInfo,
         range: new Range([ line.number, parser.textStartIndex ],
             [ line.number, parser.originalLength ])
       });
+      result.invalid = true;
       break;
     }
 
@@ -453,6 +488,7 @@ function processMultiStringRule(parser: LineParser, line: LineInfo,
         range: new Range([ line.number, currentValue.startIndex ],
             [ line.number, currentValue.endIndex ])
       });
+      result.invalid = true;
     }
   }
   return result;
@@ -471,6 +507,7 @@ function processSocketGroup(parser: LineParser, line: LineInfo):
   const operatorMessage = expectEqualityOp(parser, line);
   if(operatorMessage) {
     result.messages.push(operatorMessage);
+    result.invalid = true;
     return result;
   }
 
@@ -483,6 +520,7 @@ function processSocketGroup(parser: LineParser, line: LineInfo):
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
   } else {
     const groupRegex: RegExp = new RegExp("^[rgbw]{1,6}$", "i");
     if(groupRegex.test(retVal.value)) {
@@ -501,6 +539,7 @@ function processSocketGroup(parser: LineParser, line: LineInfo):
         range: new Range([ line.number, retVal.startIndex ],
             [ line.number, retVal.endIndex ])
       });
+      result.invalid = true;
     }
   }
   return result;
@@ -534,6 +573,7 @@ function processOpNumberRule(parser: LineParser, line: LineInfo,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
     return result;
   }
 
@@ -553,6 +593,7 @@ function processOpNumberRule(parser: LineParser, line: LineInfo,
       range: new Range([ line.number, retVal.startIndex],
           [ line.number, retVal.endIndex ])
     });
+    result.invalid = true;
   }
 
   return result;
@@ -592,6 +633,7 @@ function processStringRule(parser: LineParser, line: LineInfo,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
     return result;
   }
 
@@ -661,6 +703,7 @@ function processBooleanRule(parser: LineParser, line: LineInfo):
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
   } else {
     const valueRange = new Range([line.number, retVal.startIndex],
       [line.number, retVal.endIndex]);
@@ -703,6 +746,7 @@ function processRangeRule(parser: LineParser, line: LineInfo,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
     });
+    result.invalid = true;
   } else {
     if(retVal.value >= min && retVal.value <= max) {
       const r = new Range([line.number, retVal.startIndex],
@@ -718,6 +762,7 @@ function processRangeRule(parser: LineParser, line: LineInfo,
         range: new Range([ line.number, retVal.startIndex ],
             [line.number, retVal.endIndex])
       });
+      result.invalid = true;
     }
   }
 
@@ -743,13 +788,15 @@ function processBlock(parser: LineParser, line: LineInfo):
       };
     }
   } else if(!parser.isIgnored()) {
-    result.messages.push({
-      type: "Warning",
-      text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
-      filePath: line.file,
-      range: new Range([ line.number, parser.getCurrentIndex() ],
-          [ line.number, parser.originalLength ])
-    });
+    if(settings.config.linterSettings.enableWarnings.get()) {
+      result.messages.push({
+        type: "Warning",
+        text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
+        filePath: line.file,
+        range: new Range([ line.number, parser.getCurrentIndex() ],
+            [ line.number, parser.originalLength ])
+      });
+    }
   }
 
   return result;
@@ -766,8 +813,8 @@ export function parseLine(args: ParseLine): Filter.Line {
   const messages: Linter.TextMessage[] = [];
   const parser = new LineParser(args.lineText);
 
-  const validBases = args.itemData.bases;
-  const validClasses = args.itemData.classes;
+  const validBases = args.itemData.bases.concat(args.itemData.whitelistBases);
+  const validClasses = args.itemData.classes.concat(args.itemData.whitelistClasses);
 
   if(parser.isCommented()) {
     const commentRange = new Range([args.row, parser.textStartIndex], [args.row,
@@ -834,241 +881,90 @@ export function parseLine(args: ParseLine): Filter.Line {
   var lineData: Filter.Block|Filter.Comment|Filter.Rule|Filter.Unknown|Filter.Empty;
   var invalid = false;
 
-  // TODO(glen): clean up the code duplication below somehow.
-  switch(keyword) {
-    case "Show":
-    case "Hide": {
-      processResult = processBlock(parser, lineInfo);
-      const ld: Filter.Block = {
-        type: resultKeyword,
-        scope: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment
-      };
-      lineType = "Block";
-      lineData = ld;
-    } break;
-    // ItemLevel [Operator] <Value> (0-100)
-    // DropLevel [Operator] <Value> (0-100)
-    case "ItemLevel":
-    case "DropLevel": {
+  if(keyword == "Show" || keyword == "Hide") {
+    processResult = processBlock(parser, lineInfo);
+    const ld: Filter.Block = {
+      type: resultKeyword,
+      scope: new Range([args.row, parser.textStartIndex],
+          [args.row, parser.textEndIndex]),
+      trailingComment: processResult.trailingComment
+    };
+    lineType = "Block";
+    lineData = ld;
+  } else {
+    var ruleType: "condition"|"action"|undefined;
+
+    if(keyword == "ItemLevel" || keyword == "DropLevel") {
       processResult = processRangeRule(parser, lineInfo, 0, 100);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Quality [Operator] <Value> (0-20)
-    case "Quality": {
+      ruleType = "condition";
+    } else if(keyword == "Quality") {
       processResult = processRangeRule(parser, lineInfo, 0, 20);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Sockets [Operator] <Value> (0-6)
-    case "Sockets": {
+      ruleType = "condition";
+    } else if(keyword == "Sockets") {
       processResult = processRangeRule(parser, lineInfo, 0, 6);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Height [Operator] <Value> (1-4)
-    case "Height": {
+      ruleType = "condition";
+    } else if(keyword == "Height") {
       processResult = processRangeRule(parser, lineInfo, 1, 4);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Width [Operator] <Value> (1-2)
-    case "Width": {
+      ruleType = "condition";
+    } else if(keyword == "Width") {
       processResult = processRangeRule(parser, lineInfo, 1, 2);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Identified <Boolean>
-    // Corrupted <Boolean>
-    case "Identified":
-    case "Corrupted": {
+      ruleType = "condition";
+    } else if(keyword == "Identified" || keyword == "Corrupted") {
       processResult = processBooleanRule(parser, lineInfo);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Rarity [Operator] <String> (Normal, Magic, Rare, Unique)
-    case "Rarity": {
+      ruleType = "condition";
+    } else if(keyword == "Rarity") {
       const rarities: string[] = [ "Normal", "Magic", "Rare", "Unique" ];
       processResult = processStringRule(parser, lineInfo, rarities, false);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // LinkedSockets [Operator] <Value> (0, 2-6)
-    case "LinkedSockets": {
+      ruleType = "condition";
+    } else if(keyword == "LinkedSockets") {
       const values: number[] = [0, 2, 3, 4, 5, 6];
-
       processResult = processOpNumberRule(parser, lineInfo, values);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // SocketGroup [Group] (R, G, B, W)
-    case "SocketGroup": {
+      ruleType = "condition";
+    } else if(keyword == "SocketGroup") {
       processResult = processSocketGroup(parser, lineInfo);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // Class <Class> (String[])
-    case "Class": {
+      ruleType = "condition";
+    } else if(keyword == "Class") {
       processResult = processMultiStringRule(parser, lineInfo, validClasses, false);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // BaseType <BaseType> (String[])
-    case "BaseType": {
+      ruleType = "condition";
+    } else if(keyword == "BaseType") {
       processResult = processMultiStringRule(parser, lineInfo, validBases, false);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "condition",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // SetFontSize <Value> (18-45)
-    case "SetFontSize": {
+      ruleType = "condition";
+    } else if(keyword == "SetFontSize") {
       processResult = processRangeRule(parser, lineInfo, 18, 45);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "action",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // SetBorderColor <Red> <Green> <Blue> [Alpha] (0-255)
-    // SetTextColor <Red> <Green> <Blue> [Alpha] (0-255)
-    // SetBackgroundColor <Red> <Green> <Blue> [Alpha] (0-255)
-    case "SetBorderColor":
-    case "SetTextColor":
-    case "SetBackgroundColor": {
+      ruleType = "action";
+    } else if(keyword == "SetBorderColor" || keyword == "SetTextColor" ||
+        keyword == "SetBackgroundColor") {
       processResult = processRGBARule(parser, lineInfo);
-      const ld: Filter.Rule = {
-        type: resultKeyword,
-        range: new Range([args.row, parser.textStartIndex],
-            [args.row, parser.textEndIndex]),
-        trailingComment: processResult.trailingComment,
-        category: "action",
-        operator: processResult.operator,
-        values: processResult.values
-      };
-      lineType = "Rule";
-      lineData = ld;
-    } break;
-    // PlayAlertSound <Value> [Value]	(1-9, [0-300])
-    case "PlayAlertSound": {
+      ruleType = "action";
+    } else if(keyword == "PlayAlertSound") {
       processResult = processAlertSoundRule(parser, lineInfo);
+      ruleType = "action";
+    }
+
+    if(ruleType) {
       const ld: Filter.Rule = {
         type: resultKeyword,
         range: new Range([args.row, parser.textStartIndex],
             [args.row, parser.textEndIndex]),
         trailingComment: processResult.trailingComment,
-        category: "action",
+        category: ruleType,
         operator: processResult.operator,
         values: processResult.values
       };
       lineType = "Rule";
       lineData = ld;
-    } break;
-    default:
+
+      if(!parser.isEmpty()) {
+        messages.push({
+          text: "Trailing text for a filter rule.",
+          type: "Error",
+          filePath: args.filePath,
+          range: new Range([args.row, parser.getCurrentIndex()],
+              [args.row, parser.textEndIndex])
+        });
+        invalid = true;
+      }
+    } else {
       messages.push({
         text: "Unknown filter keyword.",
         type: "Error",
@@ -1084,7 +980,7 @@ export function parseLine(args: ParseLine): Filter.Line {
       lineType = "Unknown";
       lineData = ld;
       invalid = true;
-      break;
+    }
   }
 
   if(processResult && processResult.messages.length > 0) {

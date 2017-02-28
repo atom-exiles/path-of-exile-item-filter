@@ -3,6 +3,7 @@ import * as path from "path";
 import * as assert from "assert";
 
 import * as data from "./data";
+import * as settings from "./settings";
 import * as parser from "./parser";
 
 interface BufferChanges {
@@ -38,7 +39,6 @@ class FilterManager {
     }));
 
     this.subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
-      console.log("Did get the message.");
       this.processIfFilter();
     }));
 
@@ -82,6 +82,10 @@ class FilterManager {
 
     this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
       this.processFilterChanges();
+    }));
+
+    this.filterSubs.add(settings.config.linterSettings.enableWarnings.onDidChange(() => {
+      this.processFilter();
     }));
   }
 
@@ -178,7 +182,7 @@ class FilterManager {
 
       const result = parser.parseLine({itemData: itemData, lineText: currentLine,
           row: row, filePath: this.editor.buffer.getPath()});
-      assert(result, "bad times.");
+      assert(result, "parseLine should always return a Filter.Line");
       output.push(result);
     }
 

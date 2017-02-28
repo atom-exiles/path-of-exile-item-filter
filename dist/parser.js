@@ -1,18 +1,19 @@
 "use strict";
 const atom_1 = require("atom");
 const assert = require("assert");
+const settings = require("./settings");
 class LineParser {
     constructor(text) {
-        this.numberRegex = new RegExp("^(\\s*)([-0-9]+)(\\s|$)");
-        this.wordRegex = new RegExp("^(\\s*)([A-Za-z\u00F6]+)(\\s|$)");
+        this.numberRegex = /^(\s*)([-0-9]+)(\s|$)/;
+        this.wordRegex = /^(\s*)([A-Za-z\u00F6]+)(\s|$)/;
         this.stringRegex = /^(\s*)("[^"]*"|[^\s\"\'><=]+)(\s|$)/;
-        this.eolRegex = new RegExp("(\r|\n)");
+        this.eolRegex = /(\r|\n)/;
         this.commentRegex = /^(\s*)((#.*\S+)|(#\s*))(\s*)$/;
-        this.textRegex = new RegExp("\\S+");
-        this.operatorRegex = new RegExp("^(\\s*)(<=|>=|=|<|>){1}(\\s+|$)");
+        this.textRegex = /\S+/;
+        this.operatorRegex = /^(\s*)(<=|>=|=|<|>){1}(\s+|$)/;
         this.quotationRegex = /^(")([^\"]*)(")$/;
-        this.booleanRegex = new RegExp("^(\\s*)(\"true\"|true|\"false\"|false)(\\s+|$)", "i");
-        this.surroundingWSRegex = new RegExp("^(\\s*)(.*\\S)\\s*$");
+        this.booleanRegex = /^(\s*)("true"|true|"false"|false)(\s+|$)/i;
+        this.surroundingWSRegex = /^(\s*)(.*\S)\s*$/;
         assert(text != undefined, "fed undefined text");
         this.text = text;
         this.currentIndex = 0;
@@ -36,7 +37,7 @@ class LineParser {
             else {
                 this.textStartIndex = 0;
             }
-            this.textEndIndex = this.textStartIndex + payload.length - 1;
+            this.textEndIndex = this.textStartIndex + payload.length;
             this.empty = false;
         }
         else {
@@ -156,6 +157,7 @@ function processAlertSoundRule(parser, line) {
     const operatorMessage = expectEqualityOp(parser, line);
     if (operatorMessage) {
         result.messages.push(operatorMessage);
+        result.invalid = true;
         return result;
     }
     const retVal = parser.nextNumber();
@@ -167,6 +169,7 @@ function processAlertSoundRule(parser, line) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
         return result;
     }
     const optVal = parser.nextNumber();
@@ -207,6 +210,15 @@ function processAlertSoundRule(parser, line) {
             result.values.push(optional);
         }
     }
+    if (parser.isCommented()) {
+        const commentResult = parser.parseComment();
+        if (commentResult.found && commentResult.value) {
+            result.trailingComment = {
+                text: commentResult.value,
+                range: new atom_1.Range([line.number, commentResult.startIndex], [line.number, commentResult.endIndex])
+            };
+        }
+    }
     return result;
 }
 function processRGBARule(parser, line) {
@@ -218,6 +230,7 @@ function processRGBARule(parser, line) {
     const operatorMessage = expectEqualityOp(parser, line);
     if (operatorMessage) {
         result.messages.push(operatorMessage);
+        result.invalid = true;
         return result;
     }
     const red = parser.nextNumber();
@@ -232,6 +245,7 @@ function processRGBARule(parser, line) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
         return result;
     }
     var partialMessage = {
@@ -243,18 +257,22 @@ function processRGBARule(parser, line) {
     if (red.value < 0 || red.value > 255) {
         partialMessage.range = new atom_1.Range([line.number, red.startIndex], [line.number, red.endIndex]);
         result.messages.push(partialMessage);
+        result.invalid = true;
     }
     else if (green.value < 0 || green.value > 255) {
         partialMessage.range = new atom_1.Range([line.number, green.startIndex], [line.number, green.endIndex]);
         result.messages.push(partialMessage);
+        result.invalid = true;
     }
     else if (blue.value < 0 || blue.value > 255) {
         partialMessage.range = new atom_1.Range([line.number, blue.startIndex], [line.number, blue.endIndex]);
         result.messages.push(partialMessage);
+        result.invalid = true;
     }
     else if (alpha.found && (alpha.value < 0 || alpha.value > 255)) {
         partialMessage.range = new atom_1.Range([line.number, alpha.startIndex], [line.number, alpha.endIndex]);
         result.messages.push(partialMessage);
+        result.invalid = true;
     }
     else {
         const r = {
@@ -278,6 +296,15 @@ function processRGBARule(parser, line) {
             result.values.push(a);
         }
     }
+    if (parser.isCommented()) {
+        const commentResult = parser.parseComment();
+        if (commentResult.found && commentResult.value) {
+            result.trailingComment = {
+                text: commentResult.value,
+                range: new atom_1.Range([line.number, commentResult.startIndex], [line.number, commentResult.endIndex])
+            };
+        }
+    }
     return result;
 }
 function processMultiStringRule(parser, line, expectedValues, caseSensitive) {
@@ -289,6 +316,7 @@ function processMultiStringRule(parser, line, expectedValues, caseSensitive) {
     const operatorMessage = expectEqualityOp(parser, line);
     if (operatorMessage) {
         result.messages.push(operatorMessage);
+        result.invalid = true;
         return result;
     }
     while (true) {
@@ -301,6 +329,7 @@ function processMultiStringRule(parser, line, expectedValues, caseSensitive) {
                 filePath: line.file,
                 range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
             });
+            result.invalid = true;
             break;
         }
         if (!currentValue.found || !currentValue.value)
@@ -331,6 +360,7 @@ function processMultiStringRule(parser, line, expectedValues, caseSensitive) {
                 filePath: line.file,
                 range: new atom_1.Range([line.number, currentValue.startIndex], [line.number, currentValue.endIndex])
             });
+            result.invalid = true;
         }
     }
     return result;
@@ -344,6 +374,7 @@ function processSocketGroup(parser, line) {
     const operatorMessage = expectEqualityOp(parser, line);
     if (operatorMessage) {
         result.messages.push(operatorMessage);
+        result.invalid = true;
         return result;
     }
     var retVal = parser.nextString();
@@ -354,6 +385,7 @@ function processSocketGroup(parser, line) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
     }
     else {
         const groupRegex = new RegExp("^[rgbw]{1,6}$", "i");
@@ -372,6 +404,7 @@ function processSocketGroup(parser, line) {
                 filePath: line.file,
                 range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
             });
+            result.invalid = true;
         }
     }
     return result;
@@ -396,6 +429,7 @@ function processOpNumberRule(parser, line, values) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
         return result;
     }
     if (values.indexOf(retVal.value) != -1) {
@@ -413,6 +447,7 @@ function processOpNumberRule(parser, line, values) {
             filePath: line.file,
             range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
         });
+        result.invalid = true;
     }
     return result;
 }
@@ -439,6 +474,7 @@ function processStringRule(parser, line, expectedValues, caseSensitive) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
         return result;
     }
     var matchFound = false;
@@ -498,6 +534,7 @@ function processBooleanRule(parser, line) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
     }
     else {
         const valueRange = new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex]);
@@ -532,6 +569,7 @@ function processRangeRule(parser, line, min, max) {
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
+        result.invalid = true;
     }
     else {
         if (retVal.value >= min && retVal.value <= max) {
@@ -547,6 +585,7 @@ function processRangeRule(parser, line, min, max) {
                 filePath: line.file,
                 range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
             });
+            result.invalid = true;
         }
     }
     return result;
@@ -567,20 +606,22 @@ function processBlock(parser, line) {
         }
     }
     else if (!parser.isIgnored()) {
-        result.messages.push({
-            type: "Warning",
-            text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.getCurrentIndex()], [line.number, parser.originalLength])
-        });
+        if (settings.config.linterSettings.enableWarnings.get()) {
+            result.messages.push({
+                type: "Warning",
+                text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
+                filePath: line.file,
+                range: new atom_1.Range([line.number, parser.getCurrentIndex()], [line.number, parser.originalLength])
+            });
+        }
     }
     return result;
 }
 function parseLine(args) {
     const messages = [];
     const parser = new LineParser(args.lineText);
-    const validBases = args.itemData.bases;
-    const validClasses = args.itemData.classes;
+    const validBases = args.itemData.bases.concat(args.itemData.whitelistBases);
+    const validClasses = args.itemData.classes.concat(args.itemData.whitelistClasses);
     if (parser.isCommented()) {
         const commentRange = new atom_1.Range([args.row, parser.textStartIndex], [args.row,
             parser.textEndIndex]);
@@ -636,236 +677,99 @@ function parseLine(args) {
     var lineType;
     var lineData;
     var invalid = false;
-    switch (keyword) {
-        case "Show":
-        case "Hide":
-            {
-                processResult = processBlock(parser, lineInfo);
-                const ld = {
-                    type: resultKeyword,
-                    scope: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment
-                };
-                lineType = "Block";
-                lineData = ld;
+    if (keyword == "Show" || keyword == "Hide") {
+        processResult = processBlock(parser, lineInfo);
+        const ld = {
+            type: resultKeyword,
+            scope: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
+            trailingComment: processResult.trailingComment
+        };
+        lineType = "Block";
+        lineData = ld;
+    }
+    else {
+        var ruleType;
+        if (keyword == "ItemLevel" || keyword == "DropLevel") {
+            processResult = processRangeRule(parser, lineInfo, 0, 100);
+            ruleType = "condition";
+        }
+        else if (keyword == "Quality") {
+            processResult = processRangeRule(parser, lineInfo, 0, 20);
+            ruleType = "condition";
+        }
+        else if (keyword == "Sockets") {
+            processResult = processRangeRule(parser, lineInfo, 0, 6);
+            ruleType = "condition";
+        }
+        else if (keyword == "Height") {
+            processResult = processRangeRule(parser, lineInfo, 1, 4);
+            ruleType = "condition";
+        }
+        else if (keyword == "Width") {
+            processResult = processRangeRule(parser, lineInfo, 1, 2);
+            ruleType = "condition";
+        }
+        else if (keyword == "Identified" || keyword == "Corrupted") {
+            processResult = processBooleanRule(parser, lineInfo);
+            ruleType = "condition";
+        }
+        else if (keyword == "Rarity") {
+            const rarities = ["Normal", "Magic", "Rare", "Unique"];
+            processResult = processStringRule(parser, lineInfo, rarities, false);
+            ruleType = "condition";
+        }
+        else if (keyword == "LinkedSockets") {
+            const values = [0, 2, 3, 4, 5, 6];
+            processResult = processOpNumberRule(parser, lineInfo, values);
+            ruleType = "condition";
+        }
+        else if (keyword == "SocketGroup") {
+            processResult = processSocketGroup(parser, lineInfo);
+            ruleType = "condition";
+        }
+        else if (keyword == "Class") {
+            processResult = processMultiStringRule(parser, lineInfo, validClasses, false);
+            ruleType = "condition";
+        }
+        else if (keyword == "BaseType") {
+            processResult = processMultiStringRule(parser, lineInfo, validBases, false);
+            ruleType = "condition";
+        }
+        else if (keyword == "SetFontSize") {
+            processResult = processRangeRule(parser, lineInfo, 18, 45);
+            ruleType = "action";
+        }
+        else if (keyword == "SetBorderColor" || keyword == "SetTextColor" ||
+            keyword == "SetBackgroundColor") {
+            processResult = processRGBARule(parser, lineInfo);
+            ruleType = "action";
+        }
+        else if (keyword == "PlayAlertSound") {
+            processResult = processAlertSoundRule(parser, lineInfo);
+            ruleType = "action";
+        }
+        if (ruleType) {
+            const ld = {
+                type: resultKeyword,
+                range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
+                trailingComment: processResult.trailingComment,
+                category: ruleType,
+                operator: processResult.operator,
+                values: processResult.values
+            };
+            lineType = "Rule";
+            lineData = ld;
+            if (!parser.isEmpty()) {
+                messages.push({
+                    text: "Trailing text for a filter rule.",
+                    type: "Error",
+                    filePath: args.filePath,
+                    range: new atom_1.Range([args.row, parser.getCurrentIndex()], [args.row, parser.textEndIndex])
+                });
+                invalid = true;
             }
-            break;
-        case "ItemLevel":
-        case "DropLevel":
-            {
-                processResult = processRangeRule(parser, lineInfo, 0, 100);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Quality":
-            {
-                processResult = processRangeRule(parser, lineInfo, 0, 20);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Sockets":
-            {
-                processResult = processRangeRule(parser, lineInfo, 0, 6);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Height":
-            {
-                processResult = processRangeRule(parser, lineInfo, 1, 4);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Width":
-            {
-                processResult = processRangeRule(parser, lineInfo, 1, 2);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Identified":
-        case "Corrupted":
-            {
-                processResult = processBooleanRule(parser, lineInfo);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Rarity":
-            {
-                const rarities = ["Normal", "Magic", "Rare", "Unique"];
-                processResult = processStringRule(parser, lineInfo, rarities, false);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "LinkedSockets":
-            {
-                const values = [0, 2, 3, 4, 5, 6];
-                processResult = processOpNumberRule(parser, lineInfo, values);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "SocketGroup":
-            {
-                processResult = processSocketGroup(parser, lineInfo);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "Class":
-            {
-                processResult = processMultiStringRule(parser, lineInfo, validClasses, false);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "BaseType":
-            {
-                processResult = processMultiStringRule(parser, lineInfo, validBases, false);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "condition",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "SetFontSize":
-            {
-                processResult = processRangeRule(parser, lineInfo, 18, 45);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "action",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "SetBorderColor":
-        case "SetTextColor":
-        case "SetBackgroundColor":
-            {
-                processResult = processRGBARule(parser, lineInfo);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "action",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        case "PlayAlertSound":
-            {
-                processResult = processAlertSoundRule(parser, lineInfo);
-                const ld = {
-                    type: resultKeyword,
-                    range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.textEndIndex]),
-                    trailingComment: processResult.trailingComment,
-                    category: "action",
-                    operator: processResult.operator,
-                    values: processResult.values
-                };
-                lineType = "Rule";
-                lineData = ld;
-            }
-            break;
-        default:
+        }
+        else {
             messages.push({
                 text: "Unknown filter keyword.",
                 type: "Error",
@@ -879,7 +783,7 @@ function parseLine(args) {
             lineType = "Unknown";
             lineData = ld;
             invalid = true;
-            break;
+        }
     }
     if (processResult && processResult.messages.length > 0) {
         invalid = processResult.invalid;

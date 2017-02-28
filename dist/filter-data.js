@@ -11,6 +11,7 @@ const atom_1 = require("atom");
 const path = require("path");
 const assert = require("assert");
 const data = require("./data");
+const settings = require("./settings");
 const parser = require("./parser");
 class FilterManager {
     constructor(editor) {
@@ -30,7 +31,6 @@ class FilterManager {
             this.destructor();
         }));
         this.subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
-            console.log("Did get the message.");
             this.processIfFilter();
         }));
         this.subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
@@ -71,6 +71,9 @@ class FilterManager {
         }));
         this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
             this.processFilterChanges();
+        }));
+        this.filterSubs.add(settings.config.linterSettings.enableWarnings.onDidChange(() => {
+            this.processFilter();
         }));
     }
     processIfFilter() {
@@ -164,7 +167,7 @@ class FilterManager {
                 const currentLine = lines[row];
                 const result = parser.parseLine({ itemData: itemData, lineText: currentLine,
                     row: row, filePath: this.editor.buffer.getPath() });
-                assert(result, "bad times.");
+                assert(result, "parseLine should always return a Filter.Line");
                 output.push(result);
             }
             var lowerPartition;

@@ -22,4 +22,4 @@ SetBorderColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>]
 SetTextColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>] [#...]
 SetBackgroundColor <Number(0-255)> <Number(0-255)> <Number(0-255)> [<Number(0-255)>] [#...]
 PlayAlertSound <Number(1-9)> <Number(0-300)> [#...]
-SetFontSize <Number(18-45)> [#...]
+SetFontSize <Number(18-45)>
