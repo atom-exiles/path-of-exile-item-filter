@@ -16,7 +16,9 @@
     "@types/jquery": "^2.0.34",
     "@types/node": "^7.0.5"
   },
-  "package-deps": [],
+  "package-deps": [
+    "linter"
+  ],
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
