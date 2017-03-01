@@ -1,20 +1,35 @@
 {
   "name": "path-of-exile-item-filter",
-  "main": "./lib/main",
+  "main": "./dist/main",
   "version": "0.1.8",
   "description": "A grammar implementation for Path of Exile item filters",
   "activationCommands": {},
   "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "atom": ">=1.4.0 <2.0.0"
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "atom-package-deps": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^2.0.34",
+    "@types/node": "^7.0.5"
+  },
+  "package-deps": [
+    "linter"
+  ],
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
         "2.0.0": "provideCompletion"
+      }
+    }
+  },
+  "consumedServices": {
+    "linter-indie": {
+      "versions": {
+        "1.0.0": "consumeLinter"
       }
     }
   }

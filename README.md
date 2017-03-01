@@ -2,16 +2,28 @@
 
 This package provides additional support for the creation of Path of Exile filters within Atom, making it easier to create item filters for the game.
 
-![Demo](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/demo.gif)
+## Features
+### Grammar
+![Grammar Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/syntax.png)
 
-### Features
-* Grammar: allowing Atom to understand item filter syntax.
-* Autocompletion: giving Atom knowledge of items, rules, and more.
+Allowing your color scheme to apply to item filters.
 
-### Help and Configuration
+### Autocompletion
+![Completion Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/completion.png)
 
-#### Configuring Text Colours
-Familiarize yourself with the [Atom Basic Customization guide](http://flight-manual.atom.io/using-atom/sections/basic-customization/).
+Providing you with suggestions, including items from the game where appropriate, as you edit.
 
-Copy the contents of [poe.less](https://github.com/callum-ramage/path-of-exile-item-filter/blob/master/styles/poe.less) into your styles.less.
-You can access your styles.less from the File menu under Stylesheet...
+### Linting
+![Syntax Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/linter.png)
+
+Error checking for item filters within Atom.
+
+### Smaller Features
+- Automatic conversion of hexidecimal color codes for rules with a color.
+- Gutter decorations for rules where it's appropriate.
+
+## Configuration
+
+There are several configuration variables available, allowing you to turn off features that you don't personally like. These options can be found in the Atom settings panel for this package.
+
+Whitelists for both classes and bases are also available in that configuration menu. These will allow you to edit a filter for future versions of the game.

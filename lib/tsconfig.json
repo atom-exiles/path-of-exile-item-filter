@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "noLib": false,
+    "lib": [ "es6" ],
+    "declaration": false,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "outDir": "../dist",
+    "rootDir": ".",
+    "sourceMap": false,
+    "removeComments": true,
+    "paths": {
+    }
+  }
+}

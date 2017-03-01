@@ -1,58 +1,86 @@
 @import "ui-variables.less";
-@import "syntax-variables.less";
 
-atom-text-editor::shadow .poe {
-  .keyword {
-    &.block {
+atom-text-editor.editor {
+  .poe-decoration-container {
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .poe-play-alert-sound {
+    width: 0;
+    height: 0 !important;
+    border-style: solid;
+    border-width: 6px 0 6px 8px;
+    border-color: transparent transparent transparent rgb(50, 175, 50);
+  }
+
+  .poe-set-color-rule {
+    width: 75%;
+    height: 60% !important;
+    border-radius: 3px 3px 3px 3px;
+    border-style: groove;
+    border-width: 1px;
+    border-color: contrast(@base-background-color)
+  }
+}
+
+atom-text-editor.editor .syntax--poe {
+
+
+  .syntax--keyword {
+    &.syntax--block {
       color: @syntax-color-class
     }
 
-    &.cond {
+    &.syntax--cond {
       color: lighten(@syntax-color-function, 5%)
     }
 
-    &.action {
+    &.syntax--action {
       color: darken(@syntax-color-function, 5%)
     }
 
-    &.operator {
+    &.syntax--operator {
       color: @syntax-text-color
     }
   }
 
-  .comment {
-    &.trailing {
+  .syntax--comment {
+    &.syntax--trailing {
     }
 
-    &.line {
-    }
-  }
-
-  .constant {
-    &.number {
-
+    &.syntax--line {
     }
   }
 
-  .string {
-    &.word {
+  .syntax--constant {
+    &.syntax--number {
+
+    }
+  }
+
+  .syntax--string {
+    &.syntax--word {
 
     }
 
-    &.quotation {
+    &.syntax--quotation {
 
     }
 
-    &.rarity {
-      
-    }
-
-    &.socket-group {
+    &.syntax--rarity {
 
     }
 
+    &.syntax--socket-group {
 
-    &.boolean {
+    }
+
+
+    &.syntax--boolean {
 
     }
   }
