@@ -93,6 +93,11 @@ function activate() {
         updateGutterDecorations(args);
     }));
     subscriptions.add(filterData.emitter.on("poe-did-destroy-filter", (editorID) => {
+        filters.forEach((decorationsData, editorID) => {
+            decorationsData.decorations.forEach((decoration) => {
+                decoration.marker.destroy();
+            });
+        });
         filters.delete(editorID);
     }));
     const configChangeAction = (type, newValue) => {

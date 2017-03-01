@@ -104,6 +104,11 @@ export function activate() {
 
   subscriptions.add(filterData.emitter.on("poe-did-destroy-filter",
       (editorID: string) => {
+    filters.forEach((decorationsData, editorID) => {
+      decorationsData.decorations.forEach((decoration) => {
+        decoration.marker.destroy();
+      })
+    });
     filters.delete(editorID);
   }));
 
