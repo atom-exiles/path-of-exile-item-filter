@@ -58,7 +58,8 @@ class FilterManager {
     if(this.filterSubs) this.filterSubs.dispose();
     this.subscriptions.dispose();
     buffers.delete(this.editor.buffer.id);
-    emitter.emit('poe-did-destroy-buffer', this.editor.buffer.id);
+    if(this.isFilter()) emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+    emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
   }
 
   /** Returns whether or not this buffer contains an item filter. */
@@ -87,11 +88,17 @@ class FilterManager {
     this.filterSubs.add(settings.config.linterSettings.enableWarnings.onDidChange(() => {
       this.processFilter();
     }));
+
+    emitter.emit("poe-did-register-filter", this.editor.buffer.id);
   }
 
   /** Ensures that the buffer contains a filter prior to processing it.. */
   public processIfFilter() {
     if(this.isFilter()) this.processFilter();
+    else if(this.filter) {
+      this.filter = undefined;
+      emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+    }
   }
 
   /** Processes the entire item filter from scratch. */
@@ -202,7 +209,7 @@ class FilterManager {
     });
 
     emitter.emit<Filter.Params.DataUpdate>("poe-did-process-filter",
-        { editorID: this.editor.buffer.id, lines: output });
+        { editor: this.editor, lines: output });
     return output;
   }
 }

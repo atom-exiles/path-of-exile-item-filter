@@ -49,7 +49,9 @@ class FilterManager {
             this.filterSubs.dispose();
         this.subscriptions.dispose();
         exports.buffers.delete(this.editor.buffer.id);
-        exports.emitter.emit('poe-did-destroy-buffer', this.editor.buffer.id);
+        if (this.isFilter())
+            exports.emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+        exports.emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
     }
     isFilter() {
         if (path.extname(this.editor.buffer.getPath()) == ".filter")
@@ -75,10 +77,15 @@ class FilterManager {
         this.filterSubs.add(settings.config.linterSettings.enableWarnings.onDidChange(() => {
             this.processFilter();
         }));
+        exports.emitter.emit("poe-did-register-filter", this.editor.buffer.id);
     }
     processIfFilter() {
         if (this.isFilter())
             this.processFilter();
+        else if (this.filter) {
+            this.filter = undefined;
+            exports.emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+        }
     }
     processFilter() {
         const oldRange = new atom_1.Range([0, 0], [0, 0]);
@@ -183,7 +190,7 @@ class FilterManager {
                 this.translateLineRanges(line, delta);
                 output.push(line);
             });
-            exports.emitter.emit("poe-did-process-filter", { editorID: this.editor.buffer.id, lines: output });
+            exports.emitter.emit("poe-did-process-filter", { editor: this.editor, lines: output });
             return output;
         });
     }

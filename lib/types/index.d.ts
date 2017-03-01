@@ -118,7 +118,7 @@ declare namespace Linter {
 declare namespace Filter {
   namespace Params {
     interface DataUpdate {
-      editorID: string
+      editor: AtomCore.TextEditor
       lines: Line[]
     }
   }
@@ -134,7 +134,7 @@ declare namespace Filter {
   }
 
   interface Keyword {
-    type: string
+    name: string
     range: TextBuffer.Range
   }
 

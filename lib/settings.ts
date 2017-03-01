@@ -35,7 +35,9 @@ class SettingValue<T> {
 export const config = {
   generalSettings: {
     enableCompletion: new SettingValue<boolean>("generalSettings.enableCompletion"),
-    enableLinter: new SettingValue<boolean>("generalSettings.enableLinter")
+    enableLinter: new SettingValue<boolean>("generalSettings.enableLinter"),
+    enableAlertDecorations: new SettingValue<boolean>("generalSettings.enableAlertDecorations"),
+    enableSetColorDecorations: new SettingValue<boolean>("generalSettings.enableSetColorDecorations")
   },
 
   dataSettings: {

@@ -1,6 +1,7 @@
 ## 1.0.0 - Ninth Release
 * Support for 2.6 and Legacy league
 * Added a linter, which provides error checking outside of the game
+* Decorations for previewing sound alerts and colors for each appropriate line.
 * Added configuration settings, including class and base whitelists
 * Autocompletion improvements and bug fixes
 * Added completion decorations, which can be turned off in settings

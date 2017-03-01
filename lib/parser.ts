@@ -890,7 +890,7 @@ export function parseLine(args: ParseLine): Filter.Line {
 
   const keyword = keywordResult.value;
   const resultKeyword: Filter.Keyword = {
-    type: keyword,
+    name: keyword,
     range: new Range([args.row, keywordResult.startIndex],
         [args.row, keywordResult.endIndex])
   };

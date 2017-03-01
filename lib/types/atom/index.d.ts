@@ -770,7 +770,8 @@ declare namespace AtomCore {
     // clipScreenRange(range, [options])
 
     // Decorations ============================================================
-    // decorateMarker(marker, decorationParams)
+    // TODO(glen): actually implement this.
+    decorateMarker(marker: any, decorationParams: any): any;
     // decorateMarkerLayer(markerLayer, decorationParams)
     // getDecorations([propertyFilter])
     // getLineDecorations([propertyFilter])
@@ -779,7 +780,8 @@ declare namespace AtomCore {
     // getOverlayDecorations([propertyFilter])
 
     // Markers ================================================================
-    // markBufferRange(range, properties)
+    // TODO(glen): actually implement this.
+    markBufferRange(range: TextBuffer.Range, properties: any): any;
     // markScreenRange(range, properties)
     // markBufferPosition(bufferPosition, [options])
     // markScreenPosition(screenPosition, [options])

@@ -14,10 +14,8 @@ function setupAlertSounds(container: Map<number, HTMLAudioElement>) {
 
 export function activate() {
   const alertMapping = new Map<number, HTMLAudioElement>();
-
   setupAlertSounds(alertMapping);
 
-  // TODO(glen): determine whether or not this needs to be throttled.
   emitter.on("play-alert-sound", (params: Sound.Params.PlayAlertSound) => {
     assert(params && params.id, "missing parameters for 'play-alert-sound' emission.");
     if(params.id < 1 || params.id > 9) return;

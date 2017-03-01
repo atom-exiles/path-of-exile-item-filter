@@ -1,7 +1,35 @@
 @import "ui-variables.less";
-@import "syntax-variables.less";
+
+atom-text-editor.editor {
+  .poe-decoration-container {
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .poe-play-alert-sound {
+    width: 0;
+    height: 0 !important;
+    border-style: solid;
+    border-width: 6px 0 6px 8px;
+    border-color: transparent transparent transparent rgb(50, 175, 50);
+  }
+
+  .poe-set-color-rule {
+    width: 75%;
+    height: 60% !important;
+    border-radius: 3px 3px 3px 3px;
+    border-style: groove;
+    border-width: 1px;
+    border-color: contrast(@base-background-color)
+  }
+}
 
 atom-text-editor.editor .syntax--poe {
+
+
   .syntax--keyword {
     &.syntax--block {
       color: @syntax-color-class

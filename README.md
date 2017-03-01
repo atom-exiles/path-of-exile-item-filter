@@ -4,22 +4,26 @@ This package provides additional support for the creation of Path of Exile filte
 
 ## Features
 ### Grammar
-![Grammar Preview](media/syntax.png)
+![Grammar Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/syntax.png)
 
 Allowing your color scheme to apply to item filters.
 
 ### Autocompletion
-![Completion Preview](media/completion.png)
+![Completion Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/completion.png)
 
 Providing you with suggestions, including items from the game where appropriate, as you edit.
 
 ### Linting
-![Syntax Preview](media/linter.png)
+![Syntax Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/linter.png)
 
 Error checking for item filters within Atom.
 
+### Smaller Features
+- Automatic conversion of hexidecimal color codes for rules with a color.
+- Gutter decorations for rules where it's appropriate.
+
 ## Configuration
 
-There are several configuration variables available, allowing you to turn off features that you don't personally like. These variables can be found in the Atom setting's panel for this package.
+There are several configuration variables available, allowing you to turn off features that you don't personally like. These options can be found in the Atom settings panel for this package.
 
-A whitelist for both classes and bases is also available in that configuration menu. These will allow you to edit a filter for future versions of the game.
+Whitelists for both classes and bases are also available in that configuration menu. These will allow you to edit a filter for future versions of the game.

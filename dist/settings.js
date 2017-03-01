@@ -24,7 +24,9 @@ class SettingValue {
 exports.config = {
     generalSettings: {
         enableCompletion: new SettingValue("generalSettings.enableCompletion"),
-        enableLinter: new SettingValue("generalSettings.enableLinter")
+        enableLinter: new SettingValue("generalSettings.enableLinter"),
+        enableAlertDecorations: new SettingValue("generalSettings.enableAlertDecorations"),
+        enableSetColorDecorations: new SettingValue("generalSettings.enableSetColorDecorations")
     },
     dataSettings: {
         enableLeague: new SettingValue("dataSettings.enableLeague"),

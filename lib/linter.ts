@@ -43,7 +43,7 @@ export function activate(r: Linter.Register) {
     for(var line of args.lines) {
       if(line.messages) messages = messages.concat(line.messages);
     }
-    filterMessages.set(args.editorID, messages);
+    filterMessages.set(args.editor.buffer.id, messages);
     setMessages();
   }));
 }

@@ -684,7 +684,7 @@ function parseLine(args) {
     }
     const keyword = keywordResult.value;
     const resultKeyword = {
-        type: keyword,
+        name: keyword,
         range: new atom_1.Range([args.row, keywordResult.startIndex], [args.row, keywordResult.endIndex])
     };
     var processResult = { invalid: false, messages: [],
