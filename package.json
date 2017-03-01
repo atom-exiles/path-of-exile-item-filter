@@ -1,7 +1,7 @@
 {
   "name": "path-of-exile-item-filter",
   "main": "./dist/main",
-  "version": "0.1.8",
+  "version": "1.0.0",
   "description": "A grammar implementation for Path of Exile item filters",
   "activationCommands": {},
   "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
