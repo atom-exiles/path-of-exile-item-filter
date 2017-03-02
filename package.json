@@ -3,6 +3,13 @@
   "main": "./dist/main",
   "version": "1.0.1",
   "description": "A grammar implementation for Path of Exile item filters",
+  "keywords": [
+    "poe",
+    "exile",
+    "filter",
+    "loot",
+    "linter"
+  ],
   "activationCommands": {},
   "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
   "license": "MIT",
