@@ -1,7 +1,7 @@
 import { Point, Range } from "atom";
 
 import * as settings from "./settings";
-import * as data from "./data";
+import * as data from "./json-data";
 
 interface SuggestionRequest {
   editor: AtomCore.TextEditor

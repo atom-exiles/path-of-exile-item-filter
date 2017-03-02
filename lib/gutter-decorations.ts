@@ -145,13 +145,13 @@ export function activate() {
   }
 
   subscriptions.add(settings.config.generalSettings.enableAlertDecorations.
-      onDidChange((newValue) => {
-    configChangeAction("AlertDecoration", newValue.newValue);
+      onDidChange((event) => {
+    configChangeAction("AlertDecoration", event.newValue);
   }));
 
   subscriptions.add(settings.config.generalSettings.enableSetColorDecorations.
-      onDidChange((newValue) => {
-    configChangeAction("SetColorDecoration", newValue.newValue);
+      onDidChange((event) => {
+    configChangeAction("SetColorDecoration", event.newValue);
   }));
 };
 

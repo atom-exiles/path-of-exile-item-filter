@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const atom_1 = require("atom");
 const path = require("path");
 const assert = require("assert");
-const data = require("./data");
+const data = require("./json-data");
 const settings = require("./settings");
 const parser = require("./parser");
 class FilterManager {
@@ -20,11 +20,13 @@ class FilterManager {
         this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
             if (this.isFilter()) {
                 this.registerFilter();
+                this.processFilter();
             }
             else {
                 this.filter = undefined;
                 if (this.filterSubs)
                     this.filterSubs.dispose();
+                exports.emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
             }
         }));
         this.subscriptions.add(editor.buffer.onDidDestroy(() => {

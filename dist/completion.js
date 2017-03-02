@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const atom_1 = require("atom");
 const settings = require("./settings");
-const data = require("./data");
+const data = require("./json-data");
 function activate() { }
 exports.activate = activate;
 function deactivate() { }

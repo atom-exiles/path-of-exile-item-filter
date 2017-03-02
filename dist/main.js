@@ -1,5 +1,5 @@
 "use strict";
-const data = require("./data");
+const data = require("./json-data");
 const filterData = require("./filter-data");
 const sound = require("./sound");
 const completion = require("./completion");

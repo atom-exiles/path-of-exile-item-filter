@@ -1,7 +1,7 @@
 import { Range } from "atom";
 import * as assert from "assert";
 
-import * as data from "./data";
+import * as data from "./json-data";
 import * as settings from "./settings";
 
 interface ParseResult<T> {
@@ -28,13 +28,14 @@ interface LineInfo {
 
 /** Parses data from a single line of a Path of Exile filter. */
 export class LineParser {
-  readonly textStartIndex: number;
-  readonly textEndIndex: number;
-  readonly originalLength: number;
+  currentIndex: number;
+  textStartIndex: number;
+  textEndIndex: number;
+  originalLength: number;
 
-  private empty: boolean;
-  private currentIndex: number;
-  private text: string;
+  empty: boolean;
+
+  text: string;
 
   private readonly numberRegex = /^(\s*)([-0-9]+)(\s|$)/;
   private readonly wordRegex = /^(\s*)([A-Za-z\u00F6]+)(\s|$)/;
@@ -89,22 +90,6 @@ export class LineParser {
     }
   }
 
-  /** Returns the current index of the parser on the original line. */
-  getCurrentIndex(): number {
-    return this.currentIndex;
-  }
-
-  /** Returns current internal text value.
-      This string may have been modified since it was originally passsed in.*/
-  getText(): string {
-    return this.text;
-  }
-
-  /** Returns whether or not the internal text value is an empty string. */
-  isEmpty(): boolean {
-    return this.empty;
-  }
-
   /** Returns whether or not the internal text value would be considered a
       comment by Path of Exile. */
   isCommented(): boolean {
@@ -119,7 +104,7 @@ export class LineParser {
   /** Returns whether or not the internal text string would be ignored entirely
       by Path of Exile. */
   isIgnored(): boolean {
-    if(this.isEmpty() || this.isCommented()) {
+    if(this.empty || this.isCommented()) {
       return true;
     } else {
       return false;
@@ -153,8 +138,7 @@ export class LineParser {
     return result;
   }
 
-  /** Parses the next number from the given line, advancing the text buffer to
-      beyond that number (if found). */
+  /** Parses a number if one is next on the line. */
   nextNumber(): ParseResult<number> {
     const result = this.parseSingleValue(this.numberRegex);
     const output: ParseResult<number> = { found: result.found,
@@ -167,7 +151,7 @@ export class LineParser {
     return output;
   }
 
-  /** Parses the next boolean contained within the line.  */
+  /** Parses a boolean if one is next on the line. */
   nextBoolean(): ParseResult<boolean> {
     // Booleans are case-insensitive, and may be surrounded by either single or
     // double quotation marks.
@@ -186,19 +170,18 @@ export class LineParser {
     return output;
   }
 
-  /** Parses any operator supported by Path of Exile from the given live,
-      returning the operator as a string with no surrounding whitespace. */
+  /** Parses an next operator if one is next on the line. */
   nextOperator(): ParseResult<string> {
     return this.parseSingleValue(this.operatorRegex);
   }
 
-  /** Parses the next word from the given line.
+  /** Parses a word if one is next on the line.
       A word is considered a string of letters from any langauge. */
   nextWord(): ParseResult<string> {
     return this.parseSingleValue(this.wordRegex);
   }
 
-  /** Parses the next string contained within the line.
+  /** Parses a string if one is next on the line.
       Strings containing multiple words must be contained within double quotation marks. */
   nextString(): ParseResult<string> {
     var result = this.parseSingleValue(this.stringRegex);
@@ -212,10 +195,13 @@ export class LineParser {
     return result;
   }
 
+  /** Parses a hexadecimal value if one is next on the line. */
   nextHex(): ParseResult<string> {
     return this.parseSingleValue(this.colorHexRegex);
   }
 
+  /** Parses a comment if one is next on the line.
+   *  A comment consumes the remainder of the line. */
   parseComment(): ParseResult<string> {
     return this.parseSingleValue(this.commentRegex);
   }
@@ -240,6 +226,24 @@ function expectEqualityOp(parser: LineParser, line: LineInfo):
   }
 
   return result;
+}
+
+/** Appends an error message to the given result if the remaining text is
+ *  commented. */
+function reportTrailingComment(parser: LineParser, line: LineInfo,
+    result: ProcessResult) {
+  if(parser.isCommented()) {
+    const comment = parser.parseComment();
+    result.messages.push({
+      type: "Error",
+      text: "A trailing comment for a \"" + line.keyword +
+          "\" rule will result in an error.",
+      filePath: line.file,
+      range: new Range([line.number, comment.startIndex],
+          [line.number, parser.originalLength])
+    });
+    result.invalid = true;
+  }
 }
 
 /* Processes the PlayAlertSound rule, which has the following format:
@@ -365,6 +369,21 @@ function processRGBARule(parser: LineParser, line: LineInfo):
       replacement = replacement + " " + a;
     }
     line.editor.setTextInBufferRange(replacementRange, replacement);
+
+    // Adjust the old parser, as with the text insertion its indices have now
+    // been invalidated.
+    const adjustedLength = parser.originalLength - hexResult.value.length +
+        replacement.length;
+    const adjustedCurIndex = parser.currentIndex - hexResult.value.length;
+    const adjustedEndIndex = parser.textEndIndex - hexResult.value.length +
+        replacement.length;
+    const newTextRange = new Range([line.number, adjustedCurIndex], [line.number,
+        adjustedEndIndex]);
+
+    parser.text = line.editor.getTextInBufferRange(newTextRange);
+    parser.originalLength = adjustedLength;
+    parser.currentIndex = adjustedCurIndex;
+    parser.textEndIndex = adjustedEndIndex;
   }
 
   const red = parser.nextNumber();
@@ -513,6 +532,7 @@ function processMultiStringRule(parser: LineParser, line: LineInfo,
       result.invalid = true;
     }
   }
+
   return result;
 }
 
@@ -590,7 +610,7 @@ function processOpNumberRule(parser: LineParser, line: LineInfo,
   if(!retVal.found || retVal.value == undefined) {
     result.messages.push({
       type: "Error",
-      text: "Invalid format. Expected \"" + line.keyword +  " [Operator] <Value>\".",
+      text: "Invalid format. Expected \"" + line.keyword +  " [Operator] <Number>\".",
       filePath: line.file,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
@@ -618,6 +638,7 @@ function processOpNumberRule(parser: LineParser, line: LineInfo,
     result.invalid = true;
   }
 
+  reportTrailingComment(parser, line, result);
   return result;
 }
 
@@ -694,6 +715,7 @@ function processStringRule(parser: LineParser, line: LineInfo,
     result.invalid = true;
   }
 
+  reportTrailingComment(parser, line, result);
   return result;
 }
 
@@ -736,6 +758,7 @@ function processBooleanRule(parser: LineParser, line: LineInfo):
     result.values = [value];
   }
 
+  reportTrailingComment(parser, line, result);
   return result;
 }
 
@@ -763,7 +786,7 @@ function processRangeRule(parser: LineParser, line: LineInfo,
     result.messages.push({
       type: "Error",
       text: "Invalid format. Expected \"" + line.keyword +
-          " [Operator] <Value>\".",
+          " [Operator] <Number>\".",
       filePath: line.file,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
@@ -781,13 +804,14 @@ function processRangeRule(parser: LineParser, line: LineInfo,
         text: "Invalid value for \"" + line.keyword + "\" rule. Expected "
             + min + "-" + max + ".",
         filePath: line.file,
-        range: new Range([ line.number, retVal.startIndex ],
+        range: new Range([line.number, retVal.startIndex],
             [line.number, retVal.endIndex])
       });
       result.invalid = true;
     }
   }
 
+  reportTrailingComment(parser, line, result);
   return result;
 }
 
@@ -815,7 +839,7 @@ function processBlock(parser: LineParser, line: LineInfo):
         type: "Warning",
         text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
         filePath: line.file,
-        range: new Range([ line.number, parser.getCurrentIndex() ],
+        range: new Range([ line.number, parser.currentIndex ],
             [ line.number, parser.originalLength ])
       });
     }
@@ -832,6 +856,7 @@ interface ParseLine {
   filePath: string
 }
 
+/** Parses item filter data from a line in a text editor. */
 export function parseLine(args: ParseLine): Filter.Line {
   const messages: Linter.TextMessage[] = [];
   const parser = new LineParser(args.lineText);
@@ -843,7 +868,7 @@ export function parseLine(args: ParseLine): Filter.Line {
     const commentRange = new Range([args.row, parser.textStartIndex], [args.row,
       parser.textEndIndex ]);
     const resultData: Filter.Comment = {
-      text: parser.getText(),
+      text: parser.text,
       range: commentRange
     };
     return {
@@ -854,7 +879,7 @@ export function parseLine(args: ParseLine): Filter.Line {
     };
   }
 
-  if(parser.isEmpty()) {
+  if(parser.empty) {
     return {
       type: "Empty",
       data: {},
@@ -977,12 +1002,12 @@ export function parseLine(args: ParseLine): Filter.Line {
       lineType = "Rule";
       lineData = ld;
 
-      if(!processResult.invalid && !parser.isEmpty()) {
+      if(!processResult.invalid && !parser.empty) {
         messages.push({
           text: "Trailing text for a filter rule.",
           type: "Error",
           filePath: args.filePath,
-          range: new Range([args.row, parser.getCurrentIndex()],
+          range: new Range([args.row, parser.currentIndex],
               [args.row, parser.textEndIndex])
         });
         invalid = true;

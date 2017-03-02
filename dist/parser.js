@@ -47,15 +47,6 @@ class LineParser {
             this.empty = true;
         }
     }
-    getCurrentIndex() {
-        return this.currentIndex;
-    }
-    getText() {
-        return this.text;
-    }
-    isEmpty() {
-        return this.empty;
-    }
     isCommented() {
         const result = this.text.search(this.commentRegex);
         if (result == -1) {
@@ -66,7 +57,7 @@ class LineParser {
         }
     }
     isIgnored() {
-        if (this.isEmpty() || this.isCommented()) {
+        if (this.empty || this.isCommented()) {
             return true;
         }
         else {
@@ -152,6 +143,19 @@ function expectEqualityOp(parser, line) {
         };
     }
     return result;
+}
+function reportTrailingComment(parser, line, result) {
+    if (parser.isCommented()) {
+        const comment = parser.parseComment();
+        result.messages.push({
+            type: "Error",
+            text: "A trailing comment for a \"" + line.keyword +
+                "\" rule will result in an error.",
+            filePath: line.file,
+            range: new atom_1.Range([line.number, comment.startIndex], [line.number, parser.originalLength])
+        });
+        result.invalid = true;
+    }
 }
 function processAlertSoundRule(parser, line) {
     var result = {
@@ -250,6 +254,17 @@ function processRGBARule(parser, line) {
             replacement = replacement + " " + a;
         }
         line.editor.setTextInBufferRange(replacementRange, replacement);
+        const adjustedLength = parser.originalLength - hexResult.value.length +
+            replacement.length;
+        const adjustedCurIndex = parser.currentIndex - hexResult.value.length;
+        const adjustedEndIndex = parser.textEndIndex - hexResult.value.length +
+            replacement.length;
+        const newTextRange = new atom_1.Range([line.number, adjustedCurIndex], [line.number,
+            adjustedEndIndex]);
+        parser.text = line.editor.getTextInBufferRange(newTextRange);
+        parser.originalLength = adjustedLength;
+        parser.currentIndex = adjustedCurIndex;
+        parser.textEndIndex = adjustedEndIndex;
     }
     const red = parser.nextNumber();
     const green = parser.nextNumber();
@@ -442,7 +457,7 @@ function processOpNumberRule(parser, line, values) {
     if (!retVal.found || retVal.value == undefined) {
         result.messages.push({
             type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword + " [Operator] <Value>\".",
+            text: "Invalid format. Expected \"" + line.keyword + " [Operator] <Number>\".",
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
@@ -466,6 +481,7 @@ function processOpNumberRule(parser, line, values) {
         });
         result.invalid = true;
     }
+    reportTrailingComment(parser, line, result);
     return result;
 }
 function processStringRule(parser, line, expectedValues, caseSensitive) {
@@ -529,6 +545,7 @@ function processStringRule(parser, line, expectedValues, caseSensitive) {
         });
         result.invalid = true;
     }
+    reportTrailingComment(parser, line, result);
     return result;
 }
 function processBooleanRule(parser, line) {
@@ -561,6 +578,7 @@ function processBooleanRule(parser, line) {
         };
         result.values = [value];
     }
+    reportTrailingComment(parser, line, result);
     return result;
 }
 function processRangeRule(parser, line, min, max) {
@@ -582,7 +600,7 @@ function processRangeRule(parser, line, min, max) {
         result.messages.push({
             type: "Error",
             text: "Invalid format. Expected \"" + line.keyword +
-                " [Operator] <Value>\".",
+                " [Operator] <Number>\".",
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
@@ -605,6 +623,7 @@ function processRangeRule(parser, line, min, max) {
             result.invalid = true;
         }
     }
+    reportTrailingComment(parser, line, result);
     return result;
 }
 function processBlock(parser, line) {
@@ -628,7 +647,7 @@ function processBlock(parser, line) {
                 type: "Warning",
                 text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
                 filePath: line.file,
-                range: new atom_1.Range([line.number, parser.getCurrentIndex()], [line.number, parser.originalLength])
+                range: new atom_1.Range([line.number, parser.currentIndex], [line.number, parser.originalLength])
             });
         }
     }
@@ -643,7 +662,7 @@ function parseLine(args) {
         const commentRange = new atom_1.Range([args.row, parser.textStartIndex], [args.row,
             parser.textEndIndex]);
         const resultData = {
-            text: parser.getText(),
+            text: parser.text,
             range: commentRange
         };
         return {
@@ -653,7 +672,7 @@ function parseLine(args) {
             messages: []
         };
     }
-    if (parser.isEmpty()) {
+    if (parser.empty) {
         return {
             type: "Empty",
             data: {},
@@ -776,12 +795,12 @@ function parseLine(args) {
             };
             lineType = "Rule";
             lineData = ld;
-            if (!processResult.invalid && !parser.isEmpty()) {
+            if (!processResult.invalid && !parser.empty) {
                 messages.push({
                     text: "Trailing text for a filter rule.",
                     type: "Error",
                     filePath: args.filePath,
-                    range: new atom_1.Range([args.row, parser.getCurrentIndex()], [args.row, parser.textEndIndex])
+                    range: new atom_1.Range([args.row, parser.currentIndex], [args.row, parser.textEndIndex])
                 });
                 invalid = true;
             }

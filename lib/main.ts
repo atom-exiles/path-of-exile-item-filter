@@ -1,4 +1,4 @@
-import * as data from "./data";
+import * as data from "./json-data";
 import * as filterData from "./filter-data";
 import * as sound from "./sound";
 import * as completion from "./completion";

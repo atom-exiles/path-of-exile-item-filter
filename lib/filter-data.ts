@@ -2,7 +2,7 @@ import { Point, Range, CompositeDisposable, Emitter } from "atom";
 import * as path from "path";
 import * as assert from "assert";
 
-import * as data from "./data";
+import * as data from "./json-data";
 import * as settings from "./settings";
 import * as parser from "./parser";
 
@@ -28,9 +28,11 @@ class FilterManager {
     this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
       if(this.isFilter()) {
         this.registerFilter();
+        this.processFilter();
       } else  {
         this.filter = undefined;
         if(this.filterSubs) this.filterSubs.dispose();
+        emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
       }
     }));
 
