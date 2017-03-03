@@ -2,9 +2,6 @@
 // Project: https://github.com/atom/text-buffer/tree/v10.2.16
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
-// NOTE: these typings are currently incomplete. Missing chunks are being
-//    written over time.
-
 /// <reference path="../event-kit/index.d.ts" />
 /// <reference path="../pathwatcher/index.d.ts" />
 
@@ -170,8 +167,7 @@ declare namespace TextBuffer {
 
     // Operations =============================================================
     /** Makes this point immutable and returns itself. */
-    // TODO(glen): TypeScript 2.1.3 -> use Readonly<Point> here.
-    freeze(): Point;
+    freeze(): Readonly<Point>;
 
     /** Build and return a new point by adding the rows and columns of the
      *  given point. */
@@ -212,13 +208,15 @@ declare namespace TextBuffer {
 
     // Construction ===========================================================
     /** Convert any range-compatible object to a Range. */
-    static fromObject(object: IRange, copy?: boolean): Range
+    static fromObject(object: IRange, copy?: boolean): Range;
     /** Convert any range-compatible object to a Range. */
     static fromObject(object: [IPoint, IPoint]): Range;
     /** Convert any range-compatible object to a Range. */
     static fromObject(object: [IPoint, [number, number]]): Range;
     /** Convert any range-compatible object to a Range. */
     static fromObject(object: [[number, number], IPoint]): Range;
+    /** Convert any range-compatible object to a Range. */
+    static fromObject(object: [[number, number], [number, number]]): Range;
 
     /** Construct a Range object. */
     constructor(pointA?: IPoint, pointB?: IPoint);
@@ -259,8 +257,7 @@ declare namespace TextBuffer {
     // Operations =============================================================
     /** Freezes the range and its start and end point so it becomes immutable
      *  and returns itself. */
-    // TODO(glen): TypeScript 2.1.3 -> use Readonly<Point> here.
-    freeze(): Range;
+    freeze(): Readonly<Range>;
 
     // This function doesn't actually take a range-compatible parameter.
     /** Returns a new range that contains this range and the given range. */
@@ -329,12 +326,12 @@ declare namespace TextBuffer {
      *  end points as the given Range. */
     isEqual(otherRange: [[number, number], IPoint]): boolean;
 
-    // This function doesn't actually take a range-compatible parameter.
+    // NOTE(glen): this function doesn't actually take a range-compatible parameter.
     /** Returns a Boolean indicating whether this range starts and ends on the
      *  same row as the argument. */
     coversSameRows(otherRange: IRange): boolean;
 
-    // This function doesn't actually take a range-compatible parameter.
+    // NOTE(glen): this function doesn't actually take a range-compatible parameter.
     /** Determines whether this range intersects with the argument. */
     intersectsWith(otherRange: IRange, exclusive?: boolean): boolean;
 
@@ -594,28 +591,6 @@ declare namespace TextBuffer {
 
     /** Subscribe to be notified synchronously when this layer is destroyed. */
     onDidDestroy(callback: () => void): AtomEventKit.Disposable;
-  }
-
-  // NOTE(glen): this should be moved out into 'atom-patch'.
-  class RegionIterator {
-    // TODO(glen): implement and add tests.
-  }
-
-  // NOTE(glen): this should be moved out into 'atom-patch'.
-  class ChangeIterator {
-    // TODO(glen): implement and add tests.
-  }
-
-  // NOTE(glen): this should be moved out into 'atom-patch'.
-  class Patch {
-    // TODO(glen): add tests.
-    splice(start: Point, oldExtent: Point, newExtent: Point, newText: string):
-        void;
-    clear(): void;
-    regions(): RegionIterator;
-    changes(): ChangeIterator;
-    toInputPosition(outputPosition: Point): Point;
-    toOutputPosition(inputPosition: Point): Point;
   }
 
   /** A mutable text container with undo/redo support and the ability to
@@ -954,7 +929,7 @@ declare namespace TextBuffer {
     /** Group all changes since the given checkpoint into a single transaction for
      *  purposes of undo/redo.
      *  Returns a boolean indicating whether the operation succeeded. */
-    groupChangesSinceCheckpoint(checkpoint: number): Patch|boolean;
+    groupChangesSinceCheckpoint(checkpoint: number): boolean;
 
     /** Returns a list of changes since the given checkpoint.
      *  If the given checkpoint is no longer present in the undo history, this method

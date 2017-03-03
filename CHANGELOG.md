@@ -1,7 +1,12 @@
-## 1.0.0 - Ninth Release
+## Versions 1.0.1-1.0.3
+* Added linter errors for trailing comments on rules where it's an error in-game
+* Extension renames for opened files are now properly handled
+* A linter error will no longer flash when converting hexadecimal text
+
+## Version 1.0.0
 * Support for 2.6 and Legacy league
 * Added a linter, which provides error checking outside of the game
-* Decorations for previewing sound alerts and colors for each appropriate line.
+* Decorations for previewing sound alerts and colors for each appropriate line
 * Added configuration settings, including class and base whitelists
 * Autocompletion improvements and bug fixes
 * Added completion decorations, which can be turned off in settings
@@ -13,40 +18,40 @@
 * Automatic conversion of hex values for the rules taking an RGBA color value
 * Stopped using snippets for filter keywords
 
-## 0.1.8 - Eighth Release
+## Version 0.1.8
 * Added the 15 new divination cards from 2.5.1
 * Allow empty lines in Show and Hide blocks
 * Fix for the Corrupted rule, as it is case sensitive after all
 * Added fishing rods
 * Fixed a typo in Alder Spiked Shield
 
-## 0.1.7 - Seventh Release
+## Version 0.1.7
 * Added 'toggle-line-comments' support
 * Revamp of the grammar to work well with syntax themes
 * Added the new 2.4.2 active gems
 * Support for 2.5 and Breach league
 * Added support for Corrupted filter
 
-## 0.1.5 - Sixth Release
+## Version 0.1.5
 * Fixed several typos in map names
 
-## 0.1.4 - Fifth Release
+## Version 0.1.4
 * Divination Cards
 * Improved suggestion filtering
 * Added text highlighting
 
-## 0.1.3 - Fourth Release
+## Version 0.1.3
 * Atlas of Worlds
 * Quivers
 * Spelling mistakes
 
-## 0.1.2 - Third Release
+## Version 0.1.2
 * Identified command
 
-## 0.1.1 - Second Release
+## Version 0.1.1
 * Prophecy
 * Talisman
 * Perandus
 
-## 0.1.0 - First Release
+## Version 0.1.0
 * Path of Exile item filter grammar supported

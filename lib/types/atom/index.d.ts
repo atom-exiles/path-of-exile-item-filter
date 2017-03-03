@@ -122,6 +122,104 @@ declare namespace AtomCore {
     interface TEStoppedChangesEvent  {
       changes: Array<TEDidChange>
     }
+
+    interface CursorChangeEvent {
+      oldBufferPosition: TextBuffer.Point
+      oldScreenPosition: TextBuffer.Point
+      newBufferPosition: TextBuffer.Point
+      newScreenPosition: TextBuffer.Point
+      textChanged: boolean
+      Cursor:	Cursor
+    }
+
+    interface SelectionChangeEvent {
+      oldBufferRange: TextBuffer.Range
+      oldScreenRange: TextBuffer.Range
+      newBufferRange: TextBuffer.Range
+      newScreenRange: TextBuffer.Range
+      selection: Selection
+    }
+
+    interface DisplayMarkerChangeEvent {
+      /** Point representing the former head buffer position. */
+      oldHeadBufferPosition: TextBuffer.Point
+      /** Point representing the new head buffer position. */
+      newHeadBufferPosition: TextBuffer.Point
+      // Point representing the former tail buffer position. */
+      oldTailBufferPosition: TextBuffer.Point
+      /** Point representing the new tail buffer position. */
+      newTailBufferPosition: TextBuffer.Point
+      /** Point representing the former head screen position. */
+      oldHeadScreenPosition: TextBuffer.Point
+      /** Point representing the new head screen position. */
+      newHeadScreenPosition: TextBuffer.Point
+      /** Point representing the former tail screen position. */
+      oldTailScreenPosition: TextBuffer.Point
+      /** Point representing the new tail screen position. */
+      newTailScreenPosition: TextBuffer.Point
+      /** Boolean indicating whether the marker was valid before the change. */
+      wasValid: boolean
+      /** Boolean indicating whether the marker is now valid. */
+      isValid: boolean
+      /** Boolean indicating whether the marker had a tail before the change. */
+      hadTail: boolean
+      /** Boolean indicating whether the marker now has a tail */
+      hasTail: boolean
+      /** Object containing the marker's custom properties before the change. */
+      oldProperties: Object
+      /** Object containing the marker's custom properties after the change. */
+      newProperties: Object
+      /** Boolean indicating whether this change was caused by a textual change to the
+       *  buffer or whether the marker was manipulated directly via its public API. */
+      textChanged: boolean
+    }
+
+    interface MarkerProperties {
+      /** Only include markers starting at this Point in buffer coordinates. */
+      startBufferPosition?: TextBuffer.IPoint|[number, number]
+      /** Only include markers ending at this Point in buffer coordinates. */
+      endBufferPosition?: TextBuffer.IPoint|[number, number]
+      /** Only include markers starting at this Point in screen coordinates. */
+      startScreenPosition?: TextBuffer.IPoint|[number, number]
+      /** Only include markers ending at this Point in screen coordinates. */
+      endScreenPosition?: TextBuffer.IPoint|[number, number]
+      /** Only include markers starting at this row in buffer coordinates. */
+      startBufferRow?: number
+      /** Only include markers ending at this row in buffer coordinates. */
+      endBufferRow?: number
+      /** Only include markers starting at this row in screen coordinates. */
+      startScreenRow?: number
+      /** Only include markers ending at this row in screen coordinates. */
+      endScreenRow?: number
+      /** Only include markers intersecting this Array of [startRow, endRow] in
+       *  buffer coordinates. */
+      intersectsBufferRowRange?: [number, number]
+      /** Only include markers intersecting this Array of [startRow, endRow] in
+       *  screen coordinates. */
+      intersectsScreenRowRange?: [number, number]
+      /** Only include markers containing this Range in buffer coordinates. */
+      containsBufferRange?: TextBuffer.IRange|[TextBuffer.IPoint, TextBuffer.IPoint]|
+          [TextBuffer.IPoint, [number, number]]|[[number, number], TextBuffer.IPoint]|
+          [[number, number], [number, number]]
+      /** Only include markers containing this Point in buffer coordinates. */
+      containsBufferPosition?: TextBuffer.IPoint|[number, number]
+      /** Only include markers contained in this Range in buffer coordinates. */
+      containedInBufferRange?: TextBuffer.IRange|[TextBuffer.IPoint, TextBuffer.IPoint]|
+          [TextBuffer.IPoint, [number, number]]|[[number, number], TextBuffer.IPoint]|
+          [[number, number], [number, number]]
+      /** Only include markers contained in this Range in screen coordinates. */
+      containedInScreenRange?: TextBuffer.IRange|[TextBuffer.IPoint, TextBuffer.IPoint]|
+          [TextBuffer.IPoint, [number, number]]|[[number, number], TextBuffer.IPoint]|
+          [[number, number], [number, number]]
+      /** Only include markers intersecting this Range in buffer coordinates. */
+      intersectsBufferRange?: TextBuffer.IRange|[TextBuffer.IPoint, TextBuffer.IPoint]|
+          [TextBuffer.IPoint, [number, number]]|[[number, number], TextBuffer.IPoint]|
+          [[number, number], [number, number]]
+      /** Only include markers intersecting this Range in screen coordinates. */
+      intersectsScreenRange?: TextBuffer.IRange|[TextBuffer.IPoint, TextBuffer.IPoint]|
+          [TextBuffer.IPoint, [number, number]]|[[number, number], TextBuffer.IPoint]|
+          [[number, number], [number, number]]
+    }
   }
 
   // Base Classes =============================================================
@@ -342,8 +440,7 @@ declare namespace AtomCore {
 
     /** Rebuild native modules in this package's dependencies for the current
      *  version of Atom. */
-    // TODO(glen): determine the types for stdout and stderr here.
-    rebuild(): Promise<{ code: number, stdout: Object, stderr: Object }>;
+    rebuild(): Promise<{ code: number, stdout: string, stderr: string }>;
 
     /** If a previous rebuild failed, get the contents of stderr. */
     getBuildFailureOutput(): string|null;
@@ -1048,14 +1145,671 @@ declare namespace AtomCore {
     // setPlaceholderText(placeholderText)
   }
 
-  // TODO(glen): implement from -> https://atom.io/docs/api/v1.14.3/Cursor
+  /** The Cursor class represents the little blinking line identifying where text
+   *  can be inserted. */
   class Cursor {
+    // Event Subscription =====================================================
+    /** Calls your callback when the cursor has been moved. */
+    onDidChangePosition(callback: (event: Params.CursorChangeEvent) => void):
+        AtomEventKit.Disposable;
 
+    /** Calls your callback when the cursor is destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when the cursor's visibility has changed. */
+    onDidChangeVisibility(callback: (visibility: boolean) => void):
+        AtomEventKit.Disposable;
+
+    // Managing Cursor Position ===============================================
+    /** Moves a cursor to a given screen position. */
+    setScreenPosition(screenPosition: TextBuffer.IPoint, options?:
+        { autoscroll: boolean }): void;
+    setScreenPosition(screenPosition: [number, number], options?:
+        { autoscroll: boolean }): void;
+
+    /** Returns the screen position of the cursor as a Point. */
+    getScreenPosition(): TextBuffer.Point;
+
+    /** Moves a cursor to a given buffer position. */
+    setBufferPosition(bufferPosition: TextBuffer.IPoint, options?:
+        { autoscroll: boolean }): void;
+    /** Moves a cursor to a given buffer position. */
+    setBufferPosition(bufferPosition: [number, number], options?:
+        { autoscroll: boolean }): void;
+
+    /** Returns the current buffer position as an Array. */
+    getBufferPosition(): number[];
+
+    /** Returns the cursor's current screen row. */
+    getScreenRow(): number;
+
+    /** Returns the cursor's current screen column. */
+    getScreenColumn(): number;
+
+    /** Retrieves the cursor's current buffer row. */
+    getBufferRow(): number;
+
+    /** Returns the cursor's current buffer column. */
+    getBufferColumn(): number;
+
+    /** Returns the cursor's current buffer row of text excluding its line ending. */
+    getCurrentBufferLine(): string;
+
+    /** Returns whether the cursor is at the start of a line. */
+    isAtBeginningOfLine(): boolean;
+
+    /** Returns whether the cursor is on the line return character. */
+    isAtEndOfLine(): boolean;
+
+    // Cursor Position Details ================================================
+    /** Returns the underlying DisplayMarker for the cursor. Useful with overlay
+     *  Decorations. */
+    getMarker(): DisplayMarker;
+
+    /** Identifies if the cursor is surrounded by whitespace.
+     *  "Surrounded" here means that the character directly before and after the cursor
+     *  are both whitespace. */
+    isSurroundedByWhitespace(): boolean;
+
+    /** This method returns false if the character before or after the cursor is whitespace. */
+    isBetweenWordAndNonWord(): boolean;
+
+    /** Returns whether this cursor is between a word's start and end. */
+    isInsideWord(options?: { wordRegex: RegExp }): boolean;
+
+    /** Returns the indentation level of the current line. */
+    getIndentLevel(): number;
+
+    /** Retrieves the scope descriptor for the cursor's current position. */
+    getScopeDescriptor(): ScopeDescriptor;
+
+    /** Returns true if this cursor has no non-whitespace characters before its
+     *  current position. */
+    hasPrecedingCharactersOnLine(): boolean;
+
+    /** Identifies if this cursor is the last in the TextEditor.
+     *  "Last" is defined as the most recently added cursor. */
+    isLastCursor(): boolean;
+
+    // Moving the Cursor ======================================================
+    /** Moves the cursor up one screen row. */
+    moveUp(rowCount?: number): void;
+    /** Moves the cursor up one screen row. */
+    moveUp(rowCount: number, options?: { moveToEndOfSelection: boolean }): void;
+
+    /** Moves the cursor down one screen row. */
+    moveDown(rowCount?: number): void;
+    /** Moves the cursor down one screen row. */
+    moveDown(rowCount: number, options?: { moveToEndOfSelection: boolean }): void
+
+    /** Moves the cursor left one screen column. */
+    moveLeft(columnCount?: number): void;
+    /** Moves the cursor left one screen column. */
+    moveLeft(columnCount: number, options?: { moveToEndOfSelection: boolean }): void;
+
+    /** Moves the cursor right one screen column. */
+    moveRight(columnCount?: number): void;
+    /** Moves the cursor right one screen column. */
+    moveRight(columnCount: number, options?: { moveToEndOfSelection: boolean }): void;
+
+    /** Moves the cursor to the top of the buffer. */
+    moveToTop(): void;
+
+    /** Moves the cursor to the bottom of the buffer. */
+    moveToBottom(): void;
+
+    /** Moves the cursor to the beginning of the line. */
+    moveToBeginningOfScreenLine(): void;
+
+    /** Moves the cursor to the beginning of the buffer line. */
+    moveToBeginningOfLine(): void;
+
+    /** Moves the cursor to the beginning of the first character in the line. */
+    moveToFirstCharacterOfLine(): void;
+
+    /** Moves the cursor to the end of the line. */
+    moveToEndOfScreenLine(): void;
+
+    /** Moves the cursor to the end of the buffer line. */
+    moveToEndOfLine(): void;
+
+    /** Moves the cursor to the beginning of the word. */
+    moveToBeginningOfWord(): void;
+
+    /** Moves the cursor to the end of the word. */
+    moveToEndOfWord(): void;
+
+    /** Moves the cursor to the beginning of the next word. */
+    moveToBeginningOfNextWord(): void;
+
+    /** Moves the cursor to the previous word boundary. */
+    moveToPreviousWordBoundary(): void;
+
+    /** Moves the cursor to the next word boundary. */
+    moveToNextWordBoundary(): void;
+
+    /** Moves the cursor to the previous subword boundary. */
+    moveToPreviousSubwordBoundary(): void;
+
+    /** Moves the cursor to the next subword boundary. */
+    moveToNextSubwordBoundary(): void;
+
+    /** Moves the cursor to the beginning of the buffer line, skipping all whitespace. */
+    skipLeadingWhitespace(): void;
+
+    /** Moves the cursor to the beginning of the next paragraph. */
+    moveToBeginningOfNextParagraph(): void;
+
+    /** Moves the cursor to the beginning of the previous paragraph. */
+    moveToBeginningOfPreviousParagraph(): void;
+
+    // Local Positions and Ranges =============================================
+    /** Returns buffer position of previous word boundary. It might be on the current
+     *  word, or the previous word. */
+    getPreviousWordBoundaryBufferPosition(options?: { wordRegex: RegExp }):
+        TextBuffer.Point;
+
+    /** Returns buffer position of the next word boundary. It might be on the current
+     *  word, or the previous word. */
+    getNextWordBoundaryBufferPosition(options?: { wordRegex: RegExp }):
+        TextBuffer.Point;
+
+    /** Retrieves the buffer position of where the current word starts. */
+    getBeginningOfCurrentWordBufferPosition(options?: { wordRegex?: RegExp,
+        includeNonWordCharacters?: boolean, allowPrevious?: boolean }): TextBuffer.Point;
+
+    /** Retrieves the buffer position of where the current word ends. */
+    getEndOfCurrentWordBufferPosition(options?: { wordRegex?: RegExp,
+        includeNonWordCharacters?: boolean }): TextBuffer.Point;
+
+    /** Retrieves the buffer position of where the next word starts. */
+    getBeginningOfNextWordBufferPosition(options?: { wordRegex: RegExp }):
+        TextBuffer.Point;
+
+    /** Returns the buffer Range occupied by the word located under the cursor. */
+    getCurrentWordBufferRange(options?: { wordRegex: RegExp }): TextBuffer.Range;
+
+    /** Returns the buffer Range for the current line. */
+    getCurrentLineBufferRange(options?: { includeNewline: boolean }): TextBuffer.Range;
+
+    /** Retrieves the range for the current paragraph.
+        A paragraph is defined as a block of text surrounded by empty lines or comments. */
+    getCurrentParagraphBufferRange(): TextBuffer.Range;
+
+    /** Returns the characters preceding the cursor in the current word. */
+    getCurrentWordPrefix(): string;
+
+    // Visibility =============================================================
+    /** Sets whether the cursor is visible. */
+    setVisible(visible: boolean): void;
+
+    /** Returns the visibility of the cursor. */
+    isVisible(): boolean;
+
+    // Comparing to another cursor ============================================
+    /** Compare this cursor's buffer position to another cursor's buffer position.
+     *  See Point::compare for more details. */
+    compare(otherCursor: Cursor): number;
+
+    // Utilities ==============================================================
+    /** Prevents this cursor from causing scrolling. */
+    clearAutoscroll(): void;
+
+    /** Deselects the current selection. */
+    clearSelection(): void;
+
+    /** Get the RegExp used by the cursor to determine what a "word" is. */
+    wordRegExp(options?: { includeNonWordCharacters: boolean }): RegExp;
+
+    /** Get the RegExp used by the cursor to determine what a "subword" is. */
+    subwordRegExp(options?: { backwards: boolean }): RegExp;
   }
 
-  // TODO(glen): implement from -> https://atom.io/docs/api/v1.14.3/Selection
+  /** Represents a selection in the TextEditor. */
   class Selection {
+    // Event Subscription =====================================================
+    /** Calls your callback when the selection was moved. */
+    onDidChangeRange(callback: (event: Params.SelectionChangeEvent) => void):
+        AtomEventKit.Disposable;
 
+    /** Calls your callback when the selection was destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    // Managing the selection range ===========================================
+    /** Returns the screen Range for the selection. */
+    getScreenRange(): TextBuffer.Range;
+
+    /** Modifies the screen range for the selection. */
+    setScreenRange(screenRange: TextBuffer.IRange, options?: { preserveFolds?: boolean,
+        autoscroll?: boolean }): void;
+    /** Modifies the screen range for the selection. */
+    setScreenRange(screenRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+    /** Modifies the screen range for the selection. */
+    setScreenRange(screenRange: [TextBuffer.IPoint, [number, number]],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+    /** Modifies the screen range for the selection. */
+    setScreenRange(screenRange: [[number, number], TextBuffer.IPoint],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+    /** Modifies the screen range for the selection. */
+    setScreenRange(screenRange: [[number, number], [number, number]],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+
+    /** Returns the buffer Range for the selection. */
+    getBufferRange(): TextBuffer.Range;
+
+    /** Modifies the buffer Range for the selection. */
+    setBufferRange(bufferRange: TextBuffer.IRange, options?: { preserveFolds?: boolean,
+        autoscroll?: boolean }): void;
+    /** Modifies the buffer Range for the selection. */
+    setBufferRange(bufferRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+    /** Modifies the buffer Range for the selection. */
+    setBufferRange(bufferRange: [TextBuffer.IPoint, [number, number]],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+    /** Modifies the buffer Range for the selection. */
+    setBufferRange(bufferRange: [[number, number], TextBuffer.IPoint],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+    /** Modifies the buffer Range for the selection. */
+    setBufferRange(bufferRange: [[number, number], [number, number]],
+        options?: { preserveFolds?: boolean, autoscroll?: boolean }): void;
+
+    /** Returns the starting and ending buffer rows the selection is highlighting. */
+    getBufferRowRange(): [number, number];
+
+    // Info about the selection ===============================================
+    /** Determines if the selection contains anything. */
+    isEmpty(): boolean;
+
+    /** Determines if the ending position of a marker is greater than the starting position.
+     *  This can happen when, for example, you highlight text "up" in a TextBuffer. */
+    isReversed(): boolean;
+
+    /** Returns whether the selection is a single line or not. */
+    isSingleScreenLine(): boolean;
+
+    /** Returns the text in the selection. */
+    getText(): string;
+
+    // NOTE(glen): calls into Range.intersectsWith(), which is one of the few functions
+    //             that doesn't take a range-compatible range, despite what the API says.
+    /** Identifies if a selection intersects with a given buffer range. */
+    intersectsBufferRange(bufferRange: TextBuffer.IRange): boolean;
+
+    /** Identifies if a selection intersects with another selection. */
+    intersectsWith(otherSelection: Selection): boolean;
+
+    // Modifying the selected range ===========================================
+    /** Clears the selection, moving the marker to the head. */
+    clear(options?: { autoscroll: boolean }): void;
+
+    /** Selects the text from the current cursor position to a given screen position. */
+    selectToScreenPosition(position: TextBuffer.IPoint): void;
+    /** Selects the text from the current cursor position to a given screen position. */
+    selectToScreenPosition(position: [number, number]): void;
+
+    // TODO(glen): this position goes right into Cursor.setBufferPosition, so once we figure out that edit this.
+    selectToBufferPosition(position: TextBuffer.IPoint): void;
+
+    /** Selects the text one position right of the cursor. */
+    selectRight(columnCount?: number): void;
+
+    /** Selects the text one position left of the cursor. */
+    selectLeft(columnCount?: number): void;
+
+    /** Selects all the text one position above the cursor. */
+    selectUp(rowCount?: number): void;
+
+    /** Selects all the text one position below the cursor. */
+    selectDown(rowCount?: number): void;
+
+    /** Selects all the text from the current cursor position to the top of the
+     *  buffer. */
+    selectToTop(): void;
+
+    /** Selects all the text from the current cursor position to the bottom of
+     *  the buffer. */
+    selectToBottom(): void;
+
+    /** Selects all the text in the buffer. */
+    selectAll(): void;
+
+    /** Selects all the text from the current cursor position to the beginning of
+     *  the line. */
+    selectToBeginningOfLine(): void;
+
+    /** Selects all the text from the current cursor position to the first character
+     *  of the line. */
+    selectToFirstCharacterOfLine(): void;
+
+    /** Selects all the text from the current cursor position to the end of the
+     *  screen line. */
+    selectToEndOfLine(): void;
+
+    /** Selects all the text from the current cursor position to the end of the
+     *  buffer line. */
+    selectToEndOfBufferLine(): void;
+
+    /** Selects all the text from the current cursor position to the beginning
+     *  of the word. */
+    selectToBeginningOfWord(): void;
+
+    /** Selects all the text from the current cursor position to the end of the word. */
+    selectToEndOfWord(): void;
+
+    /** Selects all the text from the current cursor position to the beginning of
+     *  the next word. */
+    selectToBeginningOfNextWord(): void;
+
+    /** Selects text to the previous word boundary. */
+    selectToPreviousWordBoundary(): void;
+
+    /** Selects text to the next word boundary. */
+    selectToNextWordBoundary(): void;
+
+    /** Selects text to the previous subword boundary. */
+    selectToPreviousSubwordBoundary(): void;
+
+    /** Selects text to the next subword boundary. */
+    selectToNextSubwordBoundary(): void;
+
+    /** Selects all the text from the current cursor position to the beginning of
+     *  the next paragraph. */
+    selectToBeginningOfNextParagraph(): void;
+
+    /** Selects all the text from the current cursor position to the beginning of
+     *  the previous paragraph. */
+    selectToBeginningOfPreviousParagraph(): void;
+
+    /** Modifies the selection to encompass the current word. */
+    selectWord(): void;
+
+    /** Expands the newest selection to include the entire word on which the
+     *  cursors rests. */
+    expandOverWord(): void;
+
+    /** Selects an entire line in the buffer. */
+    selectLine(row: number): void;
+
+    /** Expands the newest selection to include the entire line on which the cursor
+     *  currently rests.
+     *  It also includes the newline character. */
+    expandOverLine(): void;
+
+    // Modifying the selected text ============================================
+    /** Replaces text at the current selection. */
+    insertText(text: string, options?: { select?: boolean, autoIndent?: boolean,
+        autoIndentNewline?: boolean, autoDecreaseIndent?: boolean,
+        normalizeLineEndings?: boolean, undo?: "skip" }): void;
+
+    /** Removes the first character before the selection if the selection is empty
+     *  otherwise it deletes the selection. */
+    backspace(): void;
+
+    /** Removes the selection or, if nothing is selected, then all characters from
+     *  the start of the selection back to the previous word boundary. */
+    deleteToPreviousWordBoundary(): void;
+
+    /** Removes the selection or, if nothing is selected, then all characters from
+     *  the start of the selection up to the next word boundary. */
+    deleteToNextWordBoundary(): void;
+
+    /** Removes from the start of the selection to the beginning of the current
+     *  word if the selection is empty otherwise it deletes the selection. */
+    deleteToBeginningOfWord(): void;
+
+    /** Removes from the beginning of the line which the selection begins on all
+     *  the way through to the end of the selection. */
+    deleteToBeginningOfLine(): void;
+
+    /** Removes the selection or the next character after the start of the selection
+     *  if the selection is empty. */
+    delete(): void;
+
+    /** If the selection is empty, removes all text from the cursor to the end of
+     *  the line. If the cursor is already at the end of the line, it removes the following
+     *  newline. If the selection isn't empty, only deletes the contents of the selection. */
+    deleteToEndOfLine(): void;
+
+    /** Removes the selection or all characters from the start of the selection to
+     *  the end of the current word if nothing is selected. */
+    deleteToEndOfWord(): void;
+
+    /** Removes the selection or all characters from the start of the selection to
+     *  the end of the current word if nothing is selected. */
+    deleteToBeginningOfSubword(): void;
+
+    /** Removes the selection or all characters from the start of the selection to
+     *  the end of the current word if nothing is selected. */
+    deleteToEndOfSubword(): void;
+
+    /** Removes only the selected text. */
+    deleteSelectedText(): void;
+
+    /** Removes the line at the beginning of the selection if the selection is empty
+     *  unless the selection spans multiple lines in which case all lines are removed. */
+    deleteLine(): void;
+
+    /** Joins the current line with the one below it. Lines will be separated by a single space.
+     *  If there selection spans more than one line, all the lines are joined together. */
+    joinLines(): void;
+
+    /** Removes one level of indent from the currently selected rows. */
+    outdentSelectedRows(): void;
+
+    /** Sets the indentation level of all selected rows to values suggested by the
+     *  relevant grammars. */
+    autoIndentSelectedRows(): void;
+
+    /** Wraps the selected lines in comments if they aren't currently part of a comment.
+     *  Removes the comment if they are currently wrapped in a comment. */
+    toggleLineComments(): void;
+
+    /** Cuts the selection until the end of the screen line. */
+    cutToEndOfLine(): void;
+
+    /** Cuts the selection until the end of the buffer line. */
+    cutToEndOfBufferLine(): void;
+
+    /** Copies the selection to the clipboard and then deletes it. */
+    cut(maintainClipboard?: boolean): void;
+    /** Copies the selection to the clipboard and then deletes it. */
+    cut(maintainClipboard: boolean, fullLine?: boolean): void;
+
+    /** Copies the current selection to the clipboard. */
+    copy(maintainClipboard?: boolean): void;
+    /** Copies the current selection to the clipboard. */
+    copy(maintainClipboard: boolean, fullLine?: boolean): void;
+
+    /** Creates a fold containing the current selection. */
+    fold(): void;
+
+    /** If the selection spans multiple rows, indent all of them. */
+    indentSelectedRows(): void;
+
+    // Managing multiple selections ===========================================
+    /** Moves the selection down one row. */
+    addSelectionBelow(): void;
+
+    /** Moves the selection up one row. */
+    addSelectionAbove(): void;
+
+    /** Combines the given selection into this selection and then destroys the
+     *  given selection. */
+    merge(otherSelection: Selection, options?: { preserveFolds?: boolean,
+        autoscroll?: boolean }): void;
+
+    // Comparing to other selections ==========================================
+    /** Compare this selection's buffer range to another selection's buffer range.
+     *  See Range::compare for more details. */
+    compare(otherSelection: Selection): number;
+  }
+
+  /** Represents a buffer annotation that remains logically stationary even as the
+   *  buffer changes. This is used to represent cursors, folds, snippet targets,
+   *  misspelled words, and anything else that needs to track a logical location
+   *  in the buffer over time. */
+  class DisplayMarker {
+    // Construction and Destruction ===========================================
+    /** Destroys the marker, causing it to emit the 'destroyed' event. Once destroyed,
+     *  a marker cannot be restored by undo/redo operations. */
+    destroy(): void;
+
+    /** Creates and returns a new DisplayMarker with the same properties as this marker. */
+    copy(properties?: Object): DisplayMarker;
+
+    // Event Subscription  ====================================================
+    /** Invoke the given callback when the state of the marker changes. */
+    onDidChange(callback: (event: Params.DisplayMarkerChangeEvent) => void):
+        AtomEventKit.Disposable;
+
+    /** Invoke the given callback when the marker is destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    // TextEditorMarker Details ===============================================
+    /** Returns a boolean indicating whether the marker is valid. Markers can be
+     *  invalidated when a region surrounding them in the buffer is changed. */
+    isValid(): boolean;
+
+    /** Returns a boolean indicating whether the marker has been destroyed. A marker
+     *  can be invalid without being destroyed, in which case undoing the invalidating
+     *  operation would restore the marker. */
+    isDestroyed(): boolean;
+
+    /** Returns a boolean indicating whether the head precedes the tail. */
+    isReversed(): boolean;
+
+    /** Returns a boolean indicating whether changes that occur exactly at the marker's
+     *  head or tail cause it to move. */
+    isExclusive(): boolean;
+
+    /** Get the invalidation strategy for this marker.
+     *  Valid values include: never, surround, overlap, inside, and touch. */
+    getInvalidationStrategy(): string;
+
+    /** Returns an Object containing any custom properties associated with the marker. */
+    getProperties(): Object;
+
+    /** Merges an Object containing new properties into the marker's existing properties. */
+    setProperties(properties: Object): void;
+
+    /** Returns whether this marker matches the given parameters. */
+    matchesProperties(attributes: Params.MarkerProperties): boolean;
+
+    // Comparing to other markers =============================================
+    /** Compares this marker to another based on their ranges. */
+    compare(other: DisplayMarker): number;
+
+    /** Returns a boolean indicating whether this marker is equivalent to another
+     *  marker, meaning they have the same range and options. */
+    isEqual(other: DisplayMarker): boolean;
+
+    // Managing the marker's range ============================================
+    /** Gets the buffer range of this marker. */
+    getBufferRange(): TextBuffer.Range;
+
+    /** Gets the screen range of this marker. */
+    getScreenRange(): TextBuffer.Range;
+
+    /** Modifies the buffer range of this marker. */
+    setBufferRange(bufferRange: TextBuffer.IRange, properties?:
+        { reversed: boolean }): void;
+    /** Modifies the buffer range of this marker. */
+    setBufferRange(bufferRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        properties?: { reversed: boolean }): void;
+    /** Modifies the buffer range of this marker. */
+    setBufferRange(bufferRange: [TextBuffer.IPoint, [number, number]],
+        properties?: { reversed: boolean }): void;
+    /** Modifies the buffer range of this marker. */
+    setBufferRange(bufferRange: [[number, number], TextBuffer.IPoint],
+        properties?: { reversed: boolean }): void;
+    /** Modifies the buffer range of this marker. */
+    setBufferRange(bufferRange: [[number, number], [number, number]],
+        properties?: { reversed: boolean }): void;
+
+    /** Modifies the screen range of this marker. */
+    setScreenRange(screenRange: TextBuffer.IRange, options?:
+        { reversed?: boolean, clipDirection?: "backward"|"forward"|"closest" }): void;
+    /** Modifies the screen range of this marker. */
+    setScreenRange(screenRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { reversed?: boolean, clipDirection?: "backward"|"forward"|"closest" }): void;
+    /** Modifies the screen range of this marker. */
+    setScreenRange(screenRange: [TextBuffer.IPoint, [number, number]],
+        options?: { reversed?: boolean, clipDirection?: "backward"|"forward"|"closest" }): void;
+    /** Modifies the screen range of this marker. */
+    setScreenRange(screenRange: [[number, number], TextBuffer.IPoint],
+        options?: { reversed?: boolean, clipDirection?: "backward"|"forward"|"closest" }): void;
+    /** Modifies the screen range of this marker. */
+    setScreenRange(screenRange: [[number, number], [number, number]],
+        options?: { reversed?: boolean, clipDirection?: "backward"|"forward"|"closest" }): void;
+
+    /** Retrieves the screen position of the marker's start. This will always be
+     *  less than or equal to the result of DisplayMarker::getEndScreenPosition. */
+    getStartScreenPosition(options?: { clipDirection: "backward"|"forward"|"closest" }):
+        TextBuffer.Point;
+
+    /** Retrieves the screen position of the marker's end. This will always be
+     *  greater than or equal to the result of DisplayMarker::getStartScreenPosition. */
+    getEndScreenPosition(options?: { clipDirection: "backward"|"forward"|"closest" }):
+        TextBuffer.Point;
+
+    /** Retrieves the buffer position of the marker's head. */
+    getHeadBufferPosition(): TextBuffer.Point;
+
+    /** Sets the buffer position of the marker's head. */
+    setHeadBufferPosition(bufferPosition: TextBuffer.IPoint): void;
+    /** Sets the buffer position of the marker's head. */
+    setHeadBufferPosition(bufferPosition: [number, number]): void;
+
+    /** Retrieves the screen position of the marker's head. */
+    getHeadScreenPosition(options?: { clipDirection: "backward"|"forward"|"closest" }):
+        TextBuffer.Point;
+
+    /** Sets the screen position of the marker's head. */
+    setHeadScreenPosition(screenPosition: TextBuffer.IPoint, options?:
+        { clipDirection: "backward"|"forward"|"closest" }): void;
+    /** Sets the screen position of the marker's head. */
+    setHeadScreenPosition(screenPosition: [number, number], options?:
+        { clipDirection: "backward"|"forward"|"closest" }): void;
+
+    /** Retrieves the buffer position of the marker's tail. */
+    getTailBufferPosition(): TextBuffer.Point;
+
+    /** Sets the buffer position of the marker's tail. */
+    setTailBufferPosition(bufferPosition: TextBuffer.IPoint): void;
+    /** Sets the buffer position of the marker's tail. */
+    setTailBufferPosition(bufferPosition: [number, number]): void;
+
+    /** Retrieves the screen position of the marker's tail. */
+    getTailScreenPosition(options?: { clipDirection: "backward"|"forward"|"closest" }):
+        TextBuffer.Point;
+
+    /** Sets the screen position of the marker's tail. */
+    setTailScreenPosition(screenPosition: TextBuffer.IPoint, options?:
+        { clipDirection: "backward"|"forward"|"closest" }): void;
+    /** Sets the screen position of the marker's tail. */
+    setTailScreenPosition(screenPosition: [number, number], options?:
+        { clipDirection: "backward"|"forward"|"closest" }): void;
+
+    /** Retrieves the buffer position of the marker's start. This will always be less
+     *  than or equal to the result of DisplayMarker::getEndBufferPosition. */
+    getStartBufferPosition(): TextBuffer.Point;
+
+    /** Retrieves the buffer position of the marker's end. This will always be greater
+     *  than or equal to the result of DisplayMarker::getStartBufferPosition. */
+    getEndBufferPosition(): TextBuffer.Point;
+
+    /** Returns a boolean indicating whether the marker has a tail. */
+    hasTail(): boolean;
+
+    /** Plants the marker's tail at the current head position. After calling the
+     *  marker's tail position will be its head position at the time of the call,
+     *  regardless of where the marker's head is moved. */
+    plantTail(): void;
+
+    /** Removes the marker's tail. After calling the marker's head position will be
+     *  reported as its current tail position until the tail is planted again. */
+    clearTail(): void;
   }
 
   // Managers and Registries ==================================================

@@ -7,7 +7,7 @@ import * as sound from "./sound";
 
 interface GutterDecoration {
   type: "AlertDecoration"|"SetColorDecoration"
-  marker: any
+  marker: AtomCore.DisplayMarker
   decoration: any
 }
 
