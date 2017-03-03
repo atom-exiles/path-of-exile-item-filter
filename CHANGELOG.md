@@ -2,6 +2,7 @@
 * Added linter errors for trailing comments on rules where it's an error in-game
 * Extension renames for opened files are now properly handled
 * A linter error will no longer flash when converting hexadecimal text
+* Fixed an exception error thrown when editing an unnamed item filter
 
 ## Version 1.0.0
 * Support for 2.6 and Legacy league

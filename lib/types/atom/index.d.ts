@@ -236,6 +236,35 @@ declare namespace AtomCore {
       normalizeLineEndings?: boolean
       undo?: "skip"
     }
+
+    interface DecorationOptions {
+      /** One of several supported decoration types. */
+      type: "line"|"line-number"|"highlight"|"overlay"|"gutter"|"block"
+      /** This CSS class will be applied to the decorated line number, line, highlight,
+       *  or overlay. */
+      class: string
+      /** An HTMLElement or a model Object with a corresponding view registered. Only
+       *  applicable to the gutter, overlay and block types. */
+      item?: HTMLElement
+      /** If true, the decoration will only be applied to the head of the DisplayMarker.
+       *  Only applicable to the line and line-number types. */
+      onlyHead?: boolean
+      /** If true, the decoration will only be applied if the associated DisplayMarker
+       *  is empty. Only applicable to the gutter, line, and line-number types. */
+      onlyEmpty?: boolean
+      /** If true, the decoration will only be applied if the associated DisplayMarker
+       *  is non-empty. Only applicable to the gutter, line, and line-number types. */
+      onlyNonEmpty?: boolean
+      /** Only applicable to decorations of type overlay and block. Controls where the
+       *  view is positioned relative to the TextEditorMarker. Values can be
+       *  'head' (the default) or 'tail' for overlay decorations, and 'before' (the default)
+       *  or 'after' for block decorations. */
+      position?: "head"|"tail"|"before"|"after"
+      /** Only applicable to decorations of type overlay. Determines whether the decoration
+       *  adjusts its horizontal or vertical position to remain fully visible when it would
+       *  otherwise overflow the editor. Defaults to true. */
+      avoidOverflow?: boolean
+    }
   }
 
   // Base Classes =============================================================
@@ -677,32 +706,98 @@ declare namespace AtomCore {
     onDidStopChanging(callback: (event: Params.TEStoppedChangesEvent) => void):
         AtomEventKit.Disposable;
 
-    // onDidChangeCursorPosition(callback): AtomEventKit.Disposable;
-    // onDidChangeSelectionRange(callback): AtomEventKit.Disposable;
-    // onDidSave(callback): AtomEventKit.Disposable;
-    // onDidDestroy(callback): AtomEventKit.Disposable;
-    // getBuffer(): AtomEventKit.Disposable;
-    // observeGutters(callback): AtomEventKit.Disposable;
-    // onDidAddGutter(callback): AtomEventKit.Disposable;
-    // onDidRemoveGutter(callback): AtomEventKit.Disposable;
-    // onDidChangeSoftWrapped(callback): AtomEventKit.Disposable;
-    // onDidChangeEncoding(callback): AtomEventKit.Disposable;
-    // observeGrammar(callback): AtomEventKit.Disposable;
-    // onDidChangeGrammar(callback): AtomEventKit.Disposable;
-    // onDidChangeModified(callback): AtomEventKit.Disposable;
-    // onDidConflict(callback): AtomEventKit.Disposable;
-    // onWillInsertText(callback): AtomEventKit.Disposable;
-    // onDidInsertText(callback): AtomEventKit.Disposable;
-    // observeCursors(callback): AtomEventKit.Disposable;
-    // onDidAddCursor(callback): AtomEventKit.Disposable;
-    // onDidRemoveCursor(callback): AtomEventKit.Disposable;
-    // observeSelections(callback): AtomEventKit.Disposable;
-    // onDidAddSelection(callback): AtomEventKit.Disposable;
-    // onDidRemoveSelection(callback): AtomEventKit.Disposable;
-    // observeDecorations(callback): AtomEventKit.Disposable;
-    // onDidAddDecoration(callback): AtomEventKit.Disposable;
-    // onDidRemoveDecoration(callback): AtomEventKit.Disposable;
-    // onDidChangePlaceholderText(callback): AtomEventKit.Disposable;
+    /** Calls your callback when a Cursor is moved. If there are multiple cursors,
+     *  your callback will be called for each cursor. */
+    onDidChangeCursorPosition(callback: (event: Params.CursorChangeEvent) => void):
+        AtomEventKit.Disposable;
+
+    /** Calls your callback when a selection's screen range changes. */
+    onDidChangeSelectionRange(callback: (event: Params.SelectionChangeEvent) => void):
+        AtomEventKit.Disposable;
+
+    /** Invoke the given callback after the buffer is saved to disk. */
+    onDidSave(callback: (event: { path: string }) => void): AtomEventKit.Disposable;
+
+    /** Invoke the given callback when the editor is destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    /** Retrieves the current TextBuffer. */
+    getBuffer(): TextBuffer.TextBuffer;
+
+    /** Calls your callback when a Gutter is added to the editor. Immediately calls
+     *  your callback for each existing gutter. */
+    observeGutters(callback: (gutter: Gutter) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Gutter is added to the editor. */
+    onDidAddGutter(callback: (gutter: Gutter) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Gutter is removed from the editor. */
+    onDidRemoveGutter(callback: (name: string) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when soft wrap was enabled or disabled. */
+    onDidChangeSoftWrapped(callback: (softWrapped: boolean) => void):
+        AtomEventKit.Disposable;
+
+    /** Calls your callback when the buffer's encoding has changed. */
+    onDidChangeEncoding(callback: (encoding: string) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when the grammar that interprets and colorizes the text
+     *  has been changed. Immediately calls your callback with the current grammar. */
+    observeGrammar(callback: (grammar: Grammar) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when the grammar that interprets and colorizes the text
+     *  has been changed. */
+    onDidChangeGrammar(callback: (grammar: Grammar) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when the result of ::isModified changes. */
+    onDidChangeModified(callback: (modified: boolean) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when the buffer's underlying file changes on disk at a
+     *  moment when the result of ::isModified is true. */
+    onDidConflict(callback: () => void): AtomEventKit.Disposable;
+
+    /** Calls your callback before text has been inserted. */
+    onWillInsertText(callback: (event: { text: string, cancel: Function }) => void):
+        AtomEventKit.Disposable;
+
+    /** Calls your callback after text has been inserted. */
+    onDidInsertText(callback: (event: { text: string }) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Cursor is added to the editor. Immediately calls
+     *  your callback for each existing cursor. */
+    observeCursors(callback: (cursor: Cursor) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Cursor is added to the editor. */
+    onDidAddCursor(callback: (cursor: Cursor) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Cursor is removed from the editor. */
+    onDidRemoveCursor(callback: (cursor: Cursor) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Selection is added to the editor. Immediately
+     *  calls your callback for each existing selection. */
+    observeSelections(callback: (selection: Selection) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Selection is added to the editor. */
+    onDidAddSelection(callback: (selection: Selection) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Selection is removed from the editor. */
+    onDidRemoveSelection(callback: (selection: Selection) => void):
+        AtomEventKit.Disposable;
+
+    /** Calls your callback with each Decoration added to the editor. Calls your
+     *  callback immediately for any existing decorations. */
+    observeDecorations(callback: (decoration: Decoration) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Decoration is added to the editor. */
+    onDidAddDecoration(callback: (decoration: Decoration) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when a Decoration is removed from the editor. */
+    onDidRemoveDecoration(callback: (decoration: Decoration) => void):
+        AtomEventKit.Disposable;
+
+    /** Calls your callback when the placeholder text is changed. */
+    onDidChangePlaceholderText(callback: (placeholderText: string) => void):
+        AtomEventKit.Disposable;
 
     // File Details ===========================================================
     /** Get the editor's title for display in other parts of the UI such as the tabs.
@@ -928,19 +1023,113 @@ declare namespace AtomCore {
     groupChangesSinceCheckpoint(checkpoint: number): boolean;
 
     // TextEditor Coordinates =================================================
-    // screenPositionForBufferPosition(bufferPosition, [options])
-    // bufferPositionForScreenPosition(bufferPosition, [options])
-    // screenRangeForBufferRange(bufferRange)
-    // bufferRangeForScreenRange(screenRange)
-    // clipBufferPosition(bufferPosition)
-    // clipBufferRange(range)
-    // clipScreenPosition(screenPosition, [options])
-    // clipScreenRange(range, [options])
+    /** Convert a position in buffer-coordinates to screen-coordinates. */
+    screenPositionForBufferPosition(bufferPosition: TextBuffer.IPoint, options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Point;
+    /** Convert a position in buffer-coordinates to screen-coordinates. */
+    screenPositionForBufferPosition(bufferPosition: [number, number], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Point;
+
+    /** Convert a position in screen-coordinates to buffer-coordinates. */
+    bufferPositionForScreenPosition(bufferPosition: TextBuffer.IPoint, options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Point;
+    /** Convert a position in screen-coordinates to buffer-coordinates. */
+    bufferPositionForScreenPosition(bufferPosition: [number, number], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Point;
+
+    /** Convert a range in buffer-coordinates to screen-coordinates. */
+    screenRangeForBufferRange(bufferRange: TextBuffer.IRange): TextBuffer.Range;
+    /** Convert a range in buffer-coordinates to screen-coordinates. */
+    screenRangeForBufferRange(bufferRange: [TextBuffer.IPoint, TextBuffer.IPoint]):
+        TextBuffer.Range;
+    /** Convert a range in buffer-coordinates to screen-coordinates. */
+    screenRangeForBufferRange(bufferRange: [TextBuffer.IPoint, [number, number]]):
+        TextBuffer.Range;
+    /** Convert a range in buffer-coordinates to screen-coordinates. */
+    screenRangeForBufferRange(bufferRange: [[number, number], TextBuffer.IPoint]):
+        TextBuffer.Range;
+    /** Convert a range in buffer-coordinates to screen-coordinates. */
+    screenRangeForBufferRange(bufferRange: [[number, number], [number, number]]):
+        TextBuffer.Range;
+
+    /** Convert a range in screen-coordinates to buffer-coordinates. */
+    bufferRangeForScreenRange(screenRange: TextBuffer.IRange): TextBuffer.Range;
+    /** Convert a range in screen-coordinates to buffer-coordinates. */
+    bufferRangeForScreenRange(screenRange: [TextBuffer.IPoint, TextBuffer.IPoint]):
+        TextBuffer.Range;
+    /** Convert a range in screen-coordinates to buffer-coordinates. */
+    bufferRangeForScreenRange(screenRange: [TextBuffer.IPoint, [number, number]]):
+        TextBuffer.Range;
+    /** Convert a range in screen-coordinates to buffer-coordinates. */
+    bufferRangeForScreenRange(screenRange: [[number, number], TextBuffer.IPoint]):
+        TextBuffer.Range;
+    /** Convert a range in screen-coordinates to buffer-coordinates. */
+    bufferRangeForScreenRange(screenRange: [[number, number], [number, number]]):
+        TextBuffer.Range;
+
+    /** Clip the given Point to a valid position in the buffer. */
+    clipBufferPosition(bufferPosition: TextBuffer.IPoint): TextBuffer.Point;
+    /** Clip the given Point to a valid position in the buffer. */
+    clipBufferPosition(bufferPosition: [number, number]): TextBuffer.Point;
+
+    /** Clip the start and end of the given range to valid positions in the buffer.
+     *  See ::clipBufferPosition for more information. */
+    clipBufferRange(range: TextBuffer.IRange): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions in the buffer.
+     *  See ::clipBufferPosition for more information. */
+    clipBufferRange(range: [TextBuffer.IPoint, TextBuffer.IPoint]): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions in the buffer.
+     *  See ::clipBufferPosition for more information. */
+    clipBufferRange(range: [TextBuffer.IPoint, [number, number]]): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions in the buffer.
+     *  See ::clipBufferPosition for more information. */
+    clipBufferRange(range: [[number, number], TextBuffer.IPoint]): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions in the buffer.
+     *  See ::clipBufferPosition for more information. */
+    clipBufferRange(range: [[number, number], [number, number]]): TextBuffer.Range;
+
+    /** Clip the given Point to a valid position on screen. */
+    clipScreenPosition(screenPosition: TextBuffer.IPoint, options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Point;
+    /** Clip the given Point to a valid position on screen. */
+    clipScreenPosition(screenPosition: [number, number], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Point;
+
+    /** Clip the start and end of the given range to valid positions on screen.
+     *  See ::clipScreenPosition for more information. */
+    clipScreenRange(range: TextBuffer.IRange, options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions on screen.
+     *  See ::clipScreenPosition for more information. */
+    clipScreenRange(range: [TextBuffer.IPoint, TextBuffer.IPoint], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions on screen.
+     *  See ::clipScreenPosition for more information. */
+    clipScreenRange(range: [TextBuffer.IPoint, [number, number]], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions on screen.
+     *  See ::clipScreenPosition for more information. */
+    clipScreenRange(range: [[number, number], TextBuffer.IPoint], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Range;
+    /** Clip the start and end of the given range to valid positions on screen.
+     *  See ::clipScreenPosition for more information. */
+    clipScreenRange(range: [[number, number], [number, number]], options?:
+        { clipDirection: "backward"|"forward"|"closest"}): TextBuffer.Range;
 
     // Decorations ============================================================
-    // TODO(glen): actually implement this.
-    decorateMarker(marker: DisplayMarker, decorationParams: any): any;
-    // decorateMarkerLayer(markerLayer, decorationParams)
+    /** Add a decoration that tracks a DisplayMarker. When the marker moves, is
+     *  invalidated, or is destroyed, the decoration will be updated to reflect
+     *  the marker's state. */
+    decorateMarker(marker: DisplayMarker, decorationParams: Params.DecorationOptions):
+        Decoration;
+
+    /** Add a decoration to every marker in the given marker layer. Can be used to
+     *  decorate a large number of markers without having to create and manage many
+     *  individual decorations. */
+    // TODO(glen): two new types to implement here.
+    // decorateMarkerLayer(markerLayer: TextBuffer.MarkerLayer|DisplayMarkerLayer,
+    //     decorationParams: Params.DecorationLayerOptions): LayerDecoration;
+
     // getDecorations([propertyFilter])
     // getLineDecorations([propertyFilter])
     // getLineNumberDecorations([propertyFilter])
@@ -978,9 +1167,9 @@ declare namespace AtomCore {
         { autoscroll: boolean }): void;
 
     /** Get a Cursor at given screen coordinates Point. */
-    getCursorAtScreenPosition(position: TextBuffer.IPoint): AtomCore.Cursor|undefined;
+    getCursorAtScreenPosition(position: TextBuffer.IPoint): Cursor|undefined;
     /** Get a Cursor at given screen coordinates Point. */
-    getCursorAtScreenPosition(position: [number, number]): AtomCore.Cursor|undefined;
+    getCursorAtScreenPosition(position: [number, number]): Cursor|undefined;
 
     /** Get the position of the most recently added cursor in screen coordinates. */
     getCursorScreenPosition(): TextBuffer.Point;
@@ -998,14 +1187,14 @@ declare namespace AtomCore {
         options?: { autoscroll: boolean }): void;
 
     /** Add a cursor at the given position in buffer coordinates. */
-    addCursorAtBufferPosition(bufferPosition: TextBuffer.IPoint): AtomCore.Cursor;
+    addCursorAtBufferPosition(bufferPosition: TextBuffer.IPoint): Cursor;
     /** Add a cursor at the given position in buffer coordinates. */
-    addCursorAtBufferPosition(bufferPosition: [number, number]): AtomCore.Cursor;
+    addCursorAtBufferPosition(bufferPosition: [number, number]): Cursor;
 
     /** Add a cursor at the position in screen coordinates. */
-    addCursorAtScreenPosition(screenPosition: TextBuffer.IPoint): AtomCore.Cursor;
+    addCursorAtScreenPosition(screenPosition: TextBuffer.IPoint): Cursor;
     /** Add a cursor at the position in screen coordinates. */
-    addCursorAtScreenPosition(screenPosition: [number, number]): AtomCore.Cursor;
+    addCursorAtScreenPosition(screenPosition: [number, number]): Cursor;
 
     /** Returns a boolean indicating whether or not there are multiple cursors. */
     hasMultipleCursors(): boolean;
@@ -1073,18 +1262,18 @@ declare namespace AtomCore {
     moveToBeginningOfPreviousParagraph(): void;
 
     /** Returns the most recently added Cursor. */
-    getLastCursor(): AtomCore.Cursor;
+    getLastCursor(): Cursor;
 
     /** Returns the word surrounding the most recently added cursor. */
     getWordUnderCursor(options?: { wordRegex?: RegExp,
         includeNonWordCharacters: boolean, allowPrevious: boolean }): string;
 
     /** Get an Array of all Cursors. */
-    getCursors(): Array<AtomCore.Cursor>;
+    getCursors(): Array<Cursor>;
 
     /** Get all Cursorss, ordered by their position in the buffer instead of the
      *  order in which they were added. */
-    getCursorsOrderedByBufferPosition(): Array<AtomCore.Cursor>;
+    getCursorsOrderedByBufferPosition(): Array<Cursor>;
 
     // Selections =============================================================
     /** Get the selected text of the most recently added selection. */
@@ -1128,15 +1317,15 @@ declare namespace AtomCore {
         options?: { reversed?: boolean, preserveFolds?: boolean}): void;
     /** Set the selected ranges in buffer coordinates. If there are multiple selections,
      *  they are replaced by new selections with the given ranges. */
-    setSelectedBufferRanges(bufferRanges: [TextBuffer.IPoint, [number, number]],
+    setSelectedBufferRanges(bufferRanges: [TextBuffer.IPoint, [number, number]][],
         options?: { reversed?: boolean, preserveFolds?: boolean}): void;
     /** Set the selected ranges in buffer coordinates. If there are multiple selections,
      *  they are replaced by new selections with the given ranges. */
-    setSelectedBufferRanges(bufferRanges: [[number, number], TextBuffer.IPoint],
+    setSelectedBufferRanges(bufferRanges: [[number, number], TextBuffer.IPoint][],
         options?: { reversed?: boolean, preserveFolds?: boolean}): void;
     /** Set the selected ranges in buffer coordinates. If there are multiple selections,
      *  they are replaced by new selections with the given ranges. */
-    setSelectedBufferRanges(bufferRanges: [[number, number], [number, number]],
+    setSelectedBufferRanges(bufferRanges: [[number, number], [number, number]][],
         options?: { reversed?: boolean, preserveFolds?: boolean}): void;
 
     /** Get the Range of the most recently added selection in screen coordinates. */
@@ -1167,38 +1356,191 @@ declare namespace AtomCore {
     setSelectedScreenRange(screenRange: [[number, number], [number, number]],
         options?: { reversed: boolean }): void;
 
-    // TODO(glen): CONTINUE HERE.
-    // setSelectedScreenRanges(screenRanges, [options])
-    // addSelectionForBufferRange(bufferRange, [options])
-    // addSelectionForScreenRange(screenRange, [options])
-    // selectToBufferPosition(position)
-    // selectToScreenPosition(position)
-    // selectUp([rowCount])
-    // selectDown([rowCount])
-    // selectLeft([columnCount])
-    // selectRight([columnCount])
-    // selectToTop()
-    // selectToBottom()
-    // selectAll()
-    // selectToBeginningOfLine()
-    // selectToFirstCharacterOfLine()
-    // selectToEndOfLine()
-    // selectToBeginningOfWord()
-    // selectToEndOfWord()
-    // selectLinesContainingCursors()
-    // selectWordsContainingCursors()
-    // selectToPreviousSubwordBoundary()
-    // selectToNextSubwordBoundary()
-    // selectToPreviousWordBoundary()
-    // selectToNextWordBoundary()
-    // selectToBeginningOfNextWord()
-    // selectToBeginningOfNextParagraph()
-    // selectToBeginningOfPreviousParagraph()
-    // selectMarker(marker)
-    // getLastSelection()
-    // getSelections()
-    // getSelectionsOrderedByBufferPosition()
-    // selectionIntersectsBufferRange(bufferRange)
+    /** Set the selected ranges in screen coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedScreenRanges(screenRanges: TextBuffer.IRange[], options?:
+        { reversed: boolean }): void;
+    /** Set the selected ranges in screen coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedScreenRanges(screenRanges: [TextBuffer.IPoint, TextBuffer.IPoint][],
+        options?: { reversed: boolean }): void;
+    /** Set the selected ranges in screen coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedScreenRanges(screenRanges: [TextBuffer.IPoint, [number, number]][],
+        options?: { reversed: boolean }): void;
+    /** Set the selected ranges in screen coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedScreenRanges(screenRanges: [[number, number], TextBuffer.IPoint][],
+        options?: { reversed: boolean }): void;
+    /** Set the selected ranges in screen coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedScreenRanges(screenRanges: [[number, number], [number, number]][],
+        options?: { reversed: boolean }): void;
+
+    /** Add a selection for the given range in buffer coordinates. */
+    addSelectionForBufferRange(bufferRange: TextBuffer.IRange, options?:
+        { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in buffer coordinates. */
+    addSelectionForBufferRange(bufferRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in buffer coordinates. */
+    addSelectionForBufferRange(bufferRange: [TextBuffer.IPoint, [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in buffer coordinates. */
+    addSelectionForBufferRange(bufferRange: [[number, number], TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in buffer coordinates. */
+    addSelectionForBufferRange(bufferRange: [[number, number], [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+
+    /** Add a selection for the given range in screen coordinates. */
+    addSelectionForScreenRange(screenRange: TextBuffer.IRange, options?:
+        { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in screen coordinates. */
+    addSelectionForScreenRange(screenRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in screen coordinates. */
+    addSelectionForScreenRange(screenRange: [TextBuffer.IPoint, [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in screen coordinates. */
+    addSelectionForScreenRange(screenRange: [[number, number], TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+    /** Add a selection for the given range in screen coordinates. */
+    addSelectionForScreenRange(screenRange: [[number, number], [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean }): Selection;
+
+    /** Select from the current cursor position to the given position in buffer coordinates.
+     *  This method may merge selections that end up intesecting. */
+    selectToBufferPosition(position: TextBuffer.IPoint): void;
+    /** Select from the current cursor position to the given position in buffer coordinates.
+     *  This method may merge selections that end up intesecting. */
+    selectToBufferPosition(position: [number, number]): void;
+
+    /** Select from the current cursor position to the given position in screen coordinates.
+     *  This method may merge selections that end up intesecting. */
+    selectToScreenPosition(position: TextBuffer.IPoint): void;
+    /** Select from the current cursor position to the given position in screen coordinates.
+     *  This method may merge selections that end up intesecting. */
+    selectToScreenPosition(position: [number, number]): void;
+
+    /** Move the cursor of each selection one character upward while preserving the
+     *  selection's tail position.
+     *  This method may merge selections that end up intesecting. */
+    selectUp(rowCount?: number): void;
+
+    /** Move the cursor of each selection one character downward while preserving
+     *  the selection's tail position.
+     *  This method may merge selections that end up intesecting. */
+    selectDown(rowCount?: number): void;
+
+    /** Move the cursor of each selection one character leftward while preserving
+     *  the selection's tail position.
+     *  This method may merge selections that end up intesecting. */
+    selectLeft(columnCount?: number): void;
+
+    /** Move the cursor of each selection one character rightward while preserving
+     *  the selection's tail position.
+     *  This method may merge selections that end up intesecting. */
+    selectRight(columnCount?: number): void;
+
+    /** Select from the top of the buffer to the end of the last selection in the buffer.
+     *  This method merges multiple selections into a single selection. */
+    selectToTop(): void;
+
+    /** Selects from the top of the first selection in the buffer to the end of the buffer.
+     *  This method merges multiple selections into a single selection. */
+    selectToBottom(): void;
+
+    /** Select all text in the buffer.
+     *  This method merges multiple selections into a single selection. */
+    selectAll(): void;
+
+    /** Move the cursor of each selection to the beginning of its line while preserving
+     *  the selection's tail position.
+     *  This method may merge selections that end up intesecting. */
+    selectToBeginningOfLine(): void;
+
+    /** Move the cursor of each selection to the first non-whitespace character of its
+     *  line while preserving the selection's tail position. If the cursor is already
+     *  on the first character of the line, move it to the beginning of the line.
+     *  This method may merge selections that end up intersecting. */
+    selectToFirstCharacterOfLine(): void;
+
+    /** Move the cursor of each selection to the end of its line while preserving the
+     *  selection's tail position.
+     *  This method may merge selections that end up intersecting. */
+    selectToEndOfLine(): void;
+
+    /** Expand selections to the beginning of their containing word.
+     *  Operates on all selections. Moves the cursor to the beginning of the containing
+     *  word while preserving the selection's tail position. */
+    selectToBeginningOfWord(): void;
+
+    /** Expand selections to the end of their containing word.
+     *  Operates on all selections. Moves the cursor to the end of the containing word
+      * while preserving the selection's tail position. */
+    selectToEndOfWord(): void;
+
+    /** For each cursor, select the containing line.
+     *  This method merges selections on successive lines. */
+    selectLinesContainingCursors(): void;
+
+    /** Select the word surrounding each cursor. */
+    selectWordsContainingCursors(): void;
+
+    /** For each selection, move its cursor to the preceding subword boundary while
+     *  maintaining the selection's tail position.
+     *  This method may merge selections that end up intersecting. */
+    selectToPreviousSubwordBoundary(): void;
+
+    /** For each selection, move its cursor to the next subword boundary while maintaining
+     *  the selection's tail position.
+     *  This method may merge selections that end up intersecting. */
+    selectToNextSubwordBoundary(): void;
+
+    /** For each selection, move its cursor to the preceding word boundary while
+     *  maintaining the selection's tail position.
+     *  This method may merge selections that end up intersecting. */
+    selectToPreviousWordBoundary(): void;
+
+    /** For each selection, move its cursor to the next word boundary while maintaining
+     *  the selection's tail position.
+     *  This method may merge selections that end up intersecting. */
+    selectToNextWordBoundary(): void;
+
+    /** Expand selections to the beginning of the next word.
+     *  Operates on all selections. Moves the cursor to the beginning of the next word
+     *  while preserving the selection's tail position. */
+    selectToBeginningOfNextWord(): void;
+
+    /** Expand selections to the beginning of the next paragraph.
+     *  Operates on all selections. Moves the cursor to the beginning of the next
+     *  paragraph while preserving the selection's tail position. */
+    selectToBeginningOfNextParagraph(): void;
+
+    /** Expand selections to the beginning of the next paragraph.
+     *  Operates on all selections. Moves the cursor to the beginning of the next
+     *  paragraph while preserving the selection's tail position. */
+    selectToBeginningOfPreviousParagraph(): void;
+
+    /** Select the range of the given marker if it is valid. */
+    selectMarker(marker: DisplayMarker): TextBuffer.Range|undefined;
+
+    /** Get the most recently added Selection. */
+    getLastSelection(): Selection;
+
+    /** Get current Selections. */
+    getSelections(): Selection[];
+
+    /** Get all Selections, ordered by their position in the buffer instead of the
+     *  order in which they were added. */
+    getSelectionsOrderedByBufferPosition(): Selection[];
+
+    // NOTE(glen): Calls into Selection::intersectsBufferRange, which then calls into
+    // Range::intersectsWith. Range::intersectsWith is one of the few functions
+    // which does NOT take a range-compatible array.
+    /** Determine if a given range in buffer coordinates intersects a selection. */
+    selectionIntersectsBufferRange(bufferRange: TextBuffer.IRange): boolean;
 
     // Searching and Replacing ================================================
     // TODO(glen): implement this

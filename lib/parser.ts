@@ -773,13 +773,22 @@ function processRangeRule(parser: LineParser, line: LineInfo,
     values: []
   };
 
+  const operator: ParseResult<string> = parser.nextOperator();
   if(hasOperator) {
-    const operator: ParseResult<string> = parser.nextOperator();
-    if(!operator.found || !operator.value) {
-      operator.value = "=";
-    } else {
+    if(operator.found && operator.value) {
       result.operator = { type: operator.value, range: new Range([line.number,
           operator.startIndex], [line.number, operator.endIndex]) };
+    }
+  } else {
+    if(operator.found) {
+      result.messages.push({
+        type: "Error",
+        text: "An operator for a \"" + line.keyword + "\" rule is an error.",
+        filePath: line.file,
+        range: new Range([line.number, operator.startIndex],
+            [line.number, operator.endIndex])
+      });
+      result.invalid = true;
     }
   }
 
@@ -797,8 +806,8 @@ function processRangeRule(parser: LineParser, line: LineInfo,
       type: "Error",
       text: messageText,
       filePath: line.file,
-      range: new Range([ line.number, parser.textStartIndex ],
-          [ line.number, parser.originalLength ])
+      range: new Range([line.number, parser.textStartIndex],
+          [line.number, parser.originalLength])
     });
     result.invalid = true;
   } else {

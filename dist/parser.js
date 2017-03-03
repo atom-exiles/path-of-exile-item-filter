@@ -587,14 +587,22 @@ function processRangeRule(parser, line, min, max, hasOperator = true) {
         messages: [],
         values: []
     };
+    const operator = parser.nextOperator();
     if (hasOperator) {
-        const operator = parser.nextOperator();
-        if (!operator.found || !operator.value) {
-            operator.value = "=";
-        }
-        else {
+        if (operator.found && operator.value) {
             result.operator = { type: operator.value, range: new atom_1.Range([line.number,
                     operator.startIndex], [line.number, operator.endIndex]) };
+        }
+    }
+    else {
+        if (operator.found) {
+            result.messages.push({
+                type: "Error",
+                text: "An operator for a \"" + line.keyword + "\" rule is an error.",
+                filePath: line.file,
+                range: new atom_1.Range([line.number, operator.startIndex], [line.number, operator.endIndex])
+            });
+            result.invalid = true;
         }
     }
     const retVal = parser.nextNumber();
