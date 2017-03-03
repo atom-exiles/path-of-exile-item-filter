@@ -56,7 +56,6 @@ class FilterManager {
         exports.emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
     }
     isFilter() {
-        if (path.extname(this.editor.buffer.getPath()) == ".filter")
             return true;
         else
             return false;

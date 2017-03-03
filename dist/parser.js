@@ -626,6 +626,42 @@ function processRangeRule(parser, line, min, max) {
     reportTrailingComment(parser, line, result);
     return result;
 }
+function processValueInRangeRule(parser, line, min, max) {
+    var result = {
+        invalid: false,
+        messages: [],
+        values: []
+    };
+    const retVal = parser.nextNumber();
+    if (!retVal.found || retVal.value == undefined) {
+        result.messages.push({
+            type: "Error",
+            text: "Invalid format. Expected \"" + line.keyword + " <Number>\".",
+            filePath: line.file,
+            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+        });
+        result.invalid = true;
+    }
+    else {
+        if (retVal.value >= min && retVal.value <= max) {
+            const r = new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex]);
+            const value = { value: retVal.value, range: r };
+            result.values = [value];
+        }
+        else {
+            result.messages.push({
+                type: "Error",
+                text: "Invalid value for \"" + line.keyword + "\" rule. Expected "
+                    + min + "-" + max + ".",
+                filePath: line.file,
+                range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+            });
+            result.invalid = true;
+        }
+    }
+    reportTrailingComment(parser, line, result);
+    return result;
+}
 function processBlock(parser, line) {
     var result = {
         messages: [],
@@ -772,7 +808,7 @@ function parseLine(args) {
             ruleType = "condition";
         }
         else if (keyword == "SetFontSize") {
-            processResult = processRangeRule(parser, lineInfo, 18, 45);
+            processResult = processValueInRangeRule(parser, lineInfo, 18, 45);
             ruleType = "action";
         }
         else if (keyword == "SetBorderColor" || keyword == "SetTextColor" ||
