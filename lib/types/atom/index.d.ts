@@ -174,6 +174,13 @@ declare namespace AtomCore {
       textChanged: boolean
     }
 
+    interface DecorationChangeEvent {
+      /** Object the old parameters the decoration used to have. */
+      oldProperties: Object
+      /** Object the new parameters the decoration now has */
+      newProperties: Object
+    }
+
     interface MarkerProperties {
       /** Only include markers starting at this Point in buffer coordinates. */
       startBufferPosition?: TextBuffer.IPoint|[number, number]
@@ -219,6 +226,15 @@ declare namespace AtomCore {
       intersectsScreenRange?: TextBuffer.IRange|[TextBuffer.IPoint, TextBuffer.IPoint]|
           [TextBuffer.IPoint, [number, number]]|[[number, number], TextBuffer.IPoint]|
           [[number, number], [number, number]]
+    }
+
+    interface TextInsertion {
+      select?: boolean
+      autoIndent?: boolean
+      autoIndentNewline?: boolean
+      autoDecreaseIndent?: boolean
+      normalizeLineEndings?: boolean
+      undo?: "skip"
     }
   }
 
@@ -689,17 +705,42 @@ declare namespace AtomCore {
     // onDidChangePlaceholderText(callback): AtomEventKit.Disposable;
 
     // File Details ===========================================================
-    // getTitle()
-    // getLongTitle()
-    // getPath()
-    // isModified()
-    // isEmpty()
-    // getEncoding()
-    // setEncoding(encoding)
+    /** Get the editor's title for display in other parts of the UI such as the tabs.
+     *  If the editor's buffer is saved, its title is the file name. If it is unsaved,
+     *  its title is "untitled". */
+    getTitle(): string;
+
+    /** Get unique title for display in other parts of the UI, such as the window title.
+     *  If the editor's buffer is unsaved, its title is "untitled" If the editor's
+     *  buffer is saved, its unique title is formatted as one of the following,
+     *
+     *  "" when it is the only editing buffer with this file name.
+     *  " — " when other buffers have this file name. */
+    getLongTitle(): string;
+
+    /** Returns the string path of this editor's text buffer. */
+    getPath(): string|undefined;
+
+    /** Returns boolean true if this editor has been modified. */
+    isModified(): boolean;
+
+    /** Returns boolean true if this editor has no content. */
+    isEmpty(): boolean;
+
+    /** Returns the string character set encoding of this editor's text buffer. */
+    getEncoding(): string;
+
+    /** Set the character set encoding to use in this editor's text buffer. */
+    setEncoding(encoding: string): void;
 
     // File Operations ========================================================
-    // save()
-    // saveAs(filePath)
+    /** Saves the editor's text buffer.
+     *  See TextBuffer::save for more details. */
+    save(): void;
+
+    /** Saves the editor's text buffer as the given path.
+     *  See TextBuffer::saveAs for more details. */
+    saveAs(filePath: string): void;
 
     // Reading Text ===========================================================
     /** Returns a string representing the entire contents of the editor. */
@@ -848,13 +889,43 @@ declare namespace AtomCore {
     deleteLine(): void;
 
     // History ================================================================
-    // undo()
-    // redo()
-    // transact([groupingInterval], fn)
-    // abortTransaction()
-    // createCheckpoint()
-    // revertToCheckpoint()
-    // groupChangesSinceCheckpoint()
+    /** Undo the last change. */
+    undo(): void;
+
+    /** Redo the last change. */
+    redo(): void;
+
+    /** Batch multiple operations as a single undo/redo step.
+     *  Any group of operations that are logically grouped from the perspective of undoing
+     *  and redoing should be performed in a transaction. If you want to abort the transaction,
+     *  call ::abortTransaction to terminate the function's execution and revert any changes
+     *  performed up to the abortion. */
+    transact(fn: () => void): void;
+    /** Batch multiple operations as a single undo/redo step.
+     *  Any group of operations that are logically grouped from the perspective of undoing
+     *  and redoing should be performed in a transaction. If you want to abort the transaction,
+     *  call ::abortTransaction to terminate the function's execution and revert any changes
+     *  performed up to the abortion. */
+    transact(groupingInterval: number, fn: () => void): void;
+
+    /** Abort an open transaction, undoing any operations performed so far within the transaction. */
+    abortTransaction(): void;
+
+    /** Create a pointer to the current state of the buffer for use with ::revertToCheckpoint
+     *  and ::groupChangesSinceCheckpoint. */
+    createCheckpoint(): number;
+
+    /** Revert the buffer to the state it was in when the given checkpoint was created.
+     *  The redo stack will be empty following this operation, so changes since the checkpoint
+     *  will be lost. If the given checkpoint is no longer present in the undo history, no
+     *  changes will be made to the buffer and this method will return false. */
+    revertToCheckpoint(checkpoint: number): boolean;
+
+    /** Group all changes since the given checkpoint into a single transaction for purposes
+     *  of undo/redo.
+     *  If the given checkpoint is no longer present in the undo history, no grouping will be
+     *  performed and this method will return false. */
+    groupChangesSinceCheckpoint(checkpoint: number): boolean;
 
     // TextEditor Coordinates =================================================
     // screenPositionForBufferPosition(bufferPosition, [options])
@@ -868,7 +939,7 @@ declare namespace AtomCore {
 
     // Decorations ============================================================
     // TODO(glen): actually implement this.
-    decorateMarker(marker: any, decorationParams: any): any;
+    decorateMarker(marker: DisplayMarker, decorationParams: any): any;
     // decorateMarkerLayer(markerLayer, decorationParams)
     // getDecorations([propertyFilter])
     // getLineDecorations([propertyFilter])
@@ -1016,14 +1087,87 @@ declare namespace AtomCore {
     getCursorsOrderedByBufferPosition(): Array<AtomCore.Cursor>;
 
     // Selections =============================================================
-    // getSelectedText()
-    // getSelectedBufferRange()
-    // getSelectedBufferRanges()
-    // setSelectedBufferRange(bufferRange, [options])
-    // setSelectedBufferRanges(bufferRanges, [options])
-    // getSelectedScreenRange()
-    // getSelectedScreenRanges()
-    // setSelectedScreenRange(screenRange, [options])
+    /** Get the selected text of the most recently added selection. */
+    getSelectedText(): string;
+
+    /** Get the Range of the most recently added selection in buffer coordinates. */
+    getSelectedBufferRange(): TextBuffer.Range;
+
+    /** Get the Ranges of all selections in buffer coordinates.
+     *  The ranges are sorted by when the selections were added. Most recent at the end. */
+    getSelectedBufferRanges(): TextBuffer.Range[];
+
+    /** Set the selected range in buffer coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedBufferRange(bufferRange: TextBuffer.IRange, options?:
+        { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected range in buffer coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedBufferRange(bufferRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected range in buffer coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedBufferRange(bufferRange: [TextBuffer.IPoint, [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected range in buffer coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedBufferRange(bufferRange: [[number, number], TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected range in buffer coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedBufferRange(bufferRange: [[number, number], [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+
+    /** Set the selected ranges in buffer coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedBufferRanges(bufferRanges: TextBuffer.IRange[], options?:
+        { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected ranges in buffer coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedBufferRanges(bufferRanges: [TextBuffer.IPoint, TextBuffer.IPoint][],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected ranges in buffer coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedBufferRanges(bufferRanges: [TextBuffer.IPoint, [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected ranges in buffer coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedBufferRanges(bufferRanges: [[number, number], TextBuffer.IPoint],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+    /** Set the selected ranges in buffer coordinates. If there are multiple selections,
+     *  they are replaced by new selections with the given ranges. */
+    setSelectedBufferRanges(bufferRanges: [[number, number], [number, number]],
+        options?: { reversed?: boolean, preserveFolds?: boolean}): void;
+
+    /** Get the Range of the most recently added selection in screen coordinates. */
+    getSelectedScreenRange(): TextBuffer.Range;
+
+    /** Get the Ranges of all selections in screen coordinates.
+     *  The ranges are sorted by when the selections were added. Most recent at the end. */
+    getSelectedScreenRanges(): TextBuffer.Range[];
+
+    /** Set the selected range in screen coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedScreenRange(screenRange: TextBuffer.IRange, options?:
+        { reversed: boolean }): void;
+    /** Set the selected range in screen coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedScreenRange(screenRange: [TextBuffer.IPoint, TextBuffer.IPoint],
+        options?: { reversed: boolean }): void;
+    /** Set the selected range in screen coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedScreenRange(screenRange: [TextBuffer.IPoint, [number, number]],
+        options?: { reversed: boolean }): void;
+    /** Set the selected range in screen coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedScreenRange(screenRange: [[number, number], TextBuffer.IPoint],
+        options?: { reversed: boolean }): void;
+    /** Set the selected range in screen coordinates. If there are multiple selections,
+     *  they are reduced to a single selection with the given range. */
+    setSelectedScreenRange(screenRange: [[number, number], [number, number]],
+        options?: { reversed: boolean }): void;
+
+    // TODO(glen): CONTINUE HERE.
     // setSelectedScreenRanges(screenRanges, [options])
     // addSelectionForBufferRange(bufferRange, [options])
     // addSelectionForScreenRange(screenRange, [options])
@@ -1057,41 +1201,91 @@ declare namespace AtomCore {
     // selectionIntersectsBufferRange(bufferRange)
 
     // Searching and Replacing ================================================
+    // TODO(glen): implement this
     // scan(regex, iterator)
     // scanInBufferRange(regex, range, iterator)
     // backwardsScanInBufferRange(regex, range, iterator)
 
     // Tab Behavior ===========================================================
-    // getSoftTabs()
-    // setSoftTabs(softTabs)
-    // toggleSoftTabs()
-    // getTabLength()
-    // setTabLength(tabLength)
-    // usesSoftTabs()
-    // getTabText()
+    /** Returns a boolean indicating whether softTabs are enabled for this editor. */
+    getSoftTabs(): boolean;
+
+    /** Enable or disable soft tabs for this editor. */
+    setSoftTabs(softTabs: boolean): void;
+
+    /** Toggle soft tabs for this editor. */
+    toggleSoftTabs(): void;
+
+    /** Get the on-screen length of tab characters. */
+    getTabLength(): number;
+
+    /** Set the on-screen length of tab characters. Setting this to a number will
+     *  override the editor.tabLength setting. */
+    setTabLength(tabLength: number): void;
+
+    /** Determine if the buffer uses hard or soft tabs. */
+    usesSoftTabs(): boolean|undefined;
+
+    /** Get the text representing a single level of indent.
+     *  If soft tabs are enabled, the text is composed of N spaces, where N is the
+     *  tab length. Otherwise the text is a tab character (\t). */
+    getTabText(): string;
 
     // Soft Wrap Behavior =====================================================
-    // isSoftWrapped()
-    // setSoftWrapped(softWrapped)
-    // toggleSoftWrapped()
-    // getSoftWrapColumn()
+    /** Determine whether lines in this editor are soft-wrapped. */
+    isSoftWrapped(): boolean;
+
+    /** Enable or disable soft wrapping for this editor. */
+    setSoftWrapped(softWrapped: boolean): boolean;
+
+    /** Toggle soft wrapping for this editor. */
+    toggleSoftWrapped(): boolean;
+
+    /** Gets the column at which column will soft wrap. */
+    getSoftWrapColumn(): number;
 
     // Indentation ============================================================
-    // indentationForBufferRow(bufferRow)
-    // setIndentationForBufferRow(bufferRow, newLevel, [options])
-    // indentSelectedRows()
-    // outdentSelectedRows()
-    // indentLevelForLine(line)
-    // autoIndentSelectedRows()
+    /** Get the indentation level of the given buffer row.
+     *  Determines how deeply the given row is indented based on the soft tabs and tab
+     *  length settings of this editor. Note that if soft tabs are enabled and the tab
+     *  length is 2, a row with 4 leading spaces would have an indentation level of 2. */
+    indentationForBufferRow(bufferRow: number): number;
+
+    /** Set the indentation level for the given buffer row.
+     *  Inserts or removes hard tabs or spaces based on the soft tabs and tab length settings
+     *  of this editor in order to bring it to the given indentation level. Note that if soft
+     *  tabs are enabled and the tab length is 2, a row with 4 leading spaces would have an
+     *  indentation level of 2. */
+    setIndentationForBufferRow(bufferRow: number, newLevel: number, options?:
+        { preserveLeadingWhitespace: boolean }): void;
+
+    /** Indent rows intersecting selections by one level. */
+    indentSelectedRows(): void;
+
+    /** Outdent rows intersecting selections by one level. */
+    outdentSelectedRows(): void;
+
+    /** Get the indentation level of the given line of text.
+     *  Determines how deeply the given line is indented based on the soft tabs and tab length
+     *  settings of this editor. Note that if soft tabs are enabled and the tab length is 2,
+     *  a row with 4 leading spaces would have an indentation level of 2. */
+    indentLevelForLine(line: string): number;
+
+    /** Indent rows intersecting selections based on the grammar's suggested indent level. */
+    autoIndentSelectedRows(): void;
 
     // Grammars ===============================================================
-    // getGrammar()
-    // setGrammar(grammar)
+    /** Get the current Grammar of this editor. */
+    getGrammar(): Grammar;
+
+    /** Set the current Grammar of this editor.
+     *  Assigning a grammar will cause the editor to re-tokenize based on the new grammar. */
+    setGrammar(grammar: Grammar): void;
 
     // Managing Syntax Scopes =================================================
     /** Returns a ScopeDescriptor that includes this editor's language.
      *  e.g. [".source.ruby"], or [".source.coffee"]. */
-    getRootScopeDescriptor(): AtomCore.ScopeDescriptor;
+    getRootScopeDescriptor(): ScopeDescriptor;
 
     /** Get the syntactic scopeDescriptor for the given position in buffer coordinates. */
     scopeDescriptorForBufferPosition(bufferPosition: TextBuffer.IPoint):
@@ -1108,41 +1302,110 @@ declare namespace AtomCore {
     isBufferRowCommented(bufferRow: number): boolean;
 
     // Clipboard Operations ===================================================
-    // copySelectedText()
-    // cutSelectedText()
-    // pasteText([options])
-    // cutToEndOfLine()
-    // cutToEndOfBufferLine()
+    /** For each selection, copy the selected text. */
+    copySelectedText(): void;
+
+    /** For each selection, cut the selected text. */
+    cutSelectedText(): void;
+
+    /** For each selection, replace the selected text with the contents of the clipboard.
+     *  If the clipboard contains the same number of selections as the current editor,
+     *  each selection will be replaced with the content of the corresponding clipboard
+     *  selection text. */
+    pasteText(options?: Params.TextInsertion): void;
+
+    /** For each selection, if the selection is empty, cut all characters of the
+     *  containing screen line following the cursor. Otherwise cut the selected text. */
+    cutToEndOfLine(): void;
+
+    /** For each selection, if the selection is empty, cut all characters of the
+     *  containing buffer line following the cursor. Otherwise cut the selected text. */
+    cutToEndOfBufferLine(): void;
 
     // Folds ==================================================================
-    // foldCurrentRow()
-    // unfoldCurrentRow()
-    // foldBufferRow(bufferRow)
-    // unfoldBufferRow(bufferRow)
-    // foldSelectedLines()
-    // foldAll()
-    // unfoldAll()
-    // foldAllAtIndentLevel(level)
-    // isFoldableAtBufferRow(bufferRow)
-    // isFoldableAtScreenRow(bufferRow)
-    // toggleFoldAtBufferRow()
-    // isFoldedAtCursorRow()
-    // isFoldedAtBufferRow(bufferRow)
-    // isFoldedAtScreenRow(screenRow)
+    /** Fold the most recent cursor's row based on its indentation level.
+     *  The fold will extend from the nearest preceding line with a lower indentation
+     *  level up to the nearest following row with a lower indentation level. */
+    foldCurrentRow(): void;
+
+    /** Unfold the most recent cursor's row by one level. */
+    unfoldCurrentRow(): void;
+
+    /** Fold the given row in buffer coordinates based on its indentation level.
+     *  If the given row is foldable, the fold will begin there. Otherwise, it will
+     *  begin at the first foldable row preceding the given row. */
+    foldBufferRow(bufferRow: number): void;
+
+    /** Unfold all folds containing the given row in buffer coordinates. */
+    unfoldBufferRow(bufferRow: number): void;
+
+    /** For each selection, fold the rows it intersects. */
+    foldSelectedLines(): void;
+
+    /** Fold all foldable lines. */
+    foldAll(): void;
+
+    /** Unfold all existing folds. */
+    unfoldAll(): void;
+
+    /** Fold all foldable lines at the given indent level. */
+    foldAllAtIndentLevel(level: number): void;
+
+    /** Determine whether the given row in buffer coordinates is foldable.
+     *  A foldable row is a row that starts a row range that can be folded. */
+    isFoldableAtBufferRow(bufferRow: number): boolean;
+
+    /** Determine whether the given row in screen coordinates is foldable.
+     *  A foldable row is a row that starts a row range that can be folded. */
+    isFoldableAtScreenRow(bufferRow: number): boolean;
+
+    /** Fold the given buffer row if it isn't currently folded, and unfold it otherwise. */
+    toggleFoldAtBufferRow(bufferRow: number): void;
+
+    /** Determine whether the most recently added cursor's row is folded. */
+    isFoldedAtCursorRow(): boolean;
+
+    /** Determine whether the given row in buffer coordinates is folded. */
+    isFoldedAtBufferRow(bufferRow: number): boolean;
+
+    /** Determine whether the given row in screen coordinates is folded. */
+    isFoldedAtScreenRow(screenRow: number): boolean;
 
     // Gutters ================================================================
-    // addGutter(options)
-    // getGutters()
-    // gutterWithName()
+    /** Add a custom Gutter. */
+    addGutter(options: { name: string, priority?: number, visible?: boolean }): Gutter;
+
+    /** Get this editor's gutters. */
+    getGutters(): Gutter[];
+
+    /** Get the gutter with the given name. */
+    gutterWithName(name: string): Gutter|null;
 
     // Scrolling the TextEditor ===============================================
-    // scrollToCursorPosition([options])
-    // scrollToBufferPosition(bufferPosition, [options])
-    // scrollToScreenPosition(screenPosition, [options])
+    /** Scroll the editor to reveal the most recently added cursor if it is off-screen. */
+    scrollToCursorPosition(options?: { center: boolean }): void;
+
+    /** Scrolls the editor to the given buffer position. */
+    scrollToBufferPosition(bufferPosition: TextBuffer.IPoint, options?:
+        { center: boolean }): void;
+    /** Scrolls the editor to the given buffer position. */
+    scrollToBufferPosition(bufferPosition: [number, number], options?:
+        { center: boolean }): void;
+
+    /** Scrolls the editor to the given screen position. */
+    scrollToScreenPosition(screenPosition: TextBuffer.IPoint, options?:
+        { center: boolean }): void;
+    /** Scrolls the editor to the given screen position. */
+    scrollToScreenPosition(screenPosition: [number, number], options?:
+        { center: boolean }): void;
 
     // TextEditor Rendering ===================================================
-    // getPlaceholderText()
-    // setPlaceholderText(placeholderText)
+    /** Retrieves the greyed out placeholder of a mini editor. */
+    getPlaceholderText(): string;
+
+    /** Set the greyed out placeholder of a mini editor. Placeholder text will be
+     *  displayed when the editor has no content. */
+    setPlaceholderText(placeholderText: string): void;
   }
 
   /** The Cursor class represents the little blinking line identifying where text
@@ -1538,9 +1801,7 @@ declare namespace AtomCore {
 
     // Modifying the selected text ============================================
     /** Replaces text at the current selection. */
-    insertText(text: string, options?: { select?: boolean, autoIndent?: boolean,
-        autoIndentNewline?: boolean, autoDecreaseIndent?: boolean,
-        normalizeLineEndings?: boolean, undo?: "skip" }): void;
+    insertText(text: string, options?: Params.TextInsertion): void;
 
     /** Removes the first character before the selection if the selection is empty
      *  otherwise it deletes the selection. */
@@ -1810,6 +2071,71 @@ declare namespace AtomCore {
     /** Removes the marker's tail. After calling the marker's head position will be
      *  reported as its current tail position until the tail is planted again. */
     clearTail(): void;
+  }
+
+  /** Represents a decoration that follows a DisplayMarker. A decoration is basically
+   *  a visual representation of a marker. It allows you to add CSS classes to line
+   *  numbers in the gutter, lines, and add selection-line regions around marked ranges
+   *  of text. */
+  class Decoration {
+    id: number;
+
+    // Construction and Destruction ===========================================
+    /** Destroy this marker decoration.
+     *  You can also destroy the marker if you own it, which will destroy this decoration. */
+    destroy(): void;
+
+    // Event Subscription =====================================================
+    /** When the Decoration is updated via Decoration::setProperties. */
+    onDidChangeProperties(callback: (event: Params.DecorationChangeEvent) => void):
+        AtomEventKit.Disposable;
+    /** Invoke the given callback when the Decoration is destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    // Decoration Details =====================================================
+    /** An id unique across all Decoration objects. */
+    getId(): number;
+
+    /** Returns the marker associated with this Decoration. */
+    getMarker(): DisplayMarker;
+
+    // Properties =============================================================
+    /** Returns the Decoration's properties. */
+    getProperties(): Object;
+
+    /** Update the marker with new Properties. Allows you to change the decoration's
+     *  class. */
+    setProperties(newProperties: Object): void;
+  }
+
+  /** Represents a gutter within a TextEditor. */
+  class Gutter {
+    // Gutter Destruction =====================================================
+    /** Destroys the gutter. */
+    destroy(): void;
+
+    // Event Subscription =====================================================
+    /** Calls your callback when the gutter's visibility changes. */
+    onDidChangeVisible(callback: (gutter: Gutter) => void): AtomEventKit.Disposable;
+
+    /** Calls your callback when the gutter is destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    // Visibility =============================================================
+    /** Hide the gutter. */
+    hide(): void;
+
+    /** Show the gutter. */
+    show(): void;
+
+    /** Determine whether the gutter is visible. */
+    isVisible(): boolean;
+
+    /** Add a decoration that tracks a DisplayMarker. When the marker moves, is
+     *  invalidated, or is destroyed, the decoration will be updated to reflect
+     *  the marker's state. */
+    decorateMarker(marker: DisplayMarker, decorationParams:
+        { type: "line-number"|"gutter" }): Decoration;
   }
 
   // Managers and Registries ==================================================

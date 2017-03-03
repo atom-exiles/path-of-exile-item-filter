@@ -693,7 +693,7 @@ declare namespace TextBuffer {
     isInConflict(): boolean;
 
     /** Get the path of the associated file. */
-    getPath(): string;
+    getPath(): string|undefined;
 
     /** Set the path for the buffer's associated file. */
     setPath(filePath: string): void;

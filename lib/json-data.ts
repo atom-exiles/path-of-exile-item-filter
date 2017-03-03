@@ -6,8 +6,6 @@ import { Emitter, CompositeDisposable } from "atom";
 
 import * as settings from "./settings";
 
-
-
 interface ItemDataLayout {
   [index: string]: Array<string>
 }

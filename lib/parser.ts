@@ -766,27 +766,36 @@ function processBooleanRule(parser: LineParser, line: LineInfo):
  *  <Rule> [Operator] <Value>
  *  Where <Value> is expected to be a value between {min...max}. */
 function processRangeRule(parser: LineParser, line: LineInfo,
-    min: number, max: number): ProcessResult {
+    min: number, max: number, hasOperator = true): ProcessResult {
   var result: ProcessResult = {
     invalid: false,
     messages: [],
     values: []
   };
 
-  const operator: ParseResult<string> = parser.nextOperator();
-  if(!operator.found || !operator.value) {
-    operator.value = "=";
-  } else {
-    result.operator = { type: operator.value, range: new Range([line.number,
-        operator.startIndex], [line.number, operator.endIndex]) };
+  if(hasOperator) {
+    const operator: ParseResult<string> = parser.nextOperator();
+    if(!operator.found || !operator.value) {
+      operator.value = "=";
+    } else {
+      result.operator = { type: operator.value, range: new Range([line.number,
+          operator.startIndex], [line.number, operator.endIndex]) };
+    }
   }
 
   const retVal = parser.nextNumber();
   if(!retVal.found || retVal.value == undefined) {
+    var partialMessageText = "Invalid format. Expected \"" + line.keyword;
+    var messageText;
+    if(hasOperator) {
+      messageText = partialMessageText + " [Operator] <Number>\".";
+    } else {
+      messageText = partialMessageText + " <Number>\".";
+    }
+
     result.messages.push({
       type: "Error",
-      text: "Invalid format. Expected \"" + line.keyword +
-          " [Operator] <Number>\".",
+      text: messageText,
       filePath: line.file,
       range: new Range([ line.number, parser.textStartIndex ],
           [ line.number, parser.originalLength ])
@@ -978,7 +987,7 @@ export function parseLine(args: ParseLine): Filter.Line {
       processResult = processMultiStringRule(parser, lineInfo, validBases, false);
       ruleType = "condition";
     } else if(keyword == "SetFontSize") {
-      processResult = processRangeRule(parser, lineInfo, 18, 45);
+      processResult = processRangeRule(parser, lineInfo, 18, 45, false);
       ruleType = "action";
     } else if(keyword == "SetBorderColor" || keyword == "SetTextColor" ||
         keyword == "SetBackgroundColor") {

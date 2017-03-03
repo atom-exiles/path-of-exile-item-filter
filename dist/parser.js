@@ -581,62 +581,35 @@ function processBooleanRule(parser, line) {
     reportTrailingComment(parser, line, result);
     return result;
 }
-function processRangeRule(parser, line, min, max) {
+function processRangeRule(parser, line, min, max, hasOperator = true) {
     var result = {
         invalid: false,
         messages: [],
         values: []
     };
-    const operator = parser.nextOperator();
-    if (!operator.found || !operator.value) {
-        operator.value = "=";
-    }
-    else {
-        result.operator = { type: operator.value, range: new atom_1.Range([line.number,
-                operator.startIndex], [line.number, operator.endIndex]) };
-    }
-    const retVal = parser.nextNumber();
-    if (!retVal.found || retVal.value == undefined) {
-        result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword +
-                " [Operator] <Number>\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
-        });
-        result.invalid = true;
-    }
-    else {
-        if (retVal.value >= min && retVal.value <= max) {
-            const r = new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex]);
-            const value = { value: retVal.value, range: r };
-            result.values = [value];
+    if (hasOperator) {
+        const operator = parser.nextOperator();
+        if (!operator.found || !operator.value) {
+            operator.value = "=";
         }
         else {
-            result.messages.push({
-                type: "Error",
-                text: "Invalid value for \"" + line.keyword + "\" rule. Expected "
-                    + min + "-" + max + ".",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
-            });
-            result.invalid = true;
+            result.operator = { type: operator.value, range: new atom_1.Range([line.number,
+                    operator.startIndex], [line.number, operator.endIndex]) };
         }
     }
-    reportTrailingComment(parser, line, result);
-    return result;
-}
-function processValueInRangeRule(parser, line, min, max) {
-    var result = {
-        invalid: false,
-        messages: [],
-        values: []
-    };
     const retVal = parser.nextNumber();
     if (!retVal.found || retVal.value == undefined) {
+        var partialMessageText = "Invalid format. Expected \"" + line.keyword;
+        var messageText;
+        if (hasOperator) {
+            messageText = partialMessageText + " [Operator] <Number>\".";
+        }
+        else {
+            messageText = partialMessageText + " <Number>\".";
+        }
         result.messages.push({
             type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword + " <Number>\".",
+            text: messageText,
             filePath: line.file,
             range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
         });
@@ -808,7 +781,7 @@ function parseLine(args) {
             ruleType = "condition";
         }
         else if (keyword == "SetFontSize") {
-            processResult = processValueInRangeRule(parser, lineInfo, 18, 45);
+            processResult = processRangeRule(parser, lineInfo, 18, 45, false);
             ruleType = "action";
         }
         else if (keyword == "SetBorderColor" || keyword == "SetTextColor" ||

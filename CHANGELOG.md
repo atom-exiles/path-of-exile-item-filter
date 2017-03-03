@@ -1,4 +1,4 @@
-## Versions 1.0.1-1.0.3
+## Versions 1.0.1-1.0.4
 * Added linter errors for trailing comments on rules where it's an error in-game
 * Extension renames for opened files are now properly handled
 * A linter error will no longer flash when converting hexadecimal text

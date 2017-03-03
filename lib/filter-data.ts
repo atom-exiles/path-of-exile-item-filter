@@ -66,7 +66,8 @@ class FilterManager {
 
   /** Returns whether or not this buffer contains an item filter. */
   public isFilter() {
-    if(path.extname(this.editor.buffer.getPath()) == ".filter") return true;
+    const filePath = this.editor.buffer.getPath();
+    if(filePath && path.extname(filePath) == ".filter") return true;
     else return false;
   }
 
@@ -162,8 +163,13 @@ class FilterManager {
 
   private async parseLineInfo(filter: Promise<Filter.Line[]>|undefined,
       changes: BufferChanges, reset = false): Promise<Filter.Line[]> {
+    const filePath = this.editor.buffer.getPath();
     const lines = this.editor.buffer.getLines();
     const itemData = await data.filterItemData;
+
+    if(!filePath) {
+      throw new Error("attemped to parse a buffer with no associated file.");
+    }
 
     var previousLines: Filter.Line[];
     if(reset) previousLines = [];
@@ -189,8 +195,8 @@ class FilterManager {
       const row = changes.newRange.start.row + i;
       const currentLine = lines[row];
 
-      const result = parser.parseLine({editor: this.editor, itemData: itemData,
-          lineText: currentLine, row: row, filePath: this.editor.buffer.getPath()});
+      const result = parser.parseLine({ editor: this.editor, itemData: itemData,
+          lineText: currentLine, row: row, filePath: filePath });
       assert(result, "parseLine should always return a Filter.Line");
       output.push(result);
     }

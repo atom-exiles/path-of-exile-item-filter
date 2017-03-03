@@ -56,7 +56,8 @@ class FilterManager {
         exports.emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
     }
     isFilter() {
-        if (path.extname("" + this.editor.buffer.getPath()) == ".filter")
+        const filePath = this.editor.buffer.getPath();
+        if (filePath && path.extname(filePath) == ".filter")
             return true;
         else
             return false;
@@ -150,8 +151,12 @@ class FilterManager {
     }
     parseLineInfo(filter, changes, reset = false) {
         return __awaiter(this, void 0, void 0, function* () {
+            const filePath = this.editor.buffer.getPath();
             const lines = this.editor.buffer.getLines();
             const itemData = yield data.filterItemData;
+            if (!filePath) {
+                throw new Error("attemped to parse a buffer with no associated file.");
+            }
             var previousLines;
             if (reset)
                 previousLines = [];
@@ -175,7 +180,7 @@ class FilterManager {
                 const row = changes.newRange.start.row + i;
                 const currentLine = lines[row];
                 const result = parser.parseLine({ editor: this.editor, itemData: itemData,
-                    lineText: currentLine, row: row, filePath: this.editor.buffer.getPath() });
+                    lineText: currentLine, row: row, filePath: filePath });
                 assert(result, "parseLine should always return a Filter.Line");
                 output.push(result);
             }
