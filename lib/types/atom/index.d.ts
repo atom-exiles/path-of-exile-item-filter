@@ -267,6 +267,8 @@ declare namespace AtomCore {
     interface DecorationOptions extends SharedDecorationOptions {
       /** One of several supported decoration types. */
       type: "line"|"line-number"|"highlight"|"overlay"|"gutter"|"block"
+      /** The name of the gutter we're decorating, if type is "gutter". */
+      gutterName: string
     }
 
     interface DecorationLayerOptions extends SharedDecorationOptions {
