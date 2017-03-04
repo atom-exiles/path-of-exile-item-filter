@@ -976,12 +976,12 @@ declare namespace TextBuffer {
         replace: Function) => void): void;
     /** Scan regular expression matches in a given range , calling the given
      *  iterator function on each match. */
-    scanInRange(regex: RegExp, range: [IRange, [number, number]], iterator:
+    scanInRange(regex: RegExp, range: [IPoint, [number, number]], iterator:
         (match: Object, matchText: string, range: Range, stop: Function,
         replace: Function) => void): void;
     /** Scan regular expression matches in a given range , calling the given
      *  iterator function on each match. */
-    scanInRange(regex: RegExp, range: [[number, number], IRange], iterator:
+    scanInRange(regex: RegExp, range: [[number, number], IPoint], iterator:
         (match: Object, matchText: string, range: Range, stop: Function,
         replace: Function) => void): void;
 
@@ -1002,12 +1002,12 @@ declare namespace TextBuffer {
        replace: Function) => void): void;
     /** Scan regular expression matches in a given range in reverse order,
      *  calling the given iterator function on each match. */
-    backwardsScanInRange(regex: RegExp, range: [IRange, [number, number]], iterator:
+    backwardsScanInRange(regex: RegExp, range: [IPoint, [number, number]], iterator:
        (match: Object, matchText: string, range: Range, stop: Function,
        replace: Function) => void): void;
     /** Scan regular expression matches in a given range in reverse order,
      *  calling the given iterator function on each match. */
-    backwardsScanInRange(regex: RegExp, range: [[number, number], IRange], iterator:
+    backwardsScanInRange(regex: RegExp, range: [[number, number], IPoint], iterator:
        (match: Object, matchText: string, range: Range, stop: Function,
        replace: Function) => void): void;
 

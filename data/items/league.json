@@ -1,5 +1,6 @@
 {
   "Stackable Currency": [
+    "Eternal Orb",
     "Perandus Coin",
     "Splinter",
     "Splinter of Xoph",
@@ -74,11 +75,14 @@
     "Writhing Talisman",
     "Greatwolf Talisman"
   ],
-  "Misc Map Items": [],
   "Rings": [
     "Breach Ring"
   ],
   "Active Skill Gems": [
     "Vaal Breach"
-  ]
+  ],
+  "Support Skill Gems": [
+    "Item Quantity Support"
+  ],
+  "Misc Map Items": []
 }

@@ -237,9 +237,7 @@ declare namespace AtomCore {
       undo?: "skip"
     }
 
-    interface DecorationOptions {
-      /** One of several supported decoration types. */
-      type: "line"|"line-number"|"highlight"|"overlay"|"gutter"|"block"
+    interface SharedDecorationOptions {
       /** This CSS class will be applied to the decorated line number, line, highlight,
        *  or overlay. */
       class: string
@@ -264,6 +262,16 @@ declare namespace AtomCore {
        *  adjusts its horizontal or vertical position to remain fully visible when it would
        *  otherwise overflow the editor. Defaults to true. */
       avoidOverflow?: boolean
+    }
+
+    interface DecorationOptions extends SharedDecorationOptions {
+      /** One of several supported decoration types. */
+      type: "line"|"line-number"|"highlight"|"overlay"|"gutter"|"block"
+    }
+
+    interface DecorationLayerOptions extends SharedDecorationOptions {
+      /** One of several supported decoration types. */
+      type: "line"|"line-number"|"highlight"|"block"
     }
   }
 
@@ -549,7 +557,6 @@ declare namespace AtomCore {
         AtomEventKit.Disposable;
 
     // Items ==================================================================
-    // TODO(glen): figure out the common interface for these items
     /** Get the items in this pane. */
     getItems(): Array<Object>;
 
@@ -1126,29 +1133,144 @@ declare namespace AtomCore {
     /** Add a decoration to every marker in the given marker layer. Can be used to
      *  decorate a large number of markers without having to create and manage many
      *  individual decorations. */
-    // TODO(glen): two new types to implement here.
-    // decorateMarkerLayer(markerLayer: TextBuffer.MarkerLayer|DisplayMarkerLayer,
-    //     decorationParams: Params.DecorationLayerOptions): LayerDecoration;
+    decorateMarkerLayer(markerLayer: TextBuffer.MarkerLayer|DisplayMarkerLayer,
+        decorationParams: Params.DecorationLayerOptions): LayerDecoration;
 
-    // getDecorations([propertyFilter])
-    // getLineDecorations([propertyFilter])
-    // getLineNumberDecorations([propertyFilter])
-    // getHighlightDecorations([propertyFilter])
-    // getOverlayDecorations([propertyFilter])
+    /** Get all decorations. */
+    getDecorations(propertyFilter?: Params.DecorationOptions): Array<Decoration>;
+
+    /** Get all decorations of type 'line'. */
+    getLineDecorations(propertyFilter?: Params.DecorationOptions): Array<Decoration>;
+
+    /** Get all decorations of type 'line-number'. */
+    getLineNumberDecorations(propertyFilter?: Params.DecorationOptions): Array<Decoration>;
+
+    /** Get all decorations of type 'highlight'. */
+    getHighlightDecorations(propertyFilter?: Params.DecorationOptions): Array<Decoration>;
+
+    /** Get all decorations of type 'overlay'. */
+    getOverlayDecorations(propertyFilter?: Params.DecorationOptions): Array<Decoration>;
 
     // Markers ================================================================
-    // TODO(glen): actually implement this.
-    markBufferRange(range: TextBuffer.Range, properties: any): any;
-    // markScreenRange(range, properties)
-    // markBufferPosition(bufferPosition, [options])
-    // markScreenPosition(screenPosition, [options])
-    // findMarkers(properties)
-    // addMarkerLayer(options)
-    // getMarkerLayer(id)
-    // getDefaultMarkerLayer()
-    // getMarker(id)
-    // getMarkers()
-    // getMarkerCount()
+    /** Create a marker on the default marker layer with the given range in buffer coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location
+     *  in the buffer changes. */
+    markBufferRange(range: TextBuffer.IRange, properties?: { maintainHistory?: boolean,
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch" }):
+        DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in buffer coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location
+     *  in the buffer changes. */
+    markBufferRange(range: [TextBuffer.IPoint, TextBuffer.IPoint], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in buffer coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location
+     *  in the buffer changes. */
+    markBufferRange(range: [TextBuffer.IPoint, [number, number]], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in buffer coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location
+     *  in the buffer changes. */
+    markBufferRange(range: [[number, number], TextBuffer.IPoint], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in buffer coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location
+     *  in the buffer changes. */
+    markBufferRange(range: [[number, number], [number, number]], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+
+    /** Create a marker on the default marker layer with the given range in screen coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location in
+     *  the buffer changes. */
+    markScreenRange(range: TextBuffer.IRange, properties?: { maintainHistory?: boolean,
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch" }):
+        DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in screen coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location in
+     *  the buffer changes. */
+    markScreenRange(range: [TextBuffer.IPoint, TextBuffer.IPoint], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in screen coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location in
+     *  the buffer changes. */
+    markScreenRange(range: [TextBuffer.IPoint, [number, number]], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in screen coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location in
+     *  the buffer changes. */
+    markScreenRange(range: [[number, number], TextBuffer.IPoint], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given range in screen coordinates.
+     *  This marker will maintain its logical location as the buffer is changed, so if you mark
+     *  a particular word, the marker will remain over that word even if the word's location in
+     *  the buffer changes. */
+    markScreenRange(range: [[number, number], [number, number]], properties?: {
+        maintainHistory?: boolean, reversed?: boolean, invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+
+    /** Create a marker on the default marker layer with the given buffer position and no tail.
+     *  To group multiple markers together in their own private layer, see ::addMarkerLayer. */
+    markBufferPosition(bufferPosition: TextBuffer.IPoint, options?: { invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given buffer position and no tail.
+     *  To group multiple markers together in their own private layer, see ::addMarkerLayer. */
+    markBufferPosition(bufferPosition: [number, number], options?: { invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch" }): DisplayMarker;
+
+    /** Create a marker on the default marker layer with the given screen position and no tail.
+     *  To group multiple markers together in their own private layer, see ::addMarkerLayer. */
+    markScreenPosition(screenPosition: TextBuffer.IPoint, options?: { invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch", clipDirection?:
+        "backward"|"forward"|"closest" }): DisplayMarker;
+    /** Create a marker on the default marker layer with the given screen position and no tail.
+     *  To group multiple markers together in their own private layer, see ::addMarkerLayer. */
+    markScreenPosition(screenPosition: [number, number], options?: { invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch", clipDirection?:
+        "backward"|"forward"|"closest" }): DisplayMarker;
+
+    /** Find all DisplayMarkers on the default marker layer that match the given properties.
+     *
+     *  This method finds markers based on the given properties. Markers can be associated
+     *  with custom properties that will be compared with basic equality. In addition, there
+     *  are several special properties that will be compared with the range of the markers
+     *  rather than their properties. */
+    findMarkers(properties: Params.MarkerProperties): DisplayMarker[];
+
+    /** Create a marker layer to group related markers. */
+    addMarkerLayer(options?: { maintainHistory?: boolean, persistent?: boolean }):
+        DisplayMarkerLayer;
+
+    /** Get a DisplayMarkerLayer by id. */
+    getMarkerLayer(id: number): DisplayMarkerLayer|undefined;
+
+    /** Get the default DisplayMarkerLayer.
+     *  All marker APIs not tied to an explicit layer interact with this default layer. */
+    getDefaultMarkerLayer(): DisplayMarkerLayer;
+
+    /** Get the DisplayMarker on the default layer for the given marker id. */
+    getMarker(id: number): DisplayMarker;
+
+    /** Get all DisplayMarkers on the default marker layer. Consider using ::findMarkers. */
+    getMarkers(): DisplayMarker[];
+
+    /** Get the number of markers in the default marker layer. */
+    getMarkerCount(): number;
 
     // Cursors ================================================================
     /** Get the position of the most recently added cursor in buffer coordinates. */
@@ -1543,10 +1665,64 @@ declare namespace AtomCore {
     selectionIntersectsBufferRange(bufferRange: TextBuffer.IRange): boolean;
 
     // Searching and Replacing ================================================
-    // TODO(glen): implement this
-    // scan(regex, iterator)
-    // scanInBufferRange(regex, range, iterator)
-    // backwardsScanInBufferRange(regex, range, iterator)
+    /** Scan regular expression matches in the entire buffer, calling the given
+     *  iterator function on each match.
+     *
+     *  ::scan functions as the replace method as well via the replace */
+    scan(regex: RegExp, iterator: (match: Object, matchText: string, range: Range,
+        stop: Function, replace: Function) => void): void;
+
+    /** Scan regular expression matches in a given range, calling the given iterator
+     *  function on each match. */
+    scanInBufferRange(regex: RegExp, range: TextBuffer.IRange, iterator: (match: Object,
+        matchText: string, range: Range, stop: Function, replace: Function) =>
+        void): void;
+    /** Scan regular expression matches in a given range, calling the given iterator
+     *  function on each match. */
+    scanInBufferRange(regex: RegExp, range: [TextBuffer.IPoint, TextBuffer.IPoint],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
+    /** Scan regular expression matches in a given range, calling the given iterator
+     *  function on each match. */
+    scanInBufferRange(regex: RegExp, range: [[number, number], [number, number]],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
+    /** Scan regular expression matches in a given range, calling the given iterator
+     *  function on each match. */
+    scanInBufferRange(regex: RegExp, range: [TextBuffer.IPoint, [number, number]],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
+    /** Scan regular expression matches in a given range, calling the given iterator
+     *  function on each match. */
+    scanInBufferRange(regex: RegExp, range: [[number, number], TextBuffer.IPoint],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
+
+    /** Scan regular expression matches in a given range in reverse order, calling the
+     *  given iterator function on each match. */
+    backwardsScanInBufferRange(regex: RegExp, range: TextBuffer.IRange, iterator:
+        (match: Object, matchText: string, range: Range, stop: Function, replace:
+        Function) => void): void;
+    /** Scan regular expression matches in a given range in reverse order, calling the
+     *  given iterator function on each match. */
+    backwardsScanInBufferRange(regex: RegExp, range: [TextBuffer.IPoint, TextBuffer.IPoint],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
+    /** Scan regular expression matches in a given range in reverse order, calling the
+     *  given iterator function on each match. */
+    backwardsScanInBufferRange(regex: RegExp, range: [[number, number], [number, number]],
+       iterator: (match: Object, matchText: string, range: Range, stop: Function,
+       replace: Function) => void): void;
+    /** Scan regular expression matches in a given range in reverse order, calling the
+     *  given iterator function on each match. */
+    backwardsScanInBufferRange(regex: RegExp, range: [TextBuffer.IPoint, [number, number]],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
+    /** Scan regular expression matches in a given range in reverse order, calling the
+     *  given iterator function on each match. */
+    backwardsScanInBufferRange(regex: RegExp, range: [[number, number], TextBuffer.IPoint],
+        iterator: (match: Object, matchText: string, range: Range, stop: Function,
+        replace: Function) => void): void;
 
     // Tab Behavior ===========================================================
     /** Returns a boolean indicating whether softTabs are enabled for this editor. */
@@ -2053,8 +2229,10 @@ declare namespace AtomCore {
     /** Selects the text from the current cursor position to a given screen position. */
     selectToScreenPosition(position: [number, number]): void;
 
-    // TODO(glen): this position goes right into Cursor.setBufferPosition, so once we figure out that edit this.
+    /** Selects the text from the current cursor position to a given buffer position. */
     selectToBufferPosition(position: TextBuffer.IPoint): void;
+    /** Selects the text from the current cursor position to a given buffer position. */
+    selectToBufferPosition(position: [number, number]): void;
 
     /** Selects the text one position right of the cursor. */
     selectRight(columnCount?: number): void;
@@ -2450,6 +2628,141 @@ declare namespace AtomCore {
     setProperties(newProperties: Object): void;
   }
 
+  /** Represents a decoration that applies to every marker on a given layer. Created via
+   *  TextEditor::decorateMarkerLayer. */
+  class LayerDecoration {
+    /** Destroys the decoration. */
+    destroy(): void;
+
+    /** Determine whether this decoration is destroyed. */
+    isDestroyed(): boolean;
+
+    /** Get this decoration's properties. */
+    getProperties(): Params.DecorationLayerOptions;
+
+    /** Set this decoration's properties. */
+    setProperties(newProperties: Params.DecorationLayerOptions): void;
+
+    /** Override the decoration properties for a specific marker. */
+    setPropertiesForMarker(marker: DisplayMarker|TextBuffer.Marker,
+        properties: Params.DecorationLayerOptions): void;
+  }
+
+  /** Experimental: A container for a related set of markers at the DisplayLayer level.
+   *  Wraps an underlying MarkerLayer on the TextBuffer.
+   *
+   *  This API is experimental and subject to change on any release. */
+  class DisplayMarkerLayer {
+    // Lifecycle ==============================================================
+    /** Destroy this layer. */
+    destroy(): void;
+
+    /** Destroy all markers in this layer. */
+    clear(): void;
+
+    /** Determine whether this layer has been destroyed. */
+    isDestroyed(): boolean;
+
+    // Event Subscription =====================================================
+    /** Subscribe to be notified synchronously when this layer is destroyed. */
+    onDidDestroy(callback: () => void): AtomEventKit.Disposable;
+
+    /** Subscribe to be notified asynchronously whenever markers are created, updated,
+     *  or destroyed on this layer. Prefer this method for optimal performance when
+     *  interacting with layers that could contain large numbers of markers. */
+    onDidUpdate(callback: () => void): AtomEventKit.Disposable;
+
+    /** Subscribe to be notified synchronously whenever markers are created on this
+     *  layer. Avoid this method for optimal performance when interacting with layers
+     *  that could contain large numbers of markers. */
+    onDidCreateMarker(callback: (marker: DisplayMarker|TextBuffer.Marker) => void):
+        AtomEventKit.Disposable;
+
+    // Marker creation ========================================================
+    /** Create a marker with the given screen range. */
+    markScreenRange(range: TextBuffer.IRange, options?: { reversed?: boolean,
+        invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean, clipDirection?: "backward"|"forward"|"closest" }):
+        DisplayMarker;
+    /** Create a marker with the given screen range. */
+    markScreenRange(range: [TextBuffer.IPoint, TextBuffer.IPoint], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean, clipDirection?: "backward"|"forward"|"closest" }):
+        DisplayMarker;
+    /** Create a marker with the given screen range. */
+    markScreenRange(range: [TextBuffer.IPoint, [number, number]], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean, clipDirection?: "backward"|"forward"|"closest" }):
+        DisplayMarker;
+    /** Create a marker with the given screen range. */
+    markScreenRange(range: [[number, number], TextBuffer.IPoint], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean, clipDirection?: "backward"|"forward"|"closest" }):
+        DisplayMarker;
+    /** Create a marker with the given screen range. */
+    markScreenRange(range: [[number, number], [number, number]], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean, clipDirection?: "backward"|"forward"|"closest" }):
+        DisplayMarker;
+
+    /** Create a marker on this layer with its head at the given screen position
+     *  and no tail. */
+    markScreenPosition(screenPosition: TextBuffer.IPoint, options?: {
+        invalidate?: "never"|"surround"|"overlap"|"inside"|"touch", exclusive?: boolean,
+        clipDirection?: "backward"|"forward"|"closest" }): DisplayMarker;
+    /** Create a marker on this layer with its head at the given screen position
+     *  and no tail. */
+    markScreenPosition(screenPosition: [number, number], options?: {
+        invalidate?: "never"|"surround"|"overlap"|"inside"|"touch", exclusive?: boolean,
+        clipDirection?: "backward"|"forward"|"closest" }): DisplayMarker;
+
+    /** Create a marker with the given buffer range. */
+    markBufferRange(range: TextBuffer.IRange, options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean }): DisplayMarker;
+    /** Create a marker with the given buffer range. */
+    markBufferRange(range: [TextBuffer.IPoint, TextBuffer.IPoint], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean }): DisplayMarker;
+    /** Create a marker with the given buffer range. */
+    markBufferRange(range: [TextBuffer.IPoint, [number, number]], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean }): DisplayMarker;
+    /** Create a marker with the given buffer range. */
+    markBufferRange(range: [[number, number], TextBuffer.IPoint], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean }): DisplayMarker;
+    /** Create a marker with the given buffer range. */
+    markBufferRange(range: [[number, number], [number, number]], options?: {
+        reversed?: boolean, invalidate?: "never"|"surround"|"overlap"|"inside"|"touch",
+        exclusive?: boolean }): DisplayMarker;
+
+    /** Create a marker on this layer with its head at the given buffer position and no tail. */
+    markBufferPosition(bufferPosition: TextBuffer.IPoint, options?: { invalidate?:
+        "never"|"surround"|"overlap"|"inside"|"touch", exclusive?: boolean }): DisplayMarker;
+    /** Create a marker on this layer with its head at the given buffer position and no tail. */
+    markBufferPosition(bufferPosition: [number, number], options?: { invalidate?:
+      "never"|"surround"|"overlap"|"inside"|"touch", exclusive?: boolean }): DisplayMarker;
+
+    // Querying ===============================================================
+    /** Get an existing marker by its id. */
+    getMarker(id: number): DisplayMarker;
+
+    /** Get all markers in the layer. */
+    getMarkers(): DisplayMarker[];
+
+    /** Get the number of markers in the marker layer. */
+    getMarkerCount(): number;
+
+    /** Find markers in the layer conforming to the given parameters.
+     *
+     *  This method finds markers based on the given properties. Markers can be associated
+     *  with custom properties that will be compared with basic equality. In addition,
+     *  there are several special properties that will be compared with the range of the
+     *  markers rather than their properties. */
+    findMarkers(properties: Params.MarkerProperties): DisplayMarker[];
+  }
+
   /** Represents a gutter within a TextEditor. */
   class Gutter {
     // Gutter Destruction =====================================================
@@ -2478,6 +2791,20 @@ declare namespace AtomCore {
      *  the marker's state. */
     decorateMarker(marker: DisplayMarker, decorationParams:
         { type: "line-number"|"gutter" }): Decoration;
+  }
+
+  /** A simple color class returned from Config::get when the value at the key path is
+   *  of type 'color'. */
+  class Color {
+    /** Parse a string or Object into a Color. */
+    static parse(value: string|{ red: number, green: number, blue: number, alpha: number }):
+        Color;
+
+    /** Returns a string in the form '#abcdef'. */
+    toHexString(): string;
+
+    /** Returns a string in the form 'rgba(25, 50, 75, .9)'. */
+    toRGBAString(): string;
   }
 
   // Managers and Registries ==================================================
@@ -3481,7 +3808,6 @@ declare namespace AtomCore {
 
     /** Execute code in dev tools. */
     executeJavaScriptInDevTools(code: any): any;
-
   }
 }
 
