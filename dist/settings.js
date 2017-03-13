@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.packageName = require("../package.json").name;
 exports.schema = require("../data/config.json");
 class SettingValue {

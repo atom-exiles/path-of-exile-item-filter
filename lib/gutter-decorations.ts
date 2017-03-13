@@ -2,7 +2,7 @@ import { Range, CompositeDisposable } from "atom";
 import * as assert from "assert";
 
 import * as settings from "./settings";
-import * as filterData from "./filter-data";
+import * as filterData from "./filter-manager";
 import * as sound from "./sound";
 
 interface GutterDecoration {

@@ -22,7 +22,7 @@ interface ProcessResult {
 interface LineInfo {
   editor: AtomCore.TextEditor
   number: number
-  file: string
+  file?: string
   keyword: string
 }
 
@@ -264,7 +264,7 @@ function processAlertSoundRule(parser: LineParser, line: LineInfo):
   }
 
   const retVal: ParseResult<number> = parser.nextNumber();
-  if(!retVal.found) {
+  if(!retVal.found || !retVal.value) {
     result.messages.push({
       type: "Error",
       text: "Invalid format. Expected \"" + line.keyword +
@@ -390,7 +390,8 @@ function processRGBARule(parser: LineParser, line: LineInfo):
   const green = parser.nextNumber();
   const blue = parser.nextNumber();
   const alpha = parser.nextNumber();
-  if(!red.found || !green.found || !blue.found) {
+  if(!red.found || red.value == undefined || !green.found ||
+      green.value == undefined || !blue.found || blue.value == undefined) {
     result.messages.push({
       type: "Error",
       text: "Invalid format. Expected \"" + line.keyword +
@@ -424,7 +425,7 @@ function processRGBARule(parser: LineParser, line: LineInfo):
         [ line.number, blue.endIndex ]);
     result.messages.push(partialMessage);
     result.invalid = true;
-  } else if(alpha.found && (alpha.value < 0 || alpha.value > 255)) {
+  } else if(alpha.found && alpha.value && (alpha.value < 0 || alpha.value > 255)) {
     partialMessage.range = new Range([ line.number, alpha.startIndex],
         [ line.number, alpha.endIndex ]);
     result.messages.push(partialMessage);
@@ -871,13 +872,13 @@ interface ParseLine {
   itemData: Data.Parser
   lineText: string
   row: number
-  filePath: string
 }
 
 /** Parses item filter data from a line in a text editor. */
 export function parseLine(args: ParseLine): Filter.Line {
   const messages: Linter.TextMessage[] = [];
   const parser = new LineParser(args.lineText);
+  const filePath = args.editor.buffer.getPath();
 
   const validBases = args.itemData.bases.concat(args.itemData.whitelistBases);
   const validClasses = args.itemData.classes.concat(args.itemData.whitelistClasses);
@@ -911,7 +912,7 @@ export function parseLine(args: ParseLine): Filter.Line {
     messages.push({
       type: "Error",
       text: "Unreadable keyword, likely due to a stray character.",
-      filePath: args.filePath,
+      filePath: filePath,
       range: new Range([ args.row, parser.textStartIndex ],
           [ args.row, parser.originalLength])
     });
@@ -941,7 +942,7 @@ export function parseLine(args: ParseLine): Filter.Line {
   var processResult: ProcessResult = { invalid: false, messages: [],
       values: [] };
   const lineInfo: LineInfo = { editor: args.editor, number: args.row,
-      file: args.filePath, keyword: keyword };
+      file: filePath, keyword: keyword };
 
   var lineType: "Block"|"Comment"|"Rule"|"Empty"|"Unknown";
   var lineData: Filter.Block|Filter.Comment|Filter.Rule|Filter.Unknown|Filter.Empty;
@@ -1024,7 +1025,7 @@ export function parseLine(args: ParseLine): Filter.Line {
         messages.push({
           text: "Trailing text for a filter rule.",
           type: "Error",
-          filePath: args.filePath,
+          filePath: filePath,
           range: new Range([args.row, parser.currentIndex],
               [args.row, parser.textEndIndex])
         });
@@ -1034,7 +1035,7 @@ export function parseLine(args: ParseLine): Filter.Line {
       messages.push({
         text: "Unknown filter keyword.",
         type: "Error",
-        filePath: args.filePath,
+        filePath: filePath,
         range: new Range([args.row, keywordResult.startIndex],
             [args.row, keywordResult.endIndex])
       });

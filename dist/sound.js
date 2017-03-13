@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
 const assert = require("assert");
 const path = require("path");

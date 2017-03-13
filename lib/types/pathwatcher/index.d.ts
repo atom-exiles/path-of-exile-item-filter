@@ -5,7 +5,7 @@
 /// <reference types="node" />
 /// <reference path="../event-kit/index.d.ts" />
 
-// API Documentation: https://atom.io/docs/api/v1.14.3/
+// API Documentation: https://atom.io/docs/api/v1.15.0/
 //
 // These definitions are written to ultimately be used within a global "atom"
 // module, with each of these submodules being a direct dependency of that

@@ -1,15 +1,14 @@
-// Type definitions for Atom v1.14.3
-// Project: https://github.com/atom/atom/tree/v1.14.3
+// Type definitions for Atom v1.15.0
+// Project: https://github.com/atom/atom/tree/v1.15.0
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
-// NOTE: these typings are currently incomplete. Missing chunks are being
-//    written over time.
+// NOTE: the View essential class is currently missing from these type definitions.
 
 /// <reference types="node" />
 /// <reference path="../text-buffer/index.d.ts" />
 /// <reference path="../event-kit/index.d.ts" />
 
-// API Documentation: https://atom.io/docs/api/v1.14.3/
+// API Documentation: https://atom.io/docs/api/v1.15.0/
 //
 // The goal of these type definitions is to provide full coverage of the public
 // Atom API. These definitions are not exhaustive, and aim to only define class
@@ -281,12 +280,12 @@ declare namespace AtomCore {
   /** Wraps an Array of Strings. The Array describes a path from the root of the
    *  syntax tree to a token including all scope names for the entire path. */
   class ScopeDescriptor {
-    scopes: Array<string>
+    scopes: Array<string>;
 
-    constructor(object: { scopes: Array<string> })
+    constructor(object: { scopes: Array<string> });
 
     /** Returns all scopes for this descriptor. */
-    getScopesArray(): Array<string>
+    getScopesArray(): Array<string>;
   }
 
   class KeyBinding {
@@ -462,6 +461,12 @@ declare namespace AtomCore {
 
   /** Grammar that tokenizes lines of text. */
   class Grammar {
+    // Properties =============================================================
+    readonly name: string;
+    readonly packageName: string;
+    readonly path: string;
+    readonly scopeName: string;
+
     // Event Subscription =====================================================
     /** Invoke the given callback when this grammar is updated due to a grammar
      *  it depends on being added or removed from the registry. */
@@ -550,6 +555,21 @@ declare namespace AtomCore {
     /** Invoke the given callback when the value of ::getActiveItem changes. */
     onDidChangeActiveItem(callback: (activeItem: Object) => void):
         AtomEventKit.Disposable;
+
+    /** Invoke the given callback when ::activateNextRecentlyUsedItem has been called,
+     *  either initiating or continuing a forward MRU traversal of pane items. */
+    onChooseNextMRUItem(callback: (nextRecentlyUsedItem: Object) => void):
+        AtomEventKit.Disposable;
+
+    /** Invoke the given callback when ::activatePreviousRecentlyUsedItem has been called,
+     *  either initiating or continuing a reverse MRU traversal of pane items. */
+    onChooseLastMRUItem(callback: (previousRecentlyUsedItem: Object) => void):
+        AtomEventKit.Disposable;
+
+    /** Invoke the given callback when ::moveActiveItemToTopOfStack has been called,
+     *  terminating an MRU traversal of pane items and moving the current active item
+     *  to the top of the stack. Typically bound to a modifier (e.g. CTRL) key up event. */
+    onDoneChoosingMRUItem(callback: () => void): AtomEventKit.Disposable;
 
     /** Invoke the given callback with the current and future values of ::getActiveItem. */
     observeActiveItem(callback: (activeItem: Object) => void): AtomEventKit.Disposable;
@@ -2809,6 +2829,69 @@ declare namespace AtomCore {
     toRGBAString(): string;
   }
 
+  /** Run a node script in a separate process. */
+  export class Task {
+    /** A helper method to easily launch and run a task once. */
+    static once(taskPath: string, args: any[]): Task;
+
+    /** Creates a task. You should probably use .once */
+    constructor(taskPath: string);
+
+    /** Starts the task.
+     *
+     *  Throws an error if this task has already been terminated or if sending a
+     *  message to the child process fails. */
+    start(args: any[], callback: Function): void;
+
+    /** Send message to the task.
+     *
+     *  Throws an error if this task has already been terminated or if sending a
+     *  message to the child process fails. */
+    send(message: string): void;
+
+    /** Call a function when an event is emitted by the child process. */
+    on(eventName: string, callback: Function): AtomEventKit.Disposable;
+
+    /** Forcefully stop the running task.
+     *  No more events are emitted once this method is called. */
+    terminate(): void;
+  }
+
+  /** A wrapper which provides standard error/output line buffering for
+   *  Node's ChildProcess. */
+  export class BufferedProcess {
+    // Construction ===========================================================
+    constructor(options: { command: string, args: any[], options?: Object,
+        stdout: (data: string) => void, stderr: (data: string) => void,
+        exit: (code: number) => void });
+
+    // Event Subscription =====================================================
+    /** Will call your callback when an error will be raised by the process. Usually
+     *  this is due to the command not being available or not on the PATH. You can
+     *  call handle() on the object passed to your callback to indicate that you
+     *  have handled this error. */
+    onWillThrowError(callback: (errorObject: { error: Error, handle: Function }) => void):
+        AtomEventKit.Disposable;
+
+    // Helper Methods =========================================================
+    /** Terminate the process. */
+    kill(): void;
+  }
+
+  /** Like BufferedProcess, but accepts a Node script as the command to run.
+   *
+   *  This is necessary on Windows since it doesn't support shebang #! lines. */
+  export class BufferedNodeProcess {
+    /** Runs the given Node script by spawning a new child process. */
+    constructor(options: { command: string, args: any[], options?: Object,
+        stdout: Function, stderr: Function, exit: Function });
+  }
+
+  class HistoryProject {
+    paths: string[];
+    lastOpened: Date;
+  }
+
   // Managers and Registries ==================================================
   /** Associates listener functions with commands in a context-sensitive way
    *  using CSS selectors. */
@@ -2917,11 +3000,14 @@ declare namespace AtomCore {
     /** Get an Array of all of the source Strings with which settings have been added
      *  via ::set. */
     getSources(): Array<string>;
+
     /** Retrieve the schema for a specific key path. The schema will tell you what type
      *  the keyPath expects, and other metadata about the config option. */
     getSchema(keyPath: string): Object;
+
     /** Get the string path to the config file being used. */
     getUserConfigPath(): string;
+
     /** Suppress calls to handler functions registered with ::onDidChange and ::observe
      *  for the duration of callback. After callback executes, handlers will be called
      *  once if the value for their key-path has changed. */
@@ -2964,6 +3050,7 @@ declare namespace AtomCore {
         submenu?: Object,
         command?: string
       }>): AtomEventKit.Disposable;
+
     /** Refreshes the currently visible menu. */
     update(): void;
   }
@@ -3068,6 +3155,10 @@ declare namespace AtomCore {
         keyBindingCommand?: string,
         keyBindingTarget?: HTMLElement
     }): AtomEventKit.IDisposable;
+
+    // TODO(glen): implement the Tooltip object.
+    /** Find the tooltips that have been applied to the given element. */
+    findTooltips(target: HTMLElement): any[];
   }
 
   /** A notification manager used to create Notifications to be shown to the user. */
@@ -3239,6 +3330,23 @@ declare namespace AtomCore {
     /** Read a grammar asynchronously and add it to the registry. */
     loadGrammar(grammarPath: string, callback: (error: Error|null,
         grammar: Grammar|null) => void): void;
+  }
+
+  /** History manager for remembering which projects have been opened.
+   *  An instance of this class is always available as the atom.history global.
+   *  The project history is used to enable the 'Reopen Project' menu. */
+  class HistoryManager {
+    /** Obtain a list of previously opened projects. */
+    getProjects(): HistoryProject[];
+
+    /** Clear all projects from the history.
+     *  Note: This is not a privacy function - other traces will still exist, e.g.
+     *  window state. */
+    clearProjects(): void;
+
+    /** Invoke the given callback when the list of projects changes. */
+    onDidChangeProjects(callback: (args: { reloaded: boolean }) => void):
+        AtomEventKit.Disposable;
   }
 
   /** Package manager for coordinating the lifecycle of Atom packages. */
@@ -3670,6 +3778,8 @@ declare namespace AtomCore {
     project: Project;
     /** A GrammarRegistry instance. */
     grammars: GrammarRegistry;
+    /** A HistoryManager instance. */
+    history: HistoryManager;
     /** A PackageManager instance. */
     packages: PackageManager;
     /** A ThemeManager instance. */
@@ -3842,4 +3952,16 @@ declare module "atom" {
   /** This class represents all essential editing state for a single TextBuffer,
    *  including cursor and selection positions, folds, and soft wraps. */
   export class TextEditor extends AtomCore.TextEditor {}
+
+  /** Run a node script in a separate process. */
+  export class Task extends AtomCore.Task {}
+
+  /** A wrapper which provides standard error/output line buffering for
+   *  Node's ChildProcess. */
+  export class BufferedProcess extends AtomCore.BufferedProcess {}
+
+  /** Like BufferedProcess, but accepts a Node script as the command to run.
+   *
+   *  This is necessary on Windows since it doesn't support shebang #! lines. */
+  export class BufferedNodeProcess extends AtomCore.BufferedNodeProcess {}
 }

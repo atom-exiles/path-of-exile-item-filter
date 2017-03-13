@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
-const path = require("path");
 const assert = require("assert");
 const data = require("./json-data");
 const settings = require("./settings");
@@ -17,7 +17,7 @@ class FilterManager {
     constructor(editor) {
         this.editor = editor;
         this.subscriptions = new atom_1.CompositeDisposable;
-        this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
+        this.subscriptions.add(editor.onDidChangeGrammar((grammar) => {
             if (this.isFilter()) {
                 this.registerFilter();
                 this.processFilter();
@@ -26,7 +26,13 @@ class FilterManager {
                 this.filter = undefined;
                 if (this.filterSubs)
                     this.filterSubs.dispose();
-                exports.emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+                exports.emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
+            }
+        }));
+        this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
+            if (this.isFilter()) {
+                exports.emitter.emit("poe-did-rename-filter", { editor: this.editor,
+                    path: newPath });
             }
         }));
         this.subscriptions.add(editor.buffer.onDidDestroy(() => {
@@ -56,15 +62,15 @@ class FilterManager {
         exports.emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
     }
     isFilter() {
-        const filePath = this.editor.buffer.getPath();
-        if (filePath && path.extname(filePath) == ".filter")
+        const grammar = this.editor.getGrammar();
+        if (grammar.scopeName === "source.poe")
             return true;
         else
             return false;
     }
     registerFilter() {
         if (!this.filterSubs)
-            this.filterSubs = new atom_1.CompositeDisposable();
+            this.filterSubs = new atom_1.CompositeDisposable;
         this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
             if (this.changes) {
                 this.changes.oldRange = event.oldRange.union(this.changes.oldRange);
@@ -151,12 +157,8 @@ class FilterManager {
     }
     parseLineInfo(filter, changes, reset = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const filePath = this.editor.buffer.getPath();
             const lines = this.editor.buffer.getLines();
             const itemData = yield data.filterItemData;
-            if (!filePath) {
-                throw new Error("attemped to parse a buffer with no associated file.");
-            }
             var previousLines;
             if (reset)
                 previousLines = [];
@@ -180,7 +182,7 @@ class FilterManager {
                 const row = changes.newRange.start.row + i;
                 const currentLine = lines[row];
                 const result = parser.parseLine({ editor: this.editor, itemData: itemData,
-                    lineText: currentLine, row: row, filePath: filePath });
+                    lineText: currentLine, row: row });
                 assert(result, "parseLine should always return a Filter.Line");
                 output.push(result);
             }
@@ -212,10 +214,6 @@ function activate() {
         exports.emitter.dispose();
     exports.emitter = new atom_1.Emitter;
     subscriptions = new atom_1.CompositeDisposable;
-    const editor = atom.workspace.getActiveTextEditor();
-    if (editor) {
-        exports.buffers.set(editor.buffer.id, new FilterManager(editor));
-    }
     subscriptions.add(atom.workspace.observeTextEditors((editor) => {
         if (exports.buffers.has(editor.buffer.id))
             return;

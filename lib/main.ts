@@ -1,5 +1,5 @@
-import * as data from "./json-data";
-import * as filterData from "./filter-data";
+import * as jsonData from "./json-data";
+import * as filterData from "./filter-manager";
 import * as sound from "./sound";
 import * as completion from "./completion";
 import * as linter from "./linter";
@@ -10,7 +10,7 @@ const packageName = require("../package.json").name
 var linterRegister: Linter.Register;
 
 function readyToActivate() {
-  data.activate();
+  jsonData.activate();
   filterData.activate();
   sound.activate();
   completion.activate();
@@ -26,12 +26,11 @@ export function activate() {
 
 export function deactivate() {
   decorations.deactivate();
-  linterRegister.deleteMessages();
   linter.deactivate();
   completion.deactivate();
   sound.deactivate();
   filterData.deactivate();
-  data.deactivate();
+  jsonData.deactivate();
 }
 
 export function provideCompletion() {

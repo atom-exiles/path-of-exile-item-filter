@@ -25,14 +25,21 @@ class FilterManager {
     this.editor = editor;
     this.subscriptions = new CompositeDisposable;
 
-    this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
+    this.subscriptions.add(editor.onDidChangeGrammar((grammar) => {
       if(this.isFilter()) {
         this.registerFilter();
         this.processFilter();
-      } else  {
+      } else {
         this.filter = undefined;
         if(this.filterSubs) this.filterSubs.dispose();
-        emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+        emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
+      }
+    }));
+
+    this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
+      if(this.isFilter()) {
+        emitter.emit("poe-did-rename-filter", { editor: this.editor,
+            path: newPath });
       }
     }));
 
@@ -66,14 +73,14 @@ class FilterManager {
 
   /** Returns whether or not this buffer contains an item filter. */
   public isFilter() {
-    const filePath = this.editor.buffer.getPath();
-    if(filePath && path.extname(filePath) == ".filter") return true;
+    const grammar = this.editor.getGrammar();
+    if(grammar.scopeName === "source.poe") return true;
     else return false;
   }
 
   /** Register the buffer for the filter-specific events. */
   private registerFilter() {
-    if(!this.filterSubs) this.filterSubs = new CompositeDisposable();
+    if(!this.filterSubs) this.filterSubs = new CompositeDisposable;
 
     this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
       if(this.changes) {
@@ -125,7 +132,7 @@ class FilterManager {
     this.changes = undefined;
   }
 
-  private translateLineRanges(line: Filter.Line, delta: Point) {
+  translateLineRanges(line: Filter.Line, delta: Point) {
     switch(line.type) {
       case "Block": {
         const fb: Filter.Block = (<Filter.Block>line.data);
@@ -161,15 +168,10 @@ class FilterManager {
     }
   }
 
-  private async parseLineInfo(filter: Promise<Filter.Line[]>|undefined,
+  async parseLineInfo(filter: Promise<Filter.Line[]>|undefined,
       changes: BufferChanges, reset = false): Promise<Filter.Line[]> {
-    const filePath = this.editor.buffer.getPath();
     const lines = this.editor.buffer.getLines();
     const itemData = await data.filterItemData;
-
-    if(!filePath) {
-      throw new Error("attemped to parse a buffer with no associated file.");
-    }
 
     var previousLines: Filter.Line[];
     if(reset) previousLines = [];
@@ -196,7 +198,7 @@ class FilterManager {
       const currentLine = lines[row];
 
       const result = parser.parseLine({ editor: this.editor, itemData: itemData,
-          lineText: currentLine, row: row, filePath: filePath });
+          lineText: currentLine, row: row });
       assert(result, "parseLine should always return a Filter.Line");
       output.push(result);
     }
@@ -234,11 +236,10 @@ export function activate() {
   emitter = new Emitter;
   subscriptions = new CompositeDisposable;
 
-  // Process the active text editor first, prior to observing the others.
-  const editor = atom.workspace.getActiveTextEditor();
-  if(editor) {
-    buffers.set(editor.buffer.id, new FilterManager(editor));
-  }
+  // const editor = atom.workspace.getActiveTextEditor();
+  // if(editor) {
+  //   buffers.set(editor.buffer.id, new FilterManager(editor));
+  // }
 
   subscriptions.add(atom.workspace.observeTextEditors((editor) => {
     if(buffers.has(editor.buffer.id)) return;

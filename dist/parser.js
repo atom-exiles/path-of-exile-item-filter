@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
 const assert = require("assert");
 const settings = require("./settings");
@@ -170,7 +171,7 @@ function processAlertSoundRule(parser, line) {
         return result;
     }
     const retVal = parser.nextNumber();
-    if (!retVal.found) {
+    if (!retVal.found || !retVal.value) {
         result.messages.push({
             type: "Error",
             text: "Invalid format. Expected \"" + line.keyword +
@@ -270,7 +271,8 @@ function processRGBARule(parser, line) {
     const green = parser.nextNumber();
     const blue = parser.nextNumber();
     const alpha = parser.nextNumber();
-    if (!red.found || !green.found || !blue.found) {
+    if (!red.found || red.value == undefined || !green.found ||
+        green.value == undefined || !blue.found || blue.value == undefined) {
         result.messages.push({
             type: "Error",
             text: "Invalid format. Expected \"" + line.keyword +
@@ -302,7 +304,7 @@ function processRGBARule(parser, line) {
         result.messages.push(partialMessage);
         result.invalid = true;
     }
-    else if (alpha.found && (alpha.value < 0 || alpha.value > 255)) {
+    else if (alpha.found && alpha.value && (alpha.value < 0 || alpha.value > 255)) {
         partialMessage.range = new atom_1.Range([line.number, alpha.startIndex], [line.number, alpha.endIndex]);
         result.messages.push(partialMessage);
         result.invalid = true;
@@ -673,6 +675,7 @@ function processBlock(parser, line) {
 function parseLine(args) {
     const messages = [];
     const parser = new LineParser(args.lineText);
+    const filePath = args.editor.buffer.getPath();
     const validBases = args.itemData.bases.concat(args.itemData.whitelistBases);
     const validClasses = args.itemData.classes.concat(args.itemData.whitelistClasses);
     if (parser.isCommented()) {
@@ -702,7 +705,7 @@ function parseLine(args) {
         messages.push({
             type: "Error",
             text: "Unreadable keyword, likely due to a stray character.",
-            filePath: args.filePath,
+            filePath: filePath,
             range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.originalLength])
         });
         const unknownRange = new atom_1.Range([args.row, parser.textStartIndex,
@@ -726,7 +729,7 @@ function parseLine(args) {
     var processResult = { invalid: false, messages: [],
         values: [] };
     const lineInfo = { editor: args.editor, number: args.row,
-        file: args.filePath, keyword: keyword };
+        file: filePath, keyword: keyword };
     var lineType;
     var lineData;
     var invalid = false;
@@ -816,7 +819,7 @@ function parseLine(args) {
                 messages.push({
                     text: "Trailing text for a filter rule.",
                     type: "Error",
-                    filePath: args.filePath,
+                    filePath: filePath,
                     range: new atom_1.Range([args.row, parser.currentIndex], [args.row, parser.textEndIndex])
                 });
                 invalid = true;
@@ -826,7 +829,7 @@ function parseLine(args) {
             messages.push({
                 text: "Unknown filter keyword.",
                 type: "Error",
-                filePath: args.filePath,
+                filePath: filePath,
                 range: new atom_1.Range([args.row, keywordResult.startIndex], [args.row, keywordResult.endIndex])
             });
             const ld = {

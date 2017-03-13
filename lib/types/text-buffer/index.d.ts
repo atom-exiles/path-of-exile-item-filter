@@ -1,11 +1,11 @@
-// Type definitions for text-buffer v10.2.16
-// Project: https://github.com/atom/text-buffer/tree/v10.2.16
+// Type definitions for text-buffer v10.3.12
+// Project: https://github.com/atom/text-buffer/tree/v10.3.12
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
 /// <reference path="../event-kit/index.d.ts" />
 /// <reference path="../pathwatcher/index.d.ts" />
 
-// API Documentation: https://atom.io/docs/api/v1.14.3/
+// API Documentation: https://atom.io/docs/api/v1.15.0/
 //
 // These definitions are written to ultimately be used within a global 'atom'
 // module, with each of these submodules being a direct dependency of that
@@ -511,6 +511,9 @@ declare namespace TextBuffer {
 
     /** Destroy this layer. */
     destroy(): boolean;
+
+    /** Remove all markers from this layer. */
+    clear(): void;
 
     /** Determine whether this layer has been destroyed. */
     isDestroyed(): boolean;

@@ -121,6 +121,11 @@ declare namespace Filter {
       editor: AtomCore.TextEditor
       lines: Line[]
     }
+
+    interface FilterRename {
+      editor: AtomCore.TextEditor
+      path: string
+    }
   }
 
   interface Value {
