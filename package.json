@@ -1,7 +1,7 @@
 {
   "name": "path-of-exile-item-filter",
   "main": "./dist/main",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A grammar implementation for Path of Exile item filters",
   "keywords": [
     "poe",
