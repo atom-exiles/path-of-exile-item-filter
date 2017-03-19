@@ -1,4 +1,4 @@
-## Versions 1.0.1-1.0.6
+## Versions 1.0.1-1.0.7
 * Added linter errors for trailing comments on rules where it's an error in-game
 * Extension renames for opened files are now properly handled
 * A linter error will no longer flash when converting hexadecimal text
@@ -7,6 +7,8 @@
 * Eternal Orb and Item Quantity Support moved to league data list
 * Fixed an issue which occurred when RGBA rules contained a 0
 * Better support for filter files not yet on disk
+* Fixed filter decorations vanishing on other tabs whenever a filter is closed
+* Partial support for the new version of our Linter dependency
 
 ## Version 1.0.0
 * Support for 2.6 and Legacy league
