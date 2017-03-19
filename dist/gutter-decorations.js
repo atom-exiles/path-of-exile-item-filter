@@ -73,10 +73,20 @@ function updateGutterDecorations(args) {
                 default:
                     continue;
             }
+            var gutterName;
+            if (args.editor.gutterWithName("linter-ui-default")) {
+                gutterName = "linter-ui-default";
+            }
+            else if (args.editor.gutterWithName("linter")) {
+                gutterName = "linter";
+            }
+            else {
+                return;
+            }
             const r = new atom_1.Range([ld.range.start.row, 0], [ld.range.start.row, 1]);
             const marker = args.editor.markBufferRange(r, { invalidate: "never" });
             const decoration = args.editor.decorateMarker(marker, { type: "gutter",
-                gutterName: "linter", class: "poe-decoration-container", item: element });
+                gutterName, class: "poe-decoration-container", item: element });
             markers.push({ type: decorationType, marker: marker, decoration: decoration });
         }
     }
@@ -94,11 +104,12 @@ function activate() {
         updateGutterDecorations(args);
     }));
     subscriptions.add(filterData.emitter.on("poe-did-destroy-filter", (editorID) => {
-        filters.forEach((decorationsData, editorID) => {
+        const decorationsData = filters.get(editorID);
+        if (decorationsData) {
             decorationsData.decorations.forEach((decoration) => {
                 decoration.marker.destroy();
             });
-        });
+        }
         filters.delete(editorID);
     }));
     const configChangeAction = (type, newValue) => {
