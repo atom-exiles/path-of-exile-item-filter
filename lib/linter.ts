@@ -10,47 +10,45 @@ const filterMessages = new Map<string, Linter.Messages>();
 const unsavedFilterMessages = new Map<string, Linter.Messages>();
 
 function setMessages() {
+  registry.deleteMessages();
+
   const enableLinter = settings.config.generalSettings.enableLinter.get();
+  if(!enableLinter) return;
 
-  if(enableLinter) {
-    registry.deleteMessages();
-    var messages: Linter.Messages = [];
-    filterMessages.forEach((array) => {
-      // The linter modifies each message and will use that information to
-      // determine what needs to be refreshed and what doesn't. In order to
-      // allow modification of a single property, like a path, we have to
-      // always give the linter the unmutated messages and force a full refresh.
-      array.forEach((message) => {
-        var result: Linter.TextMessage|Linter.HTMLMessage;
+  var messages: Linter.Messages = [];
+  filterMessages.forEach((array) => {
+    // The linter modifies each message and will use that information to
+    // determine what needs to be refreshed and what doesn't. In order to
+    // allow modification of a single property, like a path, we have to
+    // always give the linter the unmutated messages and force a full refresh.
+    array.forEach((message) => {
+      var result: Linter.TextMessage|Linter.HTMLMessage;
 
-        if((<Linter.TextMessage>message).text) {
-          result = {
-            text: (<Linter.TextMessage>message).text,
-            type: message.type,
-            filePath: message.filePath,
-            range: message.range,
-            fix: message.fix,
-            severity: message.severity
-          }
-        } else if((<Linter.HTMLMessage>message).html) {
-          result = {
-            text: (<Linter.HTMLMessage>message).html,
-            type: message.type,
-            filePath: message.filePath,
-            range: message.range,
-            fix: message.fix,
-            severity: message.severity
-          }
-        } else {
-          throw new Error("invalid message passed to the linter");
+      if((<Linter.TextMessage>message).text) {
+        result = {
+          text: (<Linter.TextMessage>message).text,
+          type: message.type,
+          filePath: message.filePath,
+          range: message.range,
+          fix: message.fix,
+          severity: message.severity
         }
-        messages.push(result);
-      });
+      } else if((<Linter.HTMLMessage>message).html) {
+        result = {
+          text: (<Linter.HTMLMessage>message).html,
+          type: message.type,
+          filePath: message.filePath,
+          range: message.range,
+          fix: message.fix,
+          severity: message.severity
+        }
+      } else {
+        throw new Error("invalid message passed to the linter");
+      }
+      messages.push(result);
     });
-    registry.setMessages(messages);
-  } else {
-    registry.deleteMessages();
-  }
+  });
+  registry.setMessages(messages);
 }
 
 export function activate(r: Linter.Register) {
@@ -62,7 +60,7 @@ export function activate(r: Linter.Register) {
   subscriptions = new CompositeDisposable;
   var activePaneID: string|undefined;
 
-  subscriptions.add(filterData.emitter.on("poe-did-destroy-buffer", (id) => {
+  subscriptions.add(filterData.emitter.on("poe-did-unregister-filter", (id) => {
     filterMessages.delete(id);
     unsavedFilterMessages.delete(id);
     setMessages();
@@ -86,22 +84,19 @@ export function activate(r: Linter.Register) {
 
   subscriptions.add(filterData.emitter.on("poe-did-rename-filter", (args:
       Filter.Params.FilterRename) => {
-    var messages = filterMessages.get(args.editor.buffer.id);
+    assert(args.editor.buffer.getPath(), "expected file to always exist on file rename");
 
     // The linter doesn't currently allow messages for buffers with no
     // associated file. We store messages for these fileless buffers within
     // another map, but we need to migrate them over whenever the file is saved.
+    var messages = filterMessages.get(args.editor.buffer.id);
     if(!messages) {
       messages = unsavedFilterMessages.get(args.editor.buffer.id);
       unsavedFilterMessages.delete(args.editor.buffer.id);
-      assert(args.editor.buffer.getPath(), "expected file to always exist on file rename");
-      if(messages) {
-        filterMessages.set(args.editor.buffer.id, messages);
-      } else {
-        throw new Error("buffer with path '" + args.editor.buffer.getPath() +
-            "' had no stored messages");
-      }
     }
+    if(!messages) messages = []; // Filter may still be being processed.
+
+    filterMessages.set(args.editor.buffer.id, messages);
     for(var message of messages) {
       message.filePath = args.path;
     }

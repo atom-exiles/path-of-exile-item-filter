@@ -58,7 +58,7 @@ class FilterManager {
         this.subscriptions.dispose();
         exports.buffers.delete(this.editor.buffer.id);
         if (this.isFilter())
-            exports.emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+            exports.emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
         exports.emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
     }
     isFilter() {
@@ -93,7 +93,7 @@ class FilterManager {
             this.processFilter();
         else if (this.filter) {
             this.filter = undefined;
-            exports.emitter.emit("poe-did-destroy-filter", this.editor.buffer.id);
+            exports.emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
         }
     }
     processFilter() {

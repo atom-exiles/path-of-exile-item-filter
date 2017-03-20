@@ -55,7 +55,7 @@ function activate(r) {
     registry = r;
     subscriptions = new atom_1.CompositeDisposable;
     var activePaneID;
-    subscriptions.add(filterData.emitter.on("poe-did-destroy-buffer", (id) => {
+    subscriptions.add(filterData.emitter.on("poe-did-unregister-filter", (id) => {
         filterMessages.delete(id);
         unsavedFilterMessages.delete(id);
         setMessages();
@@ -76,19 +76,15 @@ function activate(r) {
         setMessages();
     }));
     subscriptions.add(filterData.emitter.on("poe-did-rename-filter", (args) => {
+        assert(args.editor.buffer.getPath(), "expected file to always exist on file rename");
         var messages = filterMessages.get(args.editor.buffer.id);
         if (!messages) {
             messages = unsavedFilterMessages.get(args.editor.buffer.id);
             unsavedFilterMessages.delete(args.editor.buffer.id);
-            assert(args.editor.buffer.getPath(), "expected file to always exist on file rename");
-            if (messages) {
-                filterMessages.set(args.editor.buffer.id, messages);
-            }
-            else {
-                throw new Error("buffer with path '" + args.editor.buffer.getPath() +
-                    "' had no stored messages");
-            }
         }
+        if (!messages)
+            messages = [];
+        filterMessages.set(args.editor.buffer.id, messages);
         for (var message of messages) {
             message.filePath = args.path;
         }

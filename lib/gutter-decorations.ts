@@ -16,6 +16,9 @@ interface DecorationData {
   decorations: GutterDecoration[]
 }
 
+var subscriptions: CompositeDisposable;
+const filters = new Map<string, DecorationData>();
+
 function updateGutterDecorations(args: Filter.Params.DataUpdate) {
   const enableAlertDecorations = settings.config.generalSettings.
       enableAlertDecorations.get();
@@ -77,20 +80,14 @@ function updateGutterDecorations(args: Filter.Params.DataUpdate) {
           continue;
       }
       // TODO(glen): we should really stop piggybacking on the Linter's gutter.
-      var gutterName: string;
-      if(args.editor.gutterWithName("linter-ui-default")) {
-        gutterName = "linter-ui-default";
-      } else if(args.editor.gutterWithName("linter")) {
-        gutterName = "linter";
-      } else {
-        return;
-      }
+      const gutterName = "linter-ui-default";
+      if(!args.editor.gutterWithName(gutterName)) return;
 
       const r = new Range([ld.range.start.row, 0], [ld.range.start.row, 1]);
       const marker = args.editor.markBufferRange(r, { invalidate: "never" });
       const decoration = args.editor.decorateMarker(marker, { type: "gutter",
           gutterName, class: "poe-decoration-container", item: element });
-      markers.push({ type: decorationType, marker: marker, decoration: decoration });
+      markers.push({ type: decorationType, marker: marker, decoration });
     }
   }
   const result: DecorationData = {
@@ -101,9 +98,6 @@ function updateGutterDecorations(args: Filter.Params.DataUpdate) {
   filters.set(args.editor.buffer.id, result);
 }
 
-var subscriptions: CompositeDisposable;
-const filters = new Map<string, DecorationData>();
-
 export function activate() {
   subscriptions = new CompositeDisposable;
 
@@ -112,7 +106,7 @@ export function activate() {
     updateGutterDecorations(args);
   }));
 
-  subscriptions.add(filterData.emitter.on("poe-did-destroy-filter",
+  subscriptions.add(filterData.emitter.on("poe-did-unregister-filter",
       (editorID: string) => {
     const decorationsData = filters.get(editorID);
     if(decorationsData) {

@@ -12,6 +12,8 @@ const atom_1 = require("atom");
 const settings = require("./settings");
 const filterData = require("./filter-manager");
 const sound = require("./sound");
+var subscriptions;
+const filters = new Map();
 function updateGutterDecorations(args) {
     const enableAlertDecorations = settings.config.generalSettings.
         enableAlertDecorations.get();
@@ -73,21 +75,14 @@ function updateGutterDecorations(args) {
                 default:
                     continue;
             }
-            var gutterName;
-            if (args.editor.gutterWithName("linter-ui-default")) {
-                gutterName = "linter-ui-default";
-            }
-            else if (args.editor.gutterWithName("linter")) {
-                gutterName = "linter";
-            }
-            else {
+            const gutterName = "linter-ui-default";
+            if (!args.editor.gutterWithName(gutterName))
                 return;
-            }
             const r = new atom_1.Range([ld.range.start.row, 0], [ld.range.start.row, 1]);
             const marker = args.editor.markBufferRange(r, { invalidate: "never" });
             const decoration = args.editor.decorateMarker(marker, { type: "gutter",
                 gutterName, class: "poe-decoration-container", item: element });
-            markers.push({ type: decorationType, marker: marker, decoration: decoration });
+            markers.push({ type: decorationType, marker: marker, decoration });
         }
     }
     const result = {
@@ -96,14 +91,12 @@ function updateGutterDecorations(args) {
     };
     filters.set(args.editor.buffer.id, result);
 }
-var subscriptions;
-const filters = new Map();
 function activate() {
     subscriptions = new atom_1.CompositeDisposable;
     subscriptions.add(filterData.emitter.on("poe-did-process-filter", (args) => {
         updateGutterDecorations(args);
     }));
-    subscriptions.add(filterData.emitter.on("poe-did-destroy-filter", (editorID) => {
+    subscriptions.add(filterData.emitter.on("poe-did-unregister-filter", (editorID) => {
         const decorationsData = filters.get(editorID);
         if (decorationsData) {
             decorationsData.decorations.forEach((decoration) => {
