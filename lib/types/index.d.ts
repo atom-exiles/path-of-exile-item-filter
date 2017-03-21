@@ -126,6 +126,11 @@ declare namespace Filter {
       editor: AtomCore.TextEditor
       path: string
     }
+
+    interface BufferChanges {
+      oldRange: TextBuffer.Range
+      newRange: TextBuffer.Range
+    }
   }
 
   interface Value {

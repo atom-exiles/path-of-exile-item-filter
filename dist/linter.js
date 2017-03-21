@@ -9,44 +9,41 @@ var subscriptions;
 const filterMessages = new Map();
 const unsavedFilterMessages = new Map();
 function setMessages() {
+    registry.deleteMessages();
     const enableLinter = settings.config.generalSettings.enableLinter.get();
-    if (enableLinter) {
-        registry.deleteMessages();
-        var messages = [];
-        filterMessages.forEach((array) => {
-            array.forEach((message) => {
-                var result;
-                if (message.text) {
-                    result = {
-                        text: message.text,
-                        type: message.type,
-                        filePath: message.filePath,
-                        range: message.range,
-                        fix: message.fix,
-                        severity: message.severity
-                    };
-                }
-                else if (message.html) {
-                    result = {
-                        text: message.html,
-                        type: message.type,
-                        filePath: message.filePath,
-                        range: message.range,
-                        fix: message.fix,
-                        severity: message.severity
-                    };
-                }
-                else {
-                    throw new Error("invalid message passed to the linter");
-                }
-                messages.push(result);
-            });
+    if (!enableLinter)
+        return;
+    var messages = [];
+    filterMessages.forEach((array) => {
+        array.forEach((message) => {
+            var result;
+            if (message.text) {
+                result = {
+                    text: message.text,
+                    type: message.type,
+                    filePath: message.filePath,
+                    range: message.range,
+                    fix: message.fix,
+                    severity: message.severity
+                };
+            }
+            else if (message.html) {
+                result = {
+                    text: message.html,
+                    type: message.type,
+                    filePath: message.filePath,
+                    range: message.range,
+                    fix: message.fix,
+                    severity: message.severity
+                };
+            }
+            else {
+                throw new Error("invalid message passed to the linter");
+            }
+            messages.push(result);
         });
-        registry.setMessages(messages);
-    }
-    else {
-        registry.deleteMessages();
-    }
+    });
+    registry.setMessages(messages);
 }
 function activate(r) {
     assert(filterMessages.size == 0 || unsavedFilterMessages.size == 0, "activation called unexpectedly.");

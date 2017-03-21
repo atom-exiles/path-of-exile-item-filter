@@ -5,11 +5,7 @@ import * as assert from "assert";
 import * as data from "./json-data";
 import * as settings from "./settings";
 import * as parser from "./parser";
-
-interface BufferChanges {
-  oldRange: TextBuffer.Range
-  newRange: TextBuffer.Range
-}
+import * as fp from "./filter-processor";
 
 /** Handles subscriptions for every buffer, while also managing the data for
  *  item filters. */
@@ -17,7 +13,7 @@ class FilterManager {
   private readonly editor: AtomCore.TextEditor;
   private subscriptions: CompositeDisposable;
   private filterSubs: CompositeDisposable;
-  private changes?: BufferChanges;
+  private changes?: Filter.Params.BufferChanges;
 
   filter?: Promise<Filter.Line[]>;
 
@@ -91,7 +87,7 @@ class FilterManager {
       }
     }));
 
-    this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
+    this.filterSubs.add(this.editor.buffer.onDidStopChanging(async () => {
       this.processFilterChanges();
     }));
 
@@ -112,7 +108,7 @@ class FilterManager {
   }
 
   /** Processes the entire item filter from scratch. */
-  private processFilter() {
+  private async processFilter() {
     const oldRange = new Range([0, 0], [0, 0]);
 
     const lastRow = this.editor.getLastBufferRow();
@@ -120,107 +116,49 @@ class FilterManager {
     const lastColumn = lastRowText.length - 1;
     const newRange = new Range([0, 0], [lastRow, lastColumn]);
 
-    this.filter = this.parseLineInfo(this.filter, { oldRange: oldRange,
-        newRange: newRange }, true);
+    const itemData = await data.filterItemData;
+
+    const result = new Promise<Filter.Line[]>((resolve, reject) => {
+      const lineInfo = fp.parseLineInfo({
+        changes: { oldRange, newRange },
+        editor: this.editor,
+        filter: undefined,
+        itemData,
+        reset: true
+      });
+      resolve(lineInfo);
+    });
+
+    const lineInfo = await result;
+    emitter.emit<Filter.Params.DataUpdate>("poe-did-process-filter",
+        { editor: this.editor, lines: lineInfo });
+    this.filter = result;
   }
 
   /** Processes only the recent changes to the item filter. */
-  private processFilterChanges() {
+  private async processFilterChanges() {
     if(!this.changes || !this.filter) return;
 
-    this.filter = this.parseLineInfo(this.filter, this.changes);
-    this.changes = undefined;
-  }
-
-  translateLineRanges(line: Filter.Line, delta: Point) {
-    switch(line.type) {
-      case "Block": {
-        const fb: Filter.Block = (<Filter.Block>line.data);
-        fb.scope = fb.scope.translate(delta);
-        fb.type.range = fb.type.range.translate(delta);
-        if(fb.trailingComment) {
-          fb.trailingComment.range = fb.trailingComment.range.translate(delta);
-        }
-        line.data = fb;
-      } break;
-      case "Comment": {
-        const fb: Filter.Comment = (<Filter.Comment>line.data);
-        fb.range = fb.range.translate(delta);
-      } break;
-      case "Rule": {
-        const fb: Filter.Rule = (<Filter.Rule>line.data);
-        fb.range = fb.range.translate(delta);
-        fb.type.range = fb.type.range.translate(delta);
-        if(fb.operator) fb.operator.range = fb.operator.range.translate(delta);
-        fb.values.forEach((value) => {
-          value.range = value.range.translate(delta);
-        })
-        if(fb.trailingComment) {
-          fb.trailingComment.range = fb.trailingComment.range.translate(delta);
-        }
-      } break;
-      case "Unknown": {
-        const fb: Filter.Unknown = (<Filter.Unknown>line.data);
-        fb.range = fb.range.translate(delta);
-      } break;
-      default:
-        break;
-    }
-  }
-
-  async parseLineInfo(filter: Promise<Filter.Line[]>|undefined,
-      changes: BufferChanges, reset = false): Promise<Filter.Line[]> {
-    const lines = this.editor.buffer.getLines();
     const itemData = await data.filterItemData;
+    const previousData = await this.filter;
 
-    var previousLines: Filter.Line[];
-    if(reset) previousLines = [];
-    else if(filter) previousLines = await filter;
-    else throw new Error("unexpected state for getLineInfo.");
-
-    var output: Filter.Line[] = [];
-    var lowerAdjustment: number;
-    if(reset) lowerAdjustment = 0;
-    else lowerAdjustment = lines.length - previousLines.length;
-
-    // Changes are essentially a partition of the file that is now invalidated
-    // and must be reprocessed. We can reuse the surrounding two partitions,
-    // which will hopefully be the vast majority.
-    var upperPartition: Filter.Line[] = [];
-    if(changes.oldRange.start.row > 0) {
-      upperPartition = previousLines.slice(0, changes.oldRange.start.row);
-    }
-
-    output = output.concat(upperPartition);
-    var newExtent: number = changes.newRange.end.row - changes.newRange.start.row;
-    for(var i = 0; i <= newExtent; i++) {
-      const row = changes.newRange.start.row + i;
-      const currentLine = lines[row];
-
-      const result = parser.parseLine({ editor: this.editor, itemData: itemData,
-          lineText: currentLine, row: row });
-      assert(result, "parseLine should always return a Filter.Line");
-      output.push(result);
-    }
-
-    var lowerPartition: Filter.Line[];
-    if(reset) {
-      lowerPartition = [];
-    } else {
-      const remaining = lines.length - output.length;
-      lowerPartition = previousLines.splice(previousLines.length - remaining,
-          previousLines.length);
-    }
-
-    const delta = new Point(lowerAdjustment, 0);
-    lowerPartition.forEach((line) => {
-      this.translateLineRanges(line, delta);
-      output.push(line);
+    const result = new Promise<Filter.Line[]>((resolve, reject) => {
+      const lineInfo = fp.parseLineInfo({
+        changes: (<Filter.Params.BufferChanges>this.changes),
+        editor: this.editor,
+        filter: previousData,
+        itemData,
+        reset: false
+      });
+      resolve(lineInfo);
     });
 
+    this.changes = undefined;
+    const lineInfo = await result;
+
     emitter.emit<Filter.Params.DataUpdate>("poe-did-process-filter",
-        { editor: this.editor, lines: output });
-    return output;
+        { editor: this.editor, lines: lineInfo });
+    this.filter = result;
   }
 }
 

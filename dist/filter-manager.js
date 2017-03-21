@@ -12,7 +12,7 @@ const atom_1 = require("atom");
 const assert = require("assert");
 const data = require("./json-data");
 const settings = require("./settings");
-const parser = require("./parser");
+const fp = require("./filter-processor");
 class FilterManager {
     constructor(editor) {
         this.editor = editor;
@@ -80,9 +80,9 @@ class FilterManager {
                 this.changes = { oldRange: event.oldRange.copy(), newRange: event.newRange.copy() };
             }
         }));
-        this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => {
+        this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => __awaiter(this, void 0, void 0, function* () {
             this.processFilterChanges();
-        }));
+        })));
         this.filterSubs.add(settings.config.linterSettings.enableWarnings.onDidChange(() => {
             this.processFilter();
         }));
@@ -97,110 +97,48 @@ class FilterManager {
         }
     }
     processFilter() {
-        const oldRange = new atom_1.Range([0, 0], [0, 0]);
-        const lastRow = this.editor.getLastBufferRow();
-        const lastRowText = this.editor.lineTextForBufferRow(lastRow);
-        const lastColumn = lastRowText.length - 1;
-        const newRange = new atom_1.Range([0, 0], [lastRow, lastColumn]);
-        this.filter = this.parseLineInfo(this.filter, { oldRange: oldRange,
-            newRange: newRange }, true);
+        return __awaiter(this, void 0, void 0, function* () {
+            const oldRange = new atom_1.Range([0, 0], [0, 0]);
+            const lastRow = this.editor.getLastBufferRow();
+            const lastRowText = this.editor.lineTextForBufferRow(lastRow);
+            const lastColumn = lastRowText.length - 1;
+            const newRange = new atom_1.Range([0, 0], [lastRow, lastColumn]);
+            const itemData = yield data.filterItemData;
+            const result = new Promise((resolve, reject) => {
+                const lineInfo = fp.parseLineInfo({
+                    changes: { oldRange, newRange },
+                    editor: this.editor,
+                    filter: undefined,
+                    itemData,
+                    reset: true
+                });
+                resolve(lineInfo);
+            });
+            const lineInfo = yield result;
+            exports.emitter.emit("poe-did-process-filter", { editor: this.editor, lines: lineInfo });
+            this.filter = result;
+        });
     }
     processFilterChanges() {
-        if (!this.changes || !this.filter)
-            return;
-        this.filter = this.parseLineInfo(this.filter, this.changes);
-        this.changes = undefined;
-    }
-    translateLineRanges(line, delta) {
-        switch (line.type) {
-            case "Block":
-                {
-                    const fb = line.data;
-                    fb.scope = fb.scope.translate(delta);
-                    fb.type.range = fb.type.range.translate(delta);
-                    if (fb.trailingComment) {
-                        fb.trailingComment.range = fb.trailingComment.range.translate(delta);
-                    }
-                    line.data = fb;
-                }
-                break;
-            case "Comment":
-                {
-                    const fb = line.data;
-                    fb.range = fb.range.translate(delta);
-                }
-                break;
-            case "Rule":
-                {
-                    const fb = line.data;
-                    fb.range = fb.range.translate(delta);
-                    fb.type.range = fb.type.range.translate(delta);
-                    if (fb.operator)
-                        fb.operator.range = fb.operator.range.translate(delta);
-                    fb.values.forEach((value) => {
-                        value.range = value.range.translate(delta);
-                    });
-                    if (fb.trailingComment) {
-                        fb.trailingComment.range = fb.trailingComment.range.translate(delta);
-                    }
-                }
-                break;
-            case "Unknown":
-                {
-                    const fb = line.data;
-                    fb.range = fb.range.translate(delta);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    parseLineInfo(filter, changes, reset = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const lines = this.editor.buffer.getLines();
+            if (!this.changes || !this.filter)
+                return;
             const itemData = yield data.filterItemData;
-            var previousLines;
-            if (reset)
-                previousLines = [];
-            else if (filter)
-                previousLines = yield filter;
-            else
-                throw new Error("unexpected state for getLineInfo.");
-            var output = [];
-            var lowerAdjustment;
-            if (reset)
-                lowerAdjustment = 0;
-            else
-                lowerAdjustment = lines.length - previousLines.length;
-            var upperPartition = [];
-            if (changes.oldRange.start.row > 0) {
-                upperPartition = previousLines.slice(0, changes.oldRange.start.row);
-            }
-            output = output.concat(upperPartition);
-            var newExtent = changes.newRange.end.row - changes.newRange.start.row;
-            for (var i = 0; i <= newExtent; i++) {
-                const row = changes.newRange.start.row + i;
-                const currentLine = lines[row];
-                const result = parser.parseLine({ editor: this.editor, itemData: itemData,
-                    lineText: currentLine, row: row });
-                assert(result, "parseLine should always return a Filter.Line");
-                output.push(result);
-            }
-            var lowerPartition;
-            if (reset) {
-                lowerPartition = [];
-            }
-            else {
-                const remaining = lines.length - output.length;
-                lowerPartition = previousLines.splice(previousLines.length - remaining, previousLines.length);
-            }
-            const delta = new atom_1.Point(lowerAdjustment, 0);
-            lowerPartition.forEach((line) => {
-                this.translateLineRanges(line, delta);
-                output.push(line);
+            const previousData = yield this.filter;
+            const result = new Promise((resolve, reject) => {
+                const lineInfo = fp.parseLineInfo({
+                    changes: this.changes,
+                    editor: this.editor,
+                    filter: previousData,
+                    itemData,
+                    reset: false
+                });
+                resolve(lineInfo);
             });
-            exports.emitter.emit("poe-did-process-filter", { editor: this.editor, lines: output });
-            return output;
+            this.changes = undefined;
+            const lineInfo = yield result;
+            exports.emitter.emit("poe-did-process-filter", { editor: this.editor, lines: lineInfo });
+            this.filter = result;
         });
     }
 }

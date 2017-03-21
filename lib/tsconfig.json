@@ -16,5 +16,6 @@
     "removeComments": true,
     "paths": {
     }
-  }
+  },
+  "compileOnSave": true
 }
