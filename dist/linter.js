@@ -10,13 +10,16 @@ const filterMessages = new Map();
 const unsavedFilterMessages = new Map();
 function setMessages() {
     const enableLinter = settings.config.generalSettings.enableLinter.get();
-    if (!enableLinter)
-        return;
-    var messages = [];
-    filterMessages.forEach((array) => {
-        messages = messages.concat(array);
-    });
-    delegate.setAllMessages(messages);
+    if (enableLinter) {
+        var messages = [];
+        filterMessages.forEach((array) => {
+            messages = messages.concat(array);
+        });
+        delegate.setAllMessages(messages);
+    }
+    else {
+        delegate.clearMessages();
+    }
 }
 function activate(indieDelegate) {
     assert(filterMessages.size == 0 || unsavedFilterMessages.size == 0, "activation called unexpectedly.");

@@ -11,13 +11,15 @@ const unsavedFilterMessages = new Map<string, Linter.Message[]>();
 
 function setMessages() {
   const enableLinter = settings.config.generalSettings.enableLinter.get();
-  if(!enableLinter) return;
-
-  var messages: Linter.Message[] = [];
-  filterMessages.forEach((array) => {
-    messages = messages.concat(array);
-  });
-  delegate.setAllMessages(messages);
+  if(enableLinter) {
+    var messages: Linter.Message[] = [];
+    filterMessages.forEach((array) => {
+      messages = messages.concat(array);
+    });
+    delegate.setAllMessages(messages);
+  } else {
+    delegate.clearMessages();
+  }
 }
 
 export function activate(indieDelegate: Linter.IndieDelegate) {

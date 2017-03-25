@@ -1,4 +1,4 @@
-## Versions 1.0.1-1.0.8
+## Versions 1.0.1-1.0.9
 * Added linter errors for trailing comments on rules where it's an error in-game
 * Extension renames for opened files are now properly handled
 * A linter error will no longer flash when converting hexadecimal text
@@ -10,6 +10,9 @@
 * Fixed filter decorations vanishing on other tabs whenever a filter is closed
 * Partial support for the new version of our Linter dependency
 * Gutter decorations and Linter messages should now behave properly when editing multiple lines
+* Linter improvements, including descriptions and solutions where appropriate
+* Added extra suggestions for each endgame set
+* The option to enable and disable the linter works properly once again
 
 ## Version 1.0.0
 * Support for 2.6 and Legacy league

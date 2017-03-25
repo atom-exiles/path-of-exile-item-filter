@@ -263,6 +263,26 @@
       "displayText": "Bases - Maraketh - High Level",
       "text": "\"Runic Hatchet\" Fleshripper \"Maraketh Bow\" \"Gemini Claw\" Sai \"Behemoth Mace\" \"Sambar Sceptre \" \"Coronal Maul\" \"Eclipse Staff\" \"Tiger Hook\" \"Dragoon Sword\" \"Exquisite Blade\" \"Profane Wand\"",
       "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Set - Atziri",
+      "text": "\"Sacrifice at Dusk\" \"Sacrifice at Midnight\" \"Sacrifice at Dawn\" \"Sacrifice at Noon\"",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Set - Uber Atziri",
+      "text": "\"Mortal Grief\" \"Mortal Rage\" \"Mortal Hope\" \"Mortal Ignorance\"",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Set - Pale Council",
+      "text": "\"Volkuur's Key\" \"Eber's Key\" \"Yriel's Key\" \"Inya's Key\"",
+      "custom": { "backupRightLabel": "Extra" }
+    },
+    {
+      "displayText": "Set - Shaper",
+      "text": "\"Fragment of the Hydra\" \"Fragment of the Phoenix\" \"Fragment of the Minotaur\" \"Fragment of the Chimera\"",
+      "custom": { "backupRightLabel": "Extra" }
     }
   ],
   "extraClasses": []
