@@ -79,40 +79,71 @@ declare namespace Completion {
 }
 
 declare namespace Linter {
-  interface Fix {
-    range: TextBuffer.IRange
-    newText: string
-    oldText?: string
+  interface TextSolution {
+    title?: string,
+    position: TextBuffer.Range,
+    priority?: number,
+    currentText?: string,
+    replaceWith: string,
+  }
+
+  interface CallbackSolution {
+    title?: string,
+    position: TextBuffer.Range,
+    priority?: number,
+    apply: (() => any),
   }
 
   interface Message {
-    type: "Error"|"Warning"|"Trace"
-    filePath?: string
-    range?: TextBuffer.IRange
-    fix?: Fix
-    severity?: "error"|"warning"|"info"
+    /** The location of the issue (aka where to highlight). */
+    location: {
+      /** The file to which the message applies. MUST be an absolute path. */
+      // Technically, this is required; however, we manage messages in such a way
+      // that only messages with this property defined are ever passed to the Linter.
+      file?: string,
+      position: TextBuffer.Range,
+    },
+    /** A reference to a different location in the editor, useful for jumping to classes etc. */
+    reference?: {
+      /** The file containing the referenced position. MUST be an absolute path. */
+      file: string,
+      position?: TextBuffer.Point,
+    },
+    /** HTTP link to a resource explaining the issue. Default is a google search. */
+    // Optional, but Google results aren't particularly useful for item filters.
+    url: string,
+    /** The name of the octicon to show in gutter. */
+    icon?: string,
+    /** The text to display for the message. */
+    excerpt: string,
+    /** The severity level for the message. */
+    severity: "error"|"warning"|"info",
+    /** The possible solutions for the issue (which users can invoke at will). */
+    solutions?: Array<TextSolution|CallbackSolution>,
+    /** A Markdown long description of the error, accepts callback so you can do
+     *  http requests etc. */
+    description?: string | (() => Promise<string> | string)
   }
 
-  interface TextMessage extends Message { text: string }
-  interface HTMLMessage extends Message { html: string }
-  type Messages = Array<TextMessage|HTMLMessage>;
-
-  interface Registry {
-    register(config: { name: string }): Register;
-  }
-
-  interface Register extends AtomEventKit.IDisposable {
-    deleteMessages(): void;
-    setMessages(messages: Messages): void;
-  }
-
-  interface Provider {
+  interface Config {
     name: string
-    scope: string
-    lintOnFly: boolean
-    grammarScopes: Array<string>
-    lint: (textEditor: AtomCore.TextEditor) => Messages
   }
+
+  interface IndieDelegate {
+    readonly name: string
+    getMessages(): Message[]
+    clearMessages(): void
+    /** Replaces the last stored messages for the given filePath for your delegate. */
+    setMessages(filePath: string, messages: Message[]): void
+    /** Replaces the list of messages Linter has stored for your provider.
+     *  Any existing messages, regardless of the file they are associated with, are discarded. */
+    setAllMessages(messages: Message[]): void
+    onDidUpdate(callback: Function): AtomEventKit.Disposable
+    onDidDestroy(callback: Function): AtomEventKit.Disposable
+    dispose(): void
+  }
+
+  type IndieRegister = (params: Linter.Config) => Linter.IndieDelegate;
 }
 
 declare namespace Filter {
@@ -179,6 +210,6 @@ declare namespace Filter {
     type: "Block"|"Comment"|"Rule"|"Unknown"|"Empty"
     data: Block|Comment|Rule|Unknown|Empty
     invalid: boolean
-    messages?: (Linter.TextMessage|Linter.HTMLMessage)[]
+    messages?: Linter.Message[]
   }
 }

@@ -21,6 +21,7 @@ interface SuggestionsDataLayout {
   extraBlocks: Completion.Suggestions
   extraBases: Completion.Suggestions
   extraClasses: Completion.Suggestions
+  [key: string]: Completion.Suggestions;
 }
 
 interface FileData {

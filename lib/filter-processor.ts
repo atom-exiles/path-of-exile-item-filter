@@ -6,8 +6,12 @@ import * as parser from "./parser";
 function translateLineRanges(line: Filter.Line, delta: Point) {
   if(line.messages) {
     line.messages.forEach((message) => {
-      if(message.range) {
-        message.range = Range.fromObject(message.range).translate(delta);
+      message.location.position = Range.fromObject(message.location.position)
+          .translate(delta);
+
+      if(message.reference && message.reference.position) {
+        message.reference.position = Point.fromObject(message.reference.position)
+            .translate(delta);
       }
     });
   }

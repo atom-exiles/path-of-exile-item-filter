@@ -136,11 +136,16 @@ function expectEqualityOp(parser, line) {
     var operator = parser.nextOperator();
     if (operator.found && operator.value != "=") {
         result = {
-            type: "Error",
-            text: "Invalid operator for \"" + line.keyword +
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, operator.startIndex], [line.number, operator.endIndex])
+            },
+            severity: "error",
+            excerpt: "Invalid operator for \"" + line.keyword +
                 "\". Only the '=' operator is supported for this rule.",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, operator.startIndex], [line.number, operator.endIndex])
+            description: "Path of Exile allows an operator to appear for most rule types, however for\n" +
+                "some rules only the '=' operator is allowed. Any other operators will result in an error.",
+            url: "http://pathofexile.gamepedia.com/Item_filter",
         };
     }
     return result;
@@ -149,11 +154,17 @@ function reportTrailingComment(parser, line, result) {
     if (parser.isCommented()) {
         const comment = parser.parseComment();
         result.messages.push({
-            type: "Error",
-            text: "A trailing comment for a \"" + line.keyword +
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, comment.startIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "A trailing comment for a \"" + line.keyword +
                 "\" rule will result in an error.",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, comment.startIndex], [line.number, parser.originalLength])
+            description: "Path of Exile only allows for comments to trail the following rule types:" +
+                "\n\n\tSetBorderColor\n\tSetTextColor\n\tSetBackgroundColor\n\tPlayAlertSound\n\n" +
+                "Any other rule types with a trailing comment will result in an error.",
+            url: "http://pathofexile.gamepedia.com/Item_filter"
         });
         result.invalid = true;
     }
@@ -173,11 +184,14 @@ function processAlertSoundRule(parser, line) {
     const retVal = parser.nextNumber();
     if (!retVal.found || !retVal.value) {
         result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword +
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Invalid format. Expected \"" + line.keyword +
                 " <Value> [Value]\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            url: "http://pathofexile.gamepedia.com/Item_filter#Actions"
         });
         result.invalid = true;
         return result;
@@ -188,10 +202,13 @@ function processAlertSoundRule(parser, line) {
         var outputRange = new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex]);
         const text = outputText + "1-9.";
         result.messages.push({
-            type: "Error",
-            text: text,
-            filePath: line.file,
-            range: outputRange
+            location: {
+                file: line.file,
+                position: outputRange
+            },
+            severity: "error",
+            excerpt: text,
+            url: "http://pathofexile.gamepedia.com/Item_filter#Actions"
         });
         result.invalid = true;
     }
@@ -199,10 +216,13 @@ function processAlertSoundRule(parser, line) {
         const text = outputText + "0-300.";
         var outputRange = new atom_1.Range([line.number, optVal.startIndex], [line.number, optVal.endIndex]);
         result.messages.push({
-            type: "Error",
-            text: text,
-            filePath: line.file,
-            range: outputRange
+            location: {
+                file: line.file,
+                position: outputRange
+            },
+            severity: "error",
+            excerpt: text,
+            url: "http://pathofexile.gamepedia.com/Item_filter#Actions"
         });
         result.invalid = true;
     }
@@ -274,38 +294,44 @@ function processRGBARule(parser, line) {
     if (!red.found || red.value == undefined || !green.found ||
         green.value == undefined || !blue.found || blue.value == undefined) {
         result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword +
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Invalid format. Expected \"" + line.keyword +
                 " <Red> <Green> <Blue> [Alpha]\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            url: "http://pathofexile.gamepedia.com/Item_filter#Actions"
         });
         result.invalid = true;
         return result;
     }
     var partialMessage = {
-        type: "Error",
-        text: "Invalid value for rule \"" + line.keyword + "\". Expected 0-255.",
-        filePath: line.file,
-        range: undefined
+        location: {
+            file: line.file,
+            position: new atom_1.Range([0, 0], [0, 0])
+        },
+        severity: "error",
+        excerpt: "Invalid value for rule \"" + line.keyword + "\". Expected 0-255.",
+        url: "http://pathofexile.gamepedia.com/Item_filter#Actions"
     };
     if (red.value < 0 || red.value > 255) {
-        partialMessage.range = new atom_1.Range([line.number, red.startIndex], [line.number, red.endIndex]);
+        partialMessage.location.position = new atom_1.Range([line.number, red.startIndex], [line.number, red.endIndex]);
         result.messages.push(partialMessage);
         result.invalid = true;
     }
     else if (green.value < 0 || green.value > 255) {
-        partialMessage.range = new atom_1.Range([line.number, green.startIndex], [line.number, green.endIndex]);
+        partialMessage.location.position = new atom_1.Range([line.number, green.startIndex], [line.number, green.endIndex]);
         result.messages.push(partialMessage);
         result.invalid = true;
     }
     else if (blue.value < 0 || blue.value > 255) {
-        partialMessage.range = new atom_1.Range([line.number, blue.startIndex], [line.number, blue.endIndex]);
+        partialMessage.location.position = new atom_1.Range([line.number, blue.startIndex], [line.number, blue.endIndex]);
         result.messages.push(partialMessage);
         result.invalid = true;
     }
     else if (alpha.found && alpha.value && (alpha.value < 0 || alpha.value > 255)) {
-        partialMessage.range = new atom_1.Range([line.number, alpha.startIndex], [line.number, alpha.endIndex]);
+        partialMessage.location.position = new atom_1.Range([line.number, alpha.startIndex], [line.number, alpha.endIndex]);
         result.messages.push(partialMessage);
         result.invalid = true;
     }
@@ -358,10 +384,15 @@ function processMultiStringRule(parser, line, expectedValues, caseSensitive) {
         const currentValue = parser.nextString();
         if (!currentValue.found && result.values.length == 0 && result.messages.length == 0) {
             result.messages.push({
-                type: "Error",
-                text: "Invalid format. Expected \"" + line.keyword + " <Text>...\".",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+                location: {
+                    file: line.file,
+                    position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+                },
+                severity: "error",
+                excerpt: "Invalid format. Expected \"" + line.keyword + " <Text>...\".",
+                description: "The '" + line.keyword + "' keyword should be followed by a list of words or strings.\n\n" +
+                    "Any value consisting of multiple words should be surrounded by double quotation marks.",
+                url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
             });
             result.invalid = true;
             break;
@@ -389,10 +420,13 @@ function processMultiStringRule(parser, line, expectedValues, caseSensitive) {
         }
         if (!resultFound) {
             result.messages.push({
-                type: "Error",
-                text: "Invalid value for \"" + line.keyword + "\" rule.",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, currentValue.startIndex], [line.number, currentValue.endIndex])
+                location: {
+                    file: line.file,
+                    position: new atom_1.Range([line.number, currentValue.startIndex], [line.number, currentValue.endIndex])
+                },
+                severity: "error",
+                excerpt: "Invalid value for \"" + line.keyword + "\" rule.",
+                url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
             });
             result.invalid = true;
         }
@@ -414,10 +448,13 @@ function processSocketGroup(parser, line) {
     var retVal = parser.nextString();
     if (!retVal.found || !retVal.value) {
         result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword + " <Group>\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Invalid format. Expected \"" + line.keyword + " <Group>\".",
+            url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
         });
         result.invalid = true;
     }
@@ -432,11 +469,14 @@ function processSocketGroup(parser, line) {
         }
         else {
             result.messages.push({
-                type: "Error",
-                text: "Invalid value for \"" + line.keyword +
+                location: {
+                    file: line.file,
+                    position: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+                },
+                severity: "error",
+                excerpt: "Invalid value for \"" + line.keyword +
                     "\" rule. Valid characters are: R, B, G, W.",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+                url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
             });
             result.invalid = true;
         }
@@ -458,10 +498,13 @@ function processOpNumberRule(parser, line, values) {
     const retVal = parser.nextNumber();
     if (!retVal.found || retVal.value == undefined) {
         result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword + " [Operator] <Number>\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Invalid format. Expected \"" + line.keyword + " [Operator] <Number>\".",
+            url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
         });
         result.invalid = true;
         return result;
@@ -475,11 +518,14 @@ function processOpNumberRule(parser, line, values) {
     }
     else {
         result.messages.push({
-            type: "Error",
-            text: "Invalid value for rule \"" + line.keyword + "\". Expected " +
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+            },
+            severity: "error",
+            excerpt: "Invalid value for rule \"" + line.keyword + "\". Expected " +
                 values.toString() + ".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+            url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
         });
         result.invalid = true;
     }
@@ -503,11 +549,14 @@ function processStringRule(parser, line, expectedValues, caseSensitive) {
     const retVal = parser.nextString();
     if (!retVal.found) {
         result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword +
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Invalid format. Expected \"" + line.keyword +
                 " [Operator] <Text>\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
         });
         result.invalid = true;
         return result;
@@ -539,11 +588,19 @@ function processStringRule(parser, line, expectedValues, caseSensitive) {
         result.values.push(value);
     }
     else {
+        var description = "The following values are valid for this rule:\n";
+        expectedValues.forEach((value) => {
+            description += "\n\t" + value;
+        });
         result.messages.push({
-            type: "Error",
-            text: "Invalid value for \"" + line.keyword + "\" rule.",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+            },
+            severity: "error",
+            excerpt: "Invalid value for \"" + line.keyword + "\" rule.",
+            description,
+            url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
         });
         result.invalid = true;
     }
@@ -565,10 +622,14 @@ function processBooleanRule(parser, line) {
     var retVal = parser.nextBoolean();
     if (!retVal.found) {
         result.messages.push({
-            type: "Error",
-            text: "Invalid format. Expected \"" + line.keyword + " <Boolean>\".",
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Invalid format. Expected \"" + line.keyword + " <Boolean>\".",
+            description: "A Boolean is a binary value that can be either 'True' or 'False'",
+            url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
         });
         result.invalid = true;
     }
@@ -599,10 +660,13 @@ function processRangeRule(parser, line, min, max, hasOperator = true) {
     else {
         if (operator.found) {
             result.messages.push({
-                type: "Error",
-                text: "An operator for a \"" + line.keyword + "\" rule is an error.",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, operator.startIndex], [line.number, operator.endIndex])
+                location: {
+                    file: line.file,
+                    position: new atom_1.Range([line.number, operator.startIndex], [line.number, operator.endIndex])
+                },
+                severity: "error",
+                excerpt: "An operator for a \"" + line.keyword + "\" rule is an error.",
+                url: "http://pathofexile.gamepedia.com/Item_filter"
             });
             result.invalid = true;
         }
@@ -618,10 +682,13 @@ function processRangeRule(parser, line, min, max, hasOperator = true) {
             messageText = partialMessageText + " <Number>\".";
         }
         result.messages.push({
-            type: "Error",
-            text: messageText,
-            filePath: line.file,
-            range: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            location: {
+                file: line.file,
+                position: new atom_1.Range([line.number, parser.textStartIndex], [line.number, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: messageText,
+            url: "http://pathofexile.gamepedia.com/Item_filter"
         });
         result.invalid = true;
     }
@@ -633,11 +700,14 @@ function processRangeRule(parser, line, min, max, hasOperator = true) {
         }
         else {
             result.messages.push({
-                type: "Error",
-                text: "Invalid value for \"" + line.keyword + "\" rule. Expected "
+                location: {
+                    file: line.file,
+                    position: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+                },
+                severity: "error",
+                excerpt: "Invalid value for \"" + line.keyword + "\" rule. Expected "
                     + min + "-" + max + ".",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, retVal.startIndex], [line.number, retVal.endIndex])
+                url: "http://pathofexile.gamepedia.com/Item_filter"
             });
             result.invalid = true;
         }
@@ -662,11 +732,26 @@ function processBlock(parser, line) {
     }
     else if (!parser.isIgnored()) {
         if (settings.config.linterSettings.enableWarnings.get()) {
+            const position = new atom_1.Range([line.number, parser.currentIndex], [line.number, parser.originalLength]);
+            const currentText = line.editor.getTextInBufferRange(position);
+            const replacement = " #" + currentText;
+            const fix = {
+                currentText,
+                position,
+                replaceWith: replacement,
+                title: "Comment This Text"
+            };
             result.messages.push({
-                type: "Warning",
-                text: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
-                filePath: line.file,
-                range: new atom_1.Range([line.number, parser.currentIndex], [line.number, parser.originalLength])
+                location: {
+                    file: line.file,
+                    position
+                },
+                severity: "warning",
+                excerpt: "Trailing text for a \"" + line.keyword + "\" block will be ignored.",
+                description: "Path of Exile will not consider this an error, however the text will " +
+                    "be completely ignored.\n\nCommenting this text with a '#' will remove this warning.",
+                solutions: [fix],
+                url: "http://pathofexile.gamepedia.com/Item_filter"
             });
         }
     }
@@ -703,10 +788,13 @@ function parseLine(args) {
     const keywordResult = parser.nextWord();
     if (!keywordResult.found || !keywordResult.value) {
         messages.push({
-            type: "Error",
-            text: "Unreadable keyword, likely due to a stray character.",
-            filePath: filePath,
-            range: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.originalLength])
+            location: {
+                file: filePath,
+                position: new atom_1.Range([args.row, parser.textStartIndex], [args.row, parser.originalLength])
+            },
+            severity: "error",
+            excerpt: "Unreadable keyword, likely due to a stray character.",
+            url: "http://pathofexile.gamepedia.com/Item_filter_guide"
         });
         const unknownRange = new atom_1.Range([args.row, parser.textStartIndex,
             args.row, parser.textEndIndex]);
@@ -816,21 +904,44 @@ function parseLine(args) {
             lineType = "Rule";
             lineData = ld;
             if (!processResult.invalid && !parser.empty) {
-                messages.push({
-                    text: "Trailing text for a filter rule.",
-                    type: "Error",
-                    filePath: filePath,
-                    range: new atom_1.Range([args.row, parser.currentIndex], [args.row, parser.textEndIndex])
-                });
+                var fix;
+                if (keyword == "SetBorderColor" || keyword == "SetTextColor" ||
+                    keyword == "SetBackgroundColor" || keyword == "PlayAlertSound") {
+                    const position = new atom_1.Range([args.row, parser.currentIndex], [args.row, parser.textEndIndex]);
+                    const currentText = args.editor.getTextInBufferRange(position);
+                    const replacement = " #" + currentText;
+                    fix = {
+                        currentText,
+                        position,
+                        replaceWith: replacement,
+                        title: "Comment This Text"
+                    };
+                }
+                const message = {
+                    location: {
+                        file: filePath,
+                        position: new atom_1.Range([args.row, parser.currentIndex], [args.row, parser.textEndIndex])
+                    },
+                    severity: "error",
+                    excerpt: "Trailing text for a filter rule.",
+                    description: "Path of Exile will consider this an error.",
+                    url: "http://pathofexile.gamepedia.com/Item_filter_guide"
+                };
+                if (fix)
+                    message.solutions = [fix];
+                messages.push(message);
                 invalid = true;
             }
         }
         else {
             messages.push({
-                text: "Unknown filter keyword.",
-                type: "Error",
-                filePath: filePath,
-                range: new atom_1.Range([args.row, keywordResult.startIndex], [args.row, keywordResult.endIndex])
+                location: {
+                    file: filePath,
+                    position: new atom_1.Range([args.row, keywordResult.startIndex], [args.row, keywordResult.endIndex])
+                },
+                severity: "error",
+                excerpt: "Unknown filter keyword.",
+                url: "http://pathofexile.gamepedia.com/Item_filter_guide"
             });
             const ld = {
                 text: args.lineText,

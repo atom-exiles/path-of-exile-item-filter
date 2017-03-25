@@ -4,59 +4,28 @@ import * as assert from "assert";
 import * as settings from "./settings";
 import * as filterData  from "./filter-manager";
 
-var registry: Linter.Register;
+var delegate: Linter.IndieDelegate;
 var subscriptions: CompositeDisposable;
-const filterMessages = new Map<string, Linter.Messages>();
-const unsavedFilterMessages = new Map<string, Linter.Messages>();
+const filterMessages = new Map<string, Linter.Message[]>();
+const unsavedFilterMessages = new Map<string, Linter.Message[]>();
 
 function setMessages() {
-  registry.deleteMessages();
-
   const enableLinter = settings.config.generalSettings.enableLinter.get();
   if(!enableLinter) return;
 
-  var messages: Linter.Messages = [];
+  var messages: Linter.Message[] = [];
   filterMessages.forEach((array) => {
-    // The linter modifies each message and will use that information to
-    // determine what needs to be refreshed and what doesn't. In order to
-    // allow modification of a single property, like a path, we have to
-    // always give the linter the unmutated messages and force a full refresh.
-    array.forEach((message) => {
-      var result: Linter.TextMessage|Linter.HTMLMessage;
-
-      if((<Linter.TextMessage>message).text) {
-        result = {
-          text: (<Linter.TextMessage>message).text,
-          type: message.type,
-          filePath: message.filePath,
-          range: message.range,
-          fix: message.fix,
-          severity: message.severity
-        }
-      } else if((<Linter.HTMLMessage>message).html) {
-        result = {
-          text: (<Linter.HTMLMessage>message).html,
-          type: message.type,
-          filePath: message.filePath,
-          range: message.range,
-          fix: message.fix,
-          severity: message.severity
-        }
-      } else {
-        throw new Error("invalid message passed to the linter");
-      }
-      messages.push(result);
-    });
+    messages = messages.concat(array);
   });
-  registry.setMessages(messages);
+  delegate.setAllMessages(messages);
 }
 
-export function activate(r: Linter.Register) {
+export function activate(indieDelegate: Linter.IndieDelegate) {
   assert(filterMessages.size == 0 || unsavedFilterMessages.size == 0,
       "activation called unexpectedly.");
   if(subscriptions) subscriptions.dispose();
 
-  registry = r;
+  delegate = indieDelegate;
   subscriptions = new CompositeDisposable;
   var activePaneID: string|undefined;
 
@@ -70,7 +39,7 @@ export function activate(r: Linter.Register) {
 
   subscriptions.add(filterData.emitter.on("poe-did-process-filter", (args:
       Filter.Params.DataUpdate) => {
-    var messages: Linter.Messages = [];
+    var messages: Linter.Message[] = [];
     for(var line of args.lines) {
       if(line.messages) messages = messages.concat(line.messages);
     }
@@ -98,7 +67,11 @@ export function activate(r: Linter.Register) {
 
     filterMessages.set(args.editor.buffer.id, messages);
     for(var message of messages) {
-      message.filePath = args.path;
+      const previousPath = message.location.file;
+      message.location.file = args.path
+      if(message.reference && message.reference.file == previousPath) {
+        message.reference.file = args.path;
+      }
     }
     setMessages();
   }));

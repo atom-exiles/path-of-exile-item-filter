@@ -6,8 +6,11 @@ const parser = require("./parser");
 function translateLineRanges(line, delta) {
     if (line.messages) {
         line.messages.forEach((message) => {
-            if (message.range) {
-                message.range = atom_1.Range.fromObject(message.range).translate(delta);
+            message.location.position = atom_1.Range.fromObject(message.location.position)
+                .translate(delta);
+            if (message.reference && message.reference.position) {
+                message.reference.position = atom_1.Point.fromObject(message.reference.position)
+                    .translate(delta);
             }
         });
     }

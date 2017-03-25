@@ -8,13 +8,13 @@ const linter = require("./linter");
 const decorations = require("./gutter-decorations");
 exports.config = require("../data/config.json");
 const packageName = require("../package.json").name;
-var linterRegister;
+var linterDelegate;
 function readyToActivate() {
     jsonData.activate();
     filterData.activate();
     sound.activate();
     completion.activate();
-    linter.activate(linterRegister);
+    linter.activate(linterDelegate);
     decorations.activate();
 }
 function activate() {
@@ -36,8 +36,7 @@ function provideCompletion() {
     return [completion.provider];
 }
 exports.provideCompletion = provideCompletion;
-function consumeLinter(registry) {
-    const register = registry.register({ name: packageName });
-    linterRegister = register;
+function consumeLinter(register) {
+    linterDelegate = register({ name: packageName });
 }
 exports.consumeLinter = consumeLinter;

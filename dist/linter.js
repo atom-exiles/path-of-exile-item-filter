@@ -4,52 +4,25 @@ const atom_1 = require("atom");
 const assert = require("assert");
 const settings = require("./settings");
 const filterData = require("./filter-manager");
-var registry;
+var delegate;
 var subscriptions;
 const filterMessages = new Map();
 const unsavedFilterMessages = new Map();
 function setMessages() {
-    registry.deleteMessages();
     const enableLinter = settings.config.generalSettings.enableLinter.get();
     if (!enableLinter)
         return;
     var messages = [];
     filterMessages.forEach((array) => {
-        array.forEach((message) => {
-            var result;
-            if (message.text) {
-                result = {
-                    text: message.text,
-                    type: message.type,
-                    filePath: message.filePath,
-                    range: message.range,
-                    fix: message.fix,
-                    severity: message.severity
-                };
-            }
-            else if (message.html) {
-                result = {
-                    text: message.html,
-                    type: message.type,
-                    filePath: message.filePath,
-                    range: message.range,
-                    fix: message.fix,
-                    severity: message.severity
-                };
-            }
-            else {
-                throw new Error("invalid message passed to the linter");
-            }
-            messages.push(result);
-        });
+        messages = messages.concat(array);
     });
-    registry.setMessages(messages);
+    delegate.setAllMessages(messages);
 }
-function activate(r) {
+function activate(indieDelegate) {
     assert(filterMessages.size == 0 || unsavedFilterMessages.size == 0, "activation called unexpectedly.");
     if (subscriptions)
         subscriptions.dispose();
-    registry = r;
+    delegate = indieDelegate;
     subscriptions = new atom_1.CompositeDisposable;
     var activePaneID;
     subscriptions.add(filterData.emitter.on("poe-did-unregister-filter", (id) => {
@@ -83,7 +56,11 @@ function activate(r) {
             messages = [];
         filterMessages.set(args.editor.buffer.id, messages);
         for (var message of messages) {
-            message.filePath = args.path;
+            const previousPath = message.location.file;
+            message.location.file = args.path;
+            if (message.reference && message.reference.file == previousPath) {
+                message.reference.file = args.path;
+            }
         }
         setMessages();
     }));
