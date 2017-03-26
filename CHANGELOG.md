@@ -13,6 +13,7 @@
 * Linter improvements, including descriptions and solutions where appropriate
 * Added extra suggestions for each endgame set
 * The option to enable and disable the linter works properly once again
+* Tabs containing a filter will no longer be processed twice whenever the editor is launched
 
 ## Version 1.0.0
 * Support for 2.6 and Legacy league

@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
 const settings = require("./settings");
-const data = require("./json-data");
+const jsonData = require("./json-data");
 function activate() { }
 exports.activate = activate;
 function deactivate() { }
@@ -86,7 +86,7 @@ function getPrefix(editor, position) {
 function setReplacementPrefix(editor, position, prefix, suggestions) {
     for (var suggestion of suggestions) {
         var blockElement = false;
-        for (var block of data.files.suggestions.blocks) {
+        for (var block of jsonData.files.suggestions.blocks) {
             if (suggestion.snippet && block.snippet) {
                 if (suggestion.snippet == block.snippet) {
                     blockElement = true;
@@ -137,7 +137,7 @@ function getSuggestions(args) {
         if (!settings.config.generalSettings.enableCompletion.get()) {
             return [];
         }
-        const cd = yield data.completionData;
+        const data = yield jsonData.promise;
         var suggestions = [];
         var prefix = getPrefix(args.editor, args.bufferPosition);
         const cursorScopes = args.scopeDescriptor.scopes;
@@ -146,45 +146,45 @@ function getSuggestions(args) {
         const enableExtraSuggestions = settings.config.completionSettings.
             enableExtraSuggestions.get();
         if (topScope == "source.poe") {
-            suggestions = suggestions.concat(data.files.suggestions.blocks);
+            suggestions = suggestions.concat(jsonData.files.suggestions.blocks);
         }
         else if (topScope == "line.empty.poe" || topScope == "line.unknown.poe") {
             if (cursorScopes.indexOf("block.poe") != -1) {
-                suggestions = suggestions.concat(data.files.suggestions.blocks, data.files.suggestions.actions, data.files.suggestions.filters);
+                suggestions = suggestions.concat(jsonData.files.suggestions.blocks, jsonData.files.suggestions.actions, jsonData.files.suggestions.filters);
                 if (enableExtraSuggestions) {
-                    suggestions = suggestions.concat(data.files.suggestions.extraBlocks);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.extraBlocks);
                 }
             }
         }
         else {
             if (cursorScopes.indexOf("filter.rarity.poe") != -1) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(data.files.suggestions.rarities);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.rarities);
                 }
                 if (isPotentialOperator(args.editor, args.bufferPosition)) {
-                    suggestions = suggestions.concat(data.files.suggestions.operators);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.operators);
                 }
             }
             else if (cursorScopes.indexOf("filter.identified.poe") != -1) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(data.files.suggestions.booleans);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.booleans);
                 }
             }
             else if (cursorScopes.indexOf("filter.corrupted.poe") != -1) {
                 if (isFirstValue(args.editor, args.bufferPosition, true)) {
-                    suggestions = suggestions.concat(data.files.suggestions.booleans);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.booleans);
                 }
             }
             else if (cursorScopes.indexOf("filter.class.poe") != -1) {
-                suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
+                suggestions = suggestions.concat(data.completion.classes, data.completion.whitelistClasses);
                 if (enableExtraSuggestions) {
-                    suggestions = suggestions.concat(data.files.suggestions.extraClasses);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.extraClasses);
                 }
             }
             else if (cursorScopes.indexOf("filter.base-type.poe") != -1) {
-                suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
+                suggestions = suggestions.concat(data.completion.bases, data.completion.whitelistBases);
                 if (enableExtraSuggestions) {
-                    suggestions = suggestions.concat(data.files.suggestions.extraBases);
+                    suggestions = suggestions.concat(jsonData.files.suggestions.extraBases);
                 }
             }
             else if (cursorScopes.indexOf("filter.socket-group.poe") != -1) {
@@ -192,7 +192,7 @@ function getSuggestions(args) {
                     shouldPruneSuggestions = false;
                     if (isFirstValue(args.editor, args.bufferPosition, true) && prefix.length < 6) {
                         prefix = "";
-                        suggestions = suggestions.concat(data.files.suggestions.socketGroup);
+                        suggestions = suggestions.concat(jsonData.files.suggestions.socketGroup);
                     }
                 }
             }
@@ -206,7 +206,7 @@ function getSuggestions(args) {
                     cursorScopes.indexOf("filter.width.poe") != -1;
                 if (numberValueRule) {
                     if (isPotentialOperator(args.editor, args.bufferPosition)) {
-                        suggestions = suggestions.concat(data.files.suggestions.operators);
+                        suggestions = suggestions.concat(jsonData.files.suggestions.operators);
                     }
                 }
             }

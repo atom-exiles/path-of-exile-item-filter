@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
 const assert = require("assert");
-const data = require("./json-data");
+const jsonData = require("./json-data");
 const settings = require("./settings");
 const fp = require("./filter-processor");
 class FilterManager {
@@ -38,10 +38,10 @@ class FilterManager {
         this.subscriptions.add(editor.buffer.onDidDestroy(() => {
             this.destructor();
         }));
-        this.subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
+        this.subscriptions.add(jsonData.emitter.on("poe-did-update-item-data", () => {
             this.processIfFilter();
         }));
-        this.subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
+        this.subscriptions.add(jsonData.emitter.on("poe-did-update-injected-data", () => {
             this.processIfFilter();
         }));
         if (this.isFilter()) {
@@ -103,13 +103,13 @@ class FilterManager {
             const lastRowText = this.editor.lineTextForBufferRow(lastRow);
             const lastColumn = lastRowText.length - 1;
             const newRange = new atom_1.Range([0, 0], [lastRow, lastColumn]);
-            const itemData = yield data.filterItemData;
+            const data = yield jsonData.promise;
             const result = new Promise((resolve, reject) => {
                 const lineInfo = fp.parseLineInfo({
                     changes: { oldRange, newRange },
                     editor: this.editor,
                     filter: undefined,
-                    itemData,
+                    itemData: data.linter,
                     reset: true
                 });
                 resolve(lineInfo);
@@ -123,14 +123,14 @@ class FilterManager {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.changes || !this.filter)
                 return;
-            const itemData = yield data.filterItemData;
+            const data = yield jsonData.promise;
             const previousData = yield this.filter;
             const result = new Promise((resolve, reject) => {
                 const lineInfo = fp.parseLineInfo({
                     changes: this.changes,
                     editor: this.editor,
                     filter: previousData,
-                    itemData,
+                    itemData: data.linter,
                     reset: false
                 });
                 resolve(lineInfo);

@@ -1,7 +1,7 @@
 import { Point, Range } from "atom";
 
 import * as settings from "./settings";
-import * as data from "./json-data";
+import * as jsonData from "./json-data";
 
 interface SuggestionRequest {
   editor: AtomCore.TextEditor
@@ -109,7 +109,7 @@ function setReplacementPrefix(editor: AtomCore.TextEditor, position: Point,
   for(var suggestion of suggestions) {
     var blockElement = false;
 
-    for(var block of data.files.suggestions.blocks) {
+    for(var block of jsonData.files.suggestions.blocks) {
       if((<Completion.SnippetSuggestion>suggestion).snippet && (<Completion.SnippetSuggestion>block).snippet) {
         if((<Completion.SnippetSuggestion>suggestion).snippet == (<Completion.SnippetSuggestion>block).snippet) {
           blockElement = true;
@@ -162,7 +162,7 @@ async function getSuggestions(args: SuggestionRequest):
     return [];
   }
 
-  const cd = await data.completionData;
+  const data = await jsonData.promise;
   var suggestions: Completion.Suggestions = [];
   var prefix = getPrefix(args.editor, args.bufferPosition);
   const cursorScopes = args.scopeDescriptor.scopes;
@@ -173,40 +173,40 @@ async function getSuggestions(args: SuggestionRequest):
       enableExtraSuggestions.get();
 
   if(topScope == "source.poe") {
-    suggestions = suggestions.concat(data.files.suggestions.blocks);
+    suggestions = suggestions.concat(jsonData.files.suggestions.blocks);
   } else if(topScope == "line.empty.poe" || topScope == "line.unknown.poe") {
     if(cursorScopes.indexOf("block.poe") != -1) {
-      suggestions = suggestions.concat(data.files.suggestions.blocks,
-          data.files.suggestions.actions, data.files.suggestions.filters);
+      suggestions = suggestions.concat(jsonData.files.suggestions.blocks,
+          jsonData.files.suggestions.actions, jsonData.files.suggestions.filters);
       if(enableExtraSuggestions) {
-        suggestions = suggestions.concat(data.files.suggestions.extraBlocks);
+        suggestions = suggestions.concat(jsonData.files.suggestions.extraBlocks);
       }
     }
   } else {
     if(cursorScopes.indexOf("filter.rarity.poe") != -1) {
       if(isFirstValue(args.editor, args.bufferPosition, true)) {
-        suggestions = suggestions.concat(data.files.suggestions.rarities);
+        suggestions = suggestions.concat(jsonData.files.suggestions.rarities);
       }
       if(isPotentialOperator(args.editor, args.bufferPosition)) {
-        suggestions = suggestions.concat(data.files.suggestions.operators);
+        suggestions = suggestions.concat(jsonData.files.suggestions.operators);
       }
     } else if(cursorScopes.indexOf("filter.identified.poe") != -1) {
       if(isFirstValue(args.editor, args.bufferPosition, true)) {
-        suggestions = suggestions.concat(data.files.suggestions.booleans);
+        suggestions = suggestions.concat(jsonData.files.suggestions.booleans);
       }
     } else if(cursorScopes.indexOf("filter.corrupted.poe") != -1) {
       if(isFirstValue(args.editor, args.bufferPosition, true)) {
-        suggestions = suggestions.concat(data.files.suggestions.booleans);
+        suggestions = suggestions.concat(jsonData.files.suggestions.booleans);
       }
     } else if(cursorScopes.indexOf("filter.class.poe") != -1) {
-      suggestions = suggestions.concat(cd.classes, cd.whitelistClasses);
+      suggestions = suggestions.concat(data.completion.classes, data.completion.whitelistClasses);
       if(enableExtraSuggestions)  {
-        suggestions = suggestions.concat(data.files.suggestions.extraClasses);
+        suggestions = suggestions.concat(jsonData.files.suggestions.extraClasses);
       }
     } else if(cursorScopes.indexOf("filter.base-type.poe") != -1) {
-      suggestions = suggestions.concat(cd.bases, cd.whitelistBases);
+      suggestions = suggestions.concat(data.completion.bases, data.completion.whitelistBases);
       if(enableExtraSuggestions) {
-        suggestions = suggestions.concat(data.files.suggestions.extraBases);
+        suggestions = suggestions.concat(jsonData.files.suggestions.extraBases);
       }
     } else if(cursorScopes.indexOf("filter.socket-group.poe") != -1) {
       // Not pruning the suggestions, so this is necessary.
@@ -214,7 +214,7 @@ async function getSuggestions(args: SuggestionRequest):
         shouldPruneSuggestions = false;
         if(isFirstValue(args.editor, args.bufferPosition, true) && prefix.length < 6) {
           prefix = "";
-          suggestions = suggestions.concat(data.files.suggestions.socketGroup);
+          suggestions = suggestions.concat(jsonData.files.suggestions.socketGroup);
         }
       }
     } else {
@@ -227,7 +227,7 @@ async function getSuggestions(args: SuggestionRequest):
           cursorScopes.indexOf("filter.width.poe") != -1;
       if(numberValueRule) {
         if(isPotentialOperator(args.editor, args.bufferPosition)) {
-          suggestions = suggestions.concat(data.files.suggestions.operators);
+          suggestions = suggestions.concat(jsonData.files.suggestions.operators);
         }
       }
     }

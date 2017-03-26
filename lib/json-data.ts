@@ -52,8 +52,9 @@ export const files: FileData = {
 export var emitter: Emitter;
 var subscriptions: CompositeDisposable;
 
-export var completionData: Promise<Data.Completion>;
-export var filterItemData: Promise<Data.Parser>;
+// export var completionData: Promise<Data.Completion>;
+// export var filterItemData: Promise<Data.Parser>;
+export var promise: Promise<ProcessedData>;
 
 /** Shapes the item data into the format expected by each module. */
 function mergeItemData(container: ProcessedData,
@@ -163,8 +164,6 @@ function updateWhitelists(itemData: ProcessedData) {
 
   action(classes, itemData.completion.whitelistClasses, itemData.linter.whitelistClasses);
   action(bases, itemData.completion.whitelistBases, itemData.linter.whitelistBases);
-
-  emitter.emit("poe-did-update-injected-data");
 }
 
 /** Iterates over all completion suggestions and updates the decoration properties
@@ -203,11 +202,10 @@ export function activate() {
   emitter = new Emitter;
 
   var itemData = processItemData();
-  completionData = itemData.then((id) => { return id.completion; });
-  filterItemData = itemData.then((id) => { return id.linter; });
-  Promise.all([itemData, completionData, filterItemData]).then((values) => {
-    updateWhitelists(values[0]);
-    updateDecorations(values[1]);
+  promise = itemData.then((id): ProcessedData => {
+    updateWhitelists(id);
+    updateDecorations(id.completion);
+    return id;
   });
 
   const action = async (itemList: ItemDataLayout, event: { oldValue: boolean,
@@ -217,9 +215,7 @@ export function activate() {
       mergeItemData(id, itemList);
     } else {
       itemData = processItemData();
-      const id = await itemData;
-      completionData = itemData.then((id) => { return id.completion; });
-      filterItemData = itemData.then((id) => { return id.linter; });
+      promise = itemData;
     }
     emitter.emit("poe-did-update-item-data");
   };
@@ -237,23 +233,25 @@ export function activate() {
   }));
 
   subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange(async (event) => {
-    const cd = await completionData;
-    updateDecorations(cd);
+    const newData = await promise;
+    updateDecorations(newData.completion);
   }));
 
-  subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange(async (event) => {
-    const cd = await completionData;
-    updateDecorations(cd);
+  subscriptions.add(settings.config.completionSettings.enableIcon.onDidChange(async (event) => {
+    const newData = await promise;
+    updateDecorations(newData.completion);
   }));
 
   subscriptions.add(settings.config.dataSettings.classWhitelist.onDidChange(async (event) => {
     const id = await itemData;
     updateWhitelists(id);
+    emitter.emit("poe-did-update-injected-data");
   }));
 
   subscriptions.add(settings.config.dataSettings.baseWhitelist.onDidChange(async (event) => {
     const id = await itemData;
     updateWhitelists(id);
+    emitter.emit("poe-did-update-injected-data");
   }));
 }
 

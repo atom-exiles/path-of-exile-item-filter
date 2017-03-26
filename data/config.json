@@ -19,15 +19,15 @@
         "order": 2
       },
       "enableAlertDecorations": {
-        "title": "Enable PlayAlertSound Decorations",
-        "description": "Enable the gutter decorations for the PlayAlertSound rule.",
+        "title": "Enable Sound Decorations",
+        "description": "Enable the gutter decoration for rules with a sound.",
         "type": "boolean",
         "default": true,
         "order": 3
       },
       "enableSetColorDecorations": {
-        "title": "Enable SetColor Decorations",
-        "description": "Enable the gutter decorations for the SetColor rules.",
+        "title": "Enable Color Decorations",
+        "description": "Enable the gutter decoration for rules with a color.",
         "type": "boolean",
         "default": true,
         "order": 4

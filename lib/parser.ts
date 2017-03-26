@@ -1,7 +1,6 @@
 import { Range } from "atom";
 import * as assert from "assert";
 
-import * as data from "./json-data";
 import * as settings from "./settings";
 
 interface ParseResult<T> {

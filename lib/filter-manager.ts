@@ -2,9 +2,8 @@ import { Point, Range, CompositeDisposable, Emitter } from "atom";
 import * as path from "path";
 import * as assert from "assert";
 
-import * as data from "./json-data";
+import * as jsonData from "./json-data";
 import * as settings from "./settings";
-import * as parser from "./parser";
 import * as fp from "./filter-processor";
 
 /** Handles subscriptions for every buffer, while also managing the data for
@@ -43,11 +42,11 @@ class FilterManager {
       this.destructor();
     }));
 
-    this.subscriptions.add(data.emitter.on("poe-did-update-item-data", () => {
+    this.subscriptions.add(jsonData.emitter.on("poe-did-update-item-data", () => {
       this.processIfFilter();
     }));
 
-    this.subscriptions.add(data.emitter.on("poe-did-update-injected-data", () => {
+    this.subscriptions.add(jsonData.emitter.on("poe-did-update-injected-data", () => {
       this.processIfFilter();
     }));
 
@@ -116,14 +115,14 @@ class FilterManager {
     const lastColumn = lastRowText.length - 1;
     const newRange = new Range([0, 0], [lastRow, lastColumn]);
 
-    const itemData = await data.filterItemData;
+    const data = await jsonData.promise;
 
     const result = new Promise<Filter.Line[]>((resolve, reject) => {
       const lineInfo = fp.parseLineInfo({
         changes: { oldRange, newRange },
         editor: this.editor,
         filter: undefined,
-        itemData,
+        itemData: data.linter,
         reset: true
       });
       resolve(lineInfo);
@@ -139,7 +138,7 @@ class FilterManager {
   private async processFilterChanges() {
     if(!this.changes || !this.filter) return;
 
-    const itemData = await data.filterItemData;
+    const data = await jsonData.promise;
     const previousData = await this.filter;
 
     const result = new Promise<Filter.Line[]>((resolve, reject) => {
@@ -147,7 +146,7 @@ class FilterManager {
         changes: (<Filter.Params.BufferChanges>this.changes),
         editor: this.editor,
         filter: previousData,
-        itemData,
+        itemData: data.linter,
         reset: false
       });
       resolve(lineInfo);

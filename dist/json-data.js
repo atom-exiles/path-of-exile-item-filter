@@ -113,7 +113,6 @@ function updateWhitelists(itemData) {
     };
     action(classes, itemData.completion.whitelistClasses, itemData.linter.whitelistClasses);
     action(bases, itemData.completion.whitelistBases, itemData.linter.whitelistBases);
-    exports.emitter.emit("poe-did-update-injected-data");
 }
 function updateDecorations(cd) {
     const enableRightLabel = settings.config.completionSettings.enableRightLabel.get();
@@ -144,11 +143,10 @@ function activate() {
     subscriptions = new atom_1.CompositeDisposable;
     exports.emitter = new atom_1.Emitter;
     var itemData = processItemData();
-    exports.completionData = itemData.then((id) => { return id.completion; });
-    exports.filterItemData = itemData.then((id) => { return id.linter; });
-    Promise.all([itemData, exports.completionData, exports.filterItemData]).then((values) => {
-        updateWhitelists(values[0]);
-        updateDecorations(values[1]);
+    exports.promise = itemData.then((id) => {
+        updateWhitelists(id);
+        updateDecorations(id.completion);
+        return id;
     });
     const action = (itemList, event) => __awaiter(this, void 0, void 0, function* () {
         if (event.newValue) {
@@ -157,9 +155,7 @@ function activate() {
         }
         else {
             itemData = processItemData();
-            const id = yield itemData;
-            exports.completionData = itemData.then((id) => { return id.completion; });
-            exports.filterItemData = itemData.then((id) => { return id.linter; });
+            exports.promise = itemData;
         }
         exports.emitter.emit("poe-did-update-item-data");
     });
@@ -173,20 +169,22 @@ function activate() {
         action(exports.files.items.recipe, event);
     }));
     subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange((event) => __awaiter(this, void 0, void 0, function* () {
-        const cd = yield exports.completionData;
-        updateDecorations(cd);
+        const newData = yield exports.promise;
+        updateDecorations(newData.completion);
     })));
-    subscriptions.add(settings.config.completionSettings.enableRightLabel.onDidChange((event) => __awaiter(this, void 0, void 0, function* () {
-        const cd = yield exports.completionData;
-        updateDecorations(cd);
+    subscriptions.add(settings.config.completionSettings.enableIcon.onDidChange((event) => __awaiter(this, void 0, void 0, function* () {
+        const newData = yield exports.promise;
+        updateDecorations(newData.completion);
     })));
     subscriptions.add(settings.config.dataSettings.classWhitelist.onDidChange((event) => __awaiter(this, void 0, void 0, function* () {
         const id = yield itemData;
         updateWhitelists(id);
+        exports.emitter.emit("poe-did-update-injected-data");
     })));
     subscriptions.add(settings.config.dataSettings.baseWhitelist.onDidChange((event) => __awaiter(this, void 0, void 0, function* () {
         const id = yield itemData;
         updateWhitelists(id);
+        exports.emitter.emit("poe-did-update-injected-data");
     })));
 }
 exports.activate = activate;
