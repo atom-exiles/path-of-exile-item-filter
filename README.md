@@ -2,6 +2,8 @@
 
 This package provides additional support for the creation of Path of Exile filters within Atom, making it easier to create item filters for the game.
 
+The thread for this package on the Path of Exile forums can be found [here](https://www.pathofexile.com/forum/view-thread/1840620).
+
 ## Features
 ### Grammar
 ![Grammar Preview](https://raw.githubusercontent.com/callum-ramage/path-of-exile-item-filter/master/media/syntax.png)
