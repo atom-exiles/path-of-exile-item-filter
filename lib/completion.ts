@@ -3,20 +3,6 @@ import { Point, Range } from "atom";
 import * as settings from "./settings";
 import * as jsonData from "./json-data";
 
-interface SuggestionRequest {
-  editor: AtomCore.TextEditor
-  bufferPosition: TextBuffer.Point
-  scopeDescriptor: AtomCore.ScopeDescriptor
-  prefix: string
-  activatedManually: boolean
-}
-
-interface SuggestionInserted {
-  editor: AtomCore.TextEditor
-  triggerPosition: TextBuffer.IPoint
-  suggestion: Completion.TextSuggestion|Completion.SnippetSuggestion
-}
-
 export function activate() {}
 export function deactivate() {}
 
@@ -156,7 +142,7 @@ function pruneSuggestions(prefix: string, suggestions:
 }
 
 /** A callback which we provide to the autocompletion engine for Atom. */
-async function getSuggestions(args: SuggestionRequest):
+export async function getSuggestions(args: Completion.Params.SuggestionRequest):
     Promise<Completion.Suggestions> {
   if(!settings.config.generalSettings.enableCompletion.get()) {
     return [];
@@ -254,7 +240,7 @@ function removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
 }
 
 /** Performs the buffer manipulations necessary following a suggestion insertion. */
-function insertedSuggestion(params: SuggestionInserted) {
+export function insertedSuggestion(params: Completion.Params.SuggestionInserted) {
   // Whenever the user opens with quotation marks and accepts a suggestion,
   // two closing quotation marks will be left at the end:
   //    BaseType "Cha" -> accepts "Chaos Orb"
@@ -268,13 +254,4 @@ function insertedSuggestion(params: SuggestionInserted) {
     const cursorPosition = params.editor.getCursorBufferPosition();
     removeConsecutiveQuotes(params.editor, cursorPosition);
   }
-}
-
-export const provider = {
-  selector: ".source.poe",
-  disableForSelector: ".source.poe .comment",
-  inclusionPriority: 1,
-  excludeLowerPriority: true,
-  getSuggestions: getSuggestions,
-  onDidInsertSuggestion: insertedSuggestion
 }

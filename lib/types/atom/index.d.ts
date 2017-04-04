@@ -2,7 +2,7 @@
 // Project: https://github.com/atom/atom/tree/v1.15.0
 // Definitions by: GlenCFL <https://github.com/GlenCFL/>
 
-// NOTE: the View essential class is currently missing from these type definitions.
+// NOTE: the View essential class is missing from these type definitions.
 
 /// <reference types="node" />
 /// <reference path="../text-buffer/index.d.ts" />
@@ -684,6 +684,8 @@ declare namespace AtomCore {
    *  should not create a Panel directly, instead use Workspace::addTopPanel and
    *  friends to add panels. */
   class Panel {
+    visible: boolean;
+
     // Construction and Destruction
     /** Destroy and remove this panel from the UI. */
     destroy(): void;
@@ -2898,10 +2900,11 @@ declare namespace AtomCore {
   class CommandRegistry {
     // Register a single command.
     add(target: string|Element, commandName: string, callback: (event: Event) => void):
-    AtomEventKit.Disposable
+        AtomEventKit.Disposable
 
     // Register multiple commands.
-    add(target: string|Element, commands: { values: Object }): AtomEventKit.CompositeDisposable
+    add(target: string|Element, commands: { [key: string]: (event: Event) => void; }):
+        AtomEventKit.CompositeDisposable
 
     /** Find all registered commands matching a query. */
     findCommands(params: { target: Object }): Array<{ name: string, displayName: string }>

@@ -24,6 +24,22 @@ declare namespace Sound {
 }
 
 declare namespace Completion {
+  namespace Params {
+    interface SuggestionRequest {
+      editor: AtomCore.TextEditor
+      bufferPosition: TextBuffer.Point
+      scopeDescriptor: AtomCore.ScopeDescriptor
+      prefix: string
+      activatedManually: boolean
+    }
+
+    interface SuggestionInserted {
+      editor: AtomCore.TextEditor
+      triggerPosition: TextBuffer.IPoint
+      suggestion: Completion.TextSuggestion|Completion.SnippetSuggestion
+    }
+  }
+
   interface Suggestion {
     /** A string that will show in the UI for this suggestion. When not set,
      *  snippet || text is displayed. */

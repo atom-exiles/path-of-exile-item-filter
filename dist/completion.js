@@ -217,6 +217,7 @@ function getSuggestions(args) {
         return suggestions;
     });
 }
+exports.getSuggestions = getSuggestions;
 function removeConsecutiveQuotes(editor, position) {
     const leftCharLocation = new atom_1.Range([position.row, position.column - 1], position);
     const rightCharLocation = new atom_1.Range(position, [position.row,
@@ -239,11 +240,4 @@ function insertedSuggestion(params) {
         removeConsecutiveQuotes(params.editor, cursorPosition);
     }
 }
-exports.provider = {
-    selector: ".source.poe",
-    disableForSelector: ".source.poe .comment",
-    inclusionPriority: 1,
-    excludeLowerPriority: true,
-    getSuggestions: getSuggestions,
-    onDidInsertSuggestion: insertedSuggestion
-};
+exports.insertedSuggestion = insertedSuggestion;
