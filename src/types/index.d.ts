@@ -101,7 +101,7 @@ declare namespace Filter {
       oldExtent: number
       start: number
     }
-    
+
     interface ProcessLines {
       /** The text for each line to be processed. */
       lines: string[],
@@ -116,6 +116,15 @@ declare namespace Filter {
     interface ProcessLinesTask extends ProcessLines {
       /** The maximum number of lines to process at any given time. */
       chunkSize: number
+    }
+
+    interface ProcessedFilterData {
+      editor: AtomCore.TextEditor
+      lines: Filter.Line[]
+    }
+
+    interface ReprocessedFilterData extends ProcessedFilterData {
+      changes: Filter.Params.BufferChange[]
     }
   }
 

@@ -16,13 +16,18 @@ const filter_processor_1 = require("./filter-processor");
 function recursivelyShiftRanges(obj, shift) {
     for (var property of Object.keys(obj)) {
         const value = obj[property];
-        if (value.start && value.start.row && value.end && value.end.row) {
+        if (_.has(value, "start.row") && _.has(value, "end.row")) {
             value.start.row += shift;
             value.end.row += shift;
         }
         else if (typeof value == "object") {
             recursivelyShiftRanges(value, shift);
         }
+    }
+}
+function shiftLineRanges(lines, shift) {
+    for (var line of lines) {
+        recursivelyShiftRanges(line, shift);
     }
 }
 class ItemFilter {
@@ -35,9 +40,7 @@ class ItemFilter {
         this.lines = Promise.all([p1, p2])
             .then((params) => { return this.processFilter(params[0], params[1]); });
     }
-    dispose() {
-        return;
-    }
+    dispose() { }
     update(changes) {
         return __awaiter(this, void 0, void 0, function* () {
             const lines = this.editor.buffer.getLines();
@@ -51,7 +54,7 @@ class ItemFilter {
                         if (change.start != currentIndex) {
                             const upperPartition = filter.slice(currentIndex, change.start);
                             if (shift != 0)
-                                recursivelyShiftRanges(upperPartition, shift);
+                                shiftLineRanges(upperPartition, shift);
                             result = result.concat(upperPartition);
                             currentIndex += upperPartition.length;
                         }
@@ -73,7 +76,7 @@ class ItemFilter {
                     const sliceIndex = lastChange.start + lastChange.oldExtent + 1;
                     const slice = filter.splice(sliceIndex);
                     if (shift != 0)
-                        recursivelyShiftRanges(slice, shift);
+                        shiftLineRanges(slice, shift);
                     result = result.concat(slice);
                     assert(result.length == lines.length, 'output size mismatch (' +
                         result.length + ' vs ' + lines.length + ')');

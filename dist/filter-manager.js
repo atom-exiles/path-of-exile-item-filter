@@ -117,7 +117,6 @@ class FilterManager {
                 filterData.filter.lines.then((ld) => {
                     callback({
                         editor: filterData.editor,
-                        filter: filterData.filter,
                         lines: ld
                     });
                 });
@@ -147,7 +146,6 @@ class FilterManager {
                     filterData.filter.update(changes).then((filter) => {
                         this.emitter.emit("did-reprocess-filter", {
                             editor: filterData.editor,
-                            filter: filterData.filter,
                             lines: filter,
                             changes
                         });
@@ -164,7 +162,6 @@ class FilterManager {
             const lines = yield filter.lines;
             this.emitter.emit("did-process-filter", {
                 editor,
-                filter,
                 lines
             });
             return;
@@ -177,6 +174,7 @@ class FilterManager {
             filterData.filter.dispose();
             this.filters.delete(editorID);
             _.pull(this.observedFilters, editorID);
+            this.emitter.emit("did-destroy-filter", editorID);
         }
         else {
             throw new Error("attempted to destroy an unknown item filter");

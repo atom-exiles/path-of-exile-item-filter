@@ -9,12 +9,15 @@ const sound_player_1 = require("./sound-player");
 const validation_data_1 = require("./validation-data");
 const editor_registry_1 = require("./editor-registry");
 const filter_manager_1 = require("./filter-manager");
+const linter_provider_1 = require("./linter-provider");
 exports.config = require("../data/config.json");
 const packageName = require("../package.json").name;
 var subscriptions;
 var completionProvider;
 var linterDelegate;
-function readyToActivate(registry) {
+function readyToActivate(config, manager) {
+    const linterProvider = new linter_provider_1.default(config, manager, linterDelegate);
+    subscriptions.add(linterProvider);
 }
 function activate(state) {
     subscriptions = new atom_1.CompositeDisposable;
@@ -37,9 +40,7 @@ function activate(state) {
     subscriptions.add(soundPlayer);
     require('atom-package-deps')
         .install(packageName)
-        .then(() => {
-        readyToActivate(editorRegistry);
-    });
+        .then(() => { readyToActivate(configManager, filterManager); });
 }
 exports.activate = activate;
 function deactivate() {

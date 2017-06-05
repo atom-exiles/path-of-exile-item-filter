@@ -12,16 +12,6 @@ interface FilterData {
   subscription: Disposable
 }
 
-interface ProcessedFilterData {
-  editor: AtomCore.TextEditor
-  filter: ItemFilter
-  lines: Filter.Line[]
-}
-
-interface ReprocessedFilterData extends ProcessedFilterData {
-  changes: Filter.Params.BufferChange[]
-}
-
 /** Sorts changes by their start position, while also performing a data transformation
  *  to simplify the change structure.
  *
@@ -143,29 +133,28 @@ export default class FilterManager {
   }
 
   /** Invoke the given callback whenever an item filter is processed. */
-  onDidProcessFilter(callback: (processedData: ProcessedFilterData) => void) {
-    return this.emitter.on<ProcessedFilterData>("did-process-filter", (processedData) => {
+  onDidProcessFilter(callback: (processedData: Filter.Params.ProcessedFilterData) => void) {
+    return this.emitter.on<Filter.Params.ProcessedFilterData>("did-process-filter", (processedData) => {
       callback(processedData);
     });
   }
 
   /** Invoke the given callback whenever an item filter is reprocessed. */
-  onDidReprocessFilter(callback: (processedData: ReprocessedFilterData) => void) {
-    return this.emitter.on<ReprocessedFilterData>("did-reprocess-filter", (processedData) => {
+  onDidReprocessFilter(callback: (processedData: Filter.Params.ReprocessedFilterData) => void) {
+    return this.emitter.on<Filter.Params.ReprocessedFilterData>("did-reprocess-filter", (processedData) => {
       callback(processedData);
     });
   }
 
   /** Invoke the given callback with all current and future item filters that
    *  have been processed. */
-  observeProcessedFilters(callback: (data: ProcessedFilterData) => void) {
+  observeProcessedFilters(callback: (data: Filter.Params.ProcessedFilterData) => void) {
     this.observedFilters.forEach((editorID) => {
       const filterData = this.filters.get(editorID);
       if(filterData) {
         filterData.filter.lines.then((ld) => {
           callback({
             editor: filterData.editor,
-            filter: filterData.filter,
             lines: ld
           });
         });
@@ -174,7 +163,7 @@ export default class FilterManager {
       }
     });
 
-    return this.emitter.on<ProcessedFilterData>("did-process-filter", (filterData) => {
+    return this.emitter.on<Filter.Params.ProcessedFilterData>("did-process-filter", (filterData) => {
       if(!this.observedFilters.includes(filterData.editor.id)) {
         this.observedFilters.push(filterData.editor.id);
         callback(filterData);
@@ -192,9 +181,8 @@ export default class FilterManager {
       if(filterData) {
         const changes = transformChanges(event.changes);
         filterData.filter.update(changes).then((filter) => {
-          this.emitter.emit<ReprocessedFilterData>("did-reprocess-filter", {
+          this.emitter.emit<Filter.Params.ReprocessedFilterData>("did-reprocess-filter", {
             editor: filterData.editor,
-            filter: filterData.filter,
             lines: filter,
             changes
           });
@@ -210,9 +198,8 @@ export default class FilterManager {
     this.emitter.emit("did-add-filter", filterData);
 
     const lines = await filter.lines;
-    this.emitter.emit<ProcessedFilterData>("did-process-filter", {
+    this.emitter.emit<Filter.Params.ProcessedFilterData>("did-process-filter", {
       editor,
-      filter,
       lines
     });
 
@@ -227,6 +214,7 @@ export default class FilterManager {
       filterData.filter.dispose();
       this.filters.delete(editorID);
       _.pull(this.observedFilters, editorID);
+      this.emitter.emit("did-destroy-filter", editorID);
     } else {
       throw new Error("attempted to destroy an unknown item filter");
     }

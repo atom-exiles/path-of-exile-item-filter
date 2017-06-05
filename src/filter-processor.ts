@@ -15,33 +15,21 @@ interface LineInfo extends ProcessLine {
   range: Filter.Components.Range
 }
 
-function reportTrailingText(lineInfo: LineInfo, severity: "error"|"warning") {
+function reportTrailingText(lineInfo: LineInfo) {
   if(lineInfo.parser.empty) return;
-
-  let container: DataFormat.ValidationMessage[];
-  if(severity === "error") {
-    container = lineInfo.messages.errors;
-    lineInfo.invalid = true;
-    var excerpt = "This trailing text will be considered an error by Path of Exile.";
-  } else {
-    container = lineInfo.messages.warnings;
-    var excerpt = "This trailing text will be ignored by Path of Exile.";
-  }
 
   const range: Filter.Components.Range = {
     start: { row: lineInfo.row, column: lineInfo.parser.currentIndex },
     end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
   }
 
-  const result: DataFormat.ValidationMessage = {
-    excerpt,
+  lineInfo.invalid = true;
+  lineInfo.messages.errors.push({
+    excerpt: "This trailing text will be considered an error by Path of Exile.",
     file: lineInfo.file,
     url: "http://pathofexile.gamepedia.com/Item_filter_guide",
     range
-  }
-  container.push(result);
-
-  return;
+  });
 }
 
 function expectEqualityOperator(lineInfo: LineInfo) {
@@ -72,8 +60,11 @@ function expectMultipleStrings(lineInfo: LineInfo, validValues: string[], whitel
         lineInfo.messages.errors.push({
           excerpt: "A string value was expected, yet not found.",
           file: lineInfo.file,
-          range: lineInfo.range,
-          url: "http://pathofexile.gamepedia.com/Item_filter#Conditions"
+          url: "http://pathofexile.gamepedia.com/Item_filter#Conditions",
+          range: {
+            start: { row: lineInfo.row, column: lineInfo.parser.textStartIndex },
+            end: { row: lineInfo.row, column: lineInfo.parser.originalLength }
+          }
         });
       }
       break;
@@ -119,7 +110,7 @@ function parseBlock(lineInfo: LineInfo) {
     }
   }
 
-  reportTrailingText(lineInfo, "warning");
+  reportTrailingText(lineInfo);
 
   let result: Filter.Block = {
     type: "block",
@@ -142,16 +133,14 @@ function parseNumberInRange(lineInfo: LineInfo, min: number, max: number, requir
       }
       return result;
     } else {
-      if(required) {
-        lineInfo.invalid = true;
-        lineInfo.messages.errors.push({
-          excerpt: "The given value is invalid. Value is expected to be between "
-              + min + " and " + max + ".",
-          file: lineInfo.file,
-          url: "http://pathofexile.gamepedia.com/Item_filter#Conditions",
-          range: numberResult.range
-        });
-      }
+      lineInfo.invalid = true;
+      lineInfo.messages.errors.push({
+        excerpt: "The given value is invalid. Value is expected to be between "
+            + min + " and " + max + ".",
+        file: lineInfo.file,
+        url: "http://pathofexile.gamepedia.com/Item_filter#Conditions",
+        range: numberResult.range
+      });
       return;
     }
   } else {
@@ -162,8 +151,8 @@ function parseNumberInRange(lineInfo: LineInfo, min: number, max: number, requir
         file: lineInfo.file,
         url: "http://pathofexile.gamepedia.com/Item_filter_guide#Conditions",
         range: {
-          start: { row: lineInfo.row, column: lineInfo.parser.currentIndex },
-          end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
+          start: { row: lineInfo.row, column: lineInfo.parser.textStartIndex },
+          end: { row: lineInfo.row, column: lineInfo.parser.originalLength }
         }
       });
     }
@@ -195,7 +184,7 @@ function parseSingleNumberRule(lineInfo: LineInfo, min: number, max: number, equ
 
   const value = parseNumberInRange(lineInfo, min, max);
 
-  if(!lineInfo.invalid) reportTrailingText(lineInfo, "error");
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   return { operator, value };
 }
@@ -215,12 +204,12 @@ function parseBooleanRule(lineInfo: LineInfo) {
       url: "http://pathofexile.gamepedia.com/Item_filter#Conditions",
       range: {
         start: { row: lineInfo.row, column: lineInfo.parser.textStartIndex },
-        end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
+        end: { row: lineInfo.row, column: lineInfo.parser.originalLength }
       }
     });
   }
 
-  if(!lineInfo.invalid) reportTrailingText(lineInfo, "error");
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   return {
     keyword: lineInfo.keyword, invalid: lineInfo.invalid, messages: lineInfo.messages,
@@ -247,6 +236,8 @@ function parseColorRule(lineInfo: LineInfo) {
       trailingComment = { text: trailingCommentResult.value, range: trailingCommentResult.range };
     }
   }
+
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   return { red, green, blue, alpha, trailingComment };
 }
@@ -341,7 +332,7 @@ function processRarityRule(lineInfo: LineInfo) {
 
   const valueResult = lineInfo.parser.nextString();
   let value: Filter.Components.Value<string>|undefined;
-  if(valueResult) {
+  if(valueResult.found) {
     const validValues = [ "Normal", "Magic", "Rare", "Unique" ];
     if(validValues.includes(valueResult.value)) {
       value = { value: valueResult.value, range: valueResult.range };
@@ -364,14 +355,14 @@ function processRarityRule(lineInfo: LineInfo) {
       file: lineInfo.file,
       url: "http://pathofexile.gamepedia.com/Item_filter#Conditions",
       range: {
-        start: { row: lineInfo.row, column: lineInfo.parser.currentIndex },
-        end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
+        start: { row: lineInfo.row, column: lineInfo.parser.textStartIndex },
+        end: { row: lineInfo.row, column: lineInfo.parser.originalLength }
       }
     });
   }
 
 
-  if(!lineInfo.invalid) reportTrailingText(lineInfo, "error");
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   const result: Filter.Element.RarityRule = {
     type: "rule", ruleType: "filter", filterName: "Rarity",
@@ -453,7 +444,7 @@ function processLinkedSocketsRule(lineInfo: LineInfo) {
     });
   }
 
-  if(!lineInfo.invalid) reportTrailingText(lineInfo, "error");
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   const result: Filter.Element.LinkedSocketsRule = {
     type: "rule",
@@ -506,7 +497,7 @@ function processSocketGroup(lineInfo: LineInfo) {
   }
 
   if(!lineInfo.invalid) {
-    reportTrailingText(lineInfo, "error");
+    reportTrailingText(lineInfo);
   }
 
   const result: Filter.Element.SocketGroupRule = {
@@ -612,6 +603,8 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
     }
   }
 
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
+
   const result: Filter.Element.PlayAlertSoundRule = {
     type: "rule", ruleType: "action", actionName: "PlayAlertSound",
     keyword: lineInfo.keyword, invalid: lineInfo.invalid, messages: lineInfo.messages,
@@ -623,7 +616,7 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
 function processSetFontSizeRule(lineInfo: LineInfo) {
   const { value } = parseSingleNumberRule(lineInfo, 18, 45, true);
 
-  if(!lineInfo.invalid) reportTrailingText(lineInfo, "error");
+  if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   const result: Filter.Element.SetFontSizeRule = {
     type: "rule", ruleType: "action", actionName: "SetFontSize",

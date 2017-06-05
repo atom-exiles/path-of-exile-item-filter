@@ -9,7 +9,7 @@ import ValidationData from "./validation-data";
 import EditorRegistry from "./editor-registry";
 import FilterManager from "./filter-manager";
 // import DecorationManager from "./decoration-manager";
-// import LinterProvider from "./linter-provider";
+import LinterProvider from "./linter-provider";
 
 export const config = require("../data/config.json");
 const packageName = require("../package.json").name;
@@ -17,14 +17,18 @@ var subscriptions: CompositeDisposable;
 var completionProvider: Autocomplete.Provider;
 var linterDelegate: Linter.IndieDelegate;
 
+// TODO(glen): determine whether or not we need to dispose of the linter delegate.
+//  Need to know if the linter will call into consumeLinter() again whenever we are
+//  reactivated.
+
 interface PackageState {}
 
 // Anything that depends on another Atom package is optional. The user will
 // be prompted by 'atom-package-deps' to install any missing packages. The user
 // may choose to either ignore or forever dismiss the prompt.
-function readyToActivate(registry: EditorRegistry) {
-  // const linterProvider = new LinterProvider(config, filterManager, linterDelegate);
-  // this.subscriptions.add(linterProvider);
+function readyToActivate(config: ConfigManager, manager: FilterManager) {
+  const linterProvider = new LinterProvider(config, manager, linterDelegate);
+  subscriptions.add(linterProvider);
 }
 
 export function activate(state: PackageState) {
@@ -59,13 +63,9 @@ export function activate(state: PackageState) {
   //     filterManager, soundPlayer, packageName);
   // this.subscriptions.add(decorationManager);
 
-  // const packageDepsArgs = { config, filterManager };
-  // const packageDepsCallback = readyToActivate.bind(this);
   require('atom-package-deps')
     .install(packageName)
-    .then(() => {
-      readyToActivate(editorRegistry);
-    });
+    .then(() => { readyToActivate(configManager, filterManager); });
 }
 
 export function deactivate() {

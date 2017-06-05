@@ -11,13 +11,18 @@ import { processLines } from "./filter-processor";
 function recursivelyShiftRanges(obj: any, shift: number) {
   for(var property of Object.keys(obj)) {
     const value = obj[property];
-
-    if(value.start && value.start.row && value.end && value.end.row) {
+    if(_.has(value, "start.row") && _.has(value, "end.row")) {
       value.start.row += shift;
       value.end.row += shift;
     } else if(typeof value == "object") {
       recursivelyShiftRanges(value, shift);
     }
+  }
+}
+
+function shiftLineRanges(lines: Filter.Line[], shift: number) {
+  for(var line of lines) {
+    recursivelyShiftRanges(line, shift);
   }
 }
 
@@ -38,9 +43,7 @@ export default class ItemFilter {
       .then((params) => { return this.processFilter(params[0], params[1]); });
   }
 
-  dispose() {
-    return;
-  }
+  dispose() {}
 
   async update(changes: Filter.Params.BufferChange[]) {
     const lines = this.editor.buffer.getLines();
@@ -55,7 +58,7 @@ export default class ItemFilter {
         for(var change of changes) {
           if(change.start != currentIndex) {
             const upperPartition = filter.slice(currentIndex, change.start);
-            if(shift != 0) recursivelyShiftRanges(upperPartition, shift);
+            if(shift != 0) shiftLineRanges(upperPartition, shift);
             result = result.concat(upperPartition);
             currentIndex += upperPartition.length;
           }
@@ -81,7 +84,7 @@ export default class ItemFilter {
         }
         const sliceIndex = lastChange.start + lastChange.oldExtent + 1;
         const slice = filter.splice(sliceIndex);
-        if(shift != 0) recursivelyShiftRanges(slice, shift);
+        if(shift != 0) shiftLineRanges(slice, shift);
         result = result.concat(slice);
 
         // We should have line data for every line within the editor.
