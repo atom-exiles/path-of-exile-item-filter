@@ -67,6 +67,9 @@ class ItemFilter {
                         shift += change.newExtent - change.oldExtent;
                     }
                     const lastChange = _.last(changes);
+                    if (lastChange == null) {
+                        throw new Error("update called with no changes");
+                    }
                     const sliceIndex = lastChange.start + lastChange.oldExtent + 1;
                     const slice = filter.splice(sliceIndex);
                     if (shift != 0)

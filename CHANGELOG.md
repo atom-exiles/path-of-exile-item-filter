@@ -21,7 +21,6 @@ The current direction of the game has made the following variables irrelevant. I
 Temporarily removed the "Autocomplete.enableIcons" configuration option. It will return once icons are implemented.
 
 ### Technical
-* Use ES6 Javascript over TypeScript, with the primary reason being improved debugging within Atom.
 * Reworked package initialization. The majority of features will now be available even if the user declines the installation of additional dependencies.
 * Significant changes to the JSON data, including file merges and the addition and removal of some data.
   * Added DropLevel to all applicable items.

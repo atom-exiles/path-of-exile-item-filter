@@ -34,7 +34,8 @@ function transformChanges(c) {
     });
     for (var i = 0; i < changes.length; i++) {
         const currentChange = changes[i];
-        if (i == 0 || _.last(result).start != currentChange.start.row) {
+        const lastResult = _.last(result);
+        if (i == 0 || (lastResult && lastResult.start != currentChange.start.row)) {
             result.push({
                 newExtent: currentChange.newExtent.row,
                 oldExtent: currentChange.oldExtent.row,
