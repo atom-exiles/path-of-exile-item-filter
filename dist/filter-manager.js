@@ -9,159 +9,178 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
-const assert = require("assert");
-const jsonData = require("./json-data");
-const settings = require("./settings");
-const fp = require("./filter-processor");
+const _ = require("lodash");
+const item_filter_1 = require("./item-filter");
+function transformChanges(c) {
+    let result = [];
+    let changes = [];
+    for (var change of c) {
+        changes.push({
+            newExtent: change.newExtent.copy(),
+            oldExtent: change.oldExtent.copy(),
+            start: change.start.copy()
+        });
+    }
+    changes.sort((a, b) => {
+        if (a.start.row == b.start.row) {
+            return 0;
+        }
+        else if (a.start.row < b.start.row) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
+    });
+    for (var i = 0; i < changes.length; i++) {
+        const currentChange = changes[i];
+        if (i == 0 || _.last(result).start != currentChange.start.row) {
+            result.push({
+                newExtent: currentChange.newExtent.row,
+                oldExtent: currentChange.oldExtent.row,
+                start: currentChange.start.row
+            });
+        }
+    }
+    return result;
+}
 class FilterManager {
-    constructor(editor) {
-        this.editor = editor;
+    constructor(config, validationData, registry) {
+        this.config = config;
+        this.validationData = validationData;
+        this.registry = registry;
+        this.emitter = new atom_1.Emitter;
         this.subscriptions = new atom_1.CompositeDisposable;
-        this.subscriptions.add(editor.onDidChangeGrammar((grammar) => {
-            if (this.isFilter()) {
-                this.registerFilter();
-                this.processFilter();
-            }
-            else {
-                this.filter = undefined;
-                if (this.filterSubs)
-                    this.filterSubs.dispose();
-                exports.emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
-            }
-        }));
-        this.subscriptions.add(editor.buffer.onDidChangePath((newPath) => {
-            if (this.isFilter()) {
-                exports.emitter.emit("poe-did-rename-filter", { editor: this.editor,
-                    path: newPath });
-            }
-        }));
-        this.subscriptions.add(editor.buffer.onDidDestroy(() => {
-            this.destructor();
-        }));
-        this.subscriptions.add(jsonData.emitter.on("poe-did-update-item-data", () => {
-            this.processIfFilter();
-        }));
-        this.subscriptions.add(jsonData.emitter.on("poe-did-update-injected-data", () => {
-            this.processIfFilter();
-        }));
-        if (this.isFilter()) {
-            this.registerFilter();
-            this.processFilter();
-        }
-        else if (this.filterSubs)
-            this.filterSubs.dispose();
+        this.filters = new Map;
+        this.observedFilters = new Array;
+        this.setupSubscriptions();
     }
-    destructor() {
-        this.filter = undefined;
-        if (this.filterSubs)
-            this.filterSubs.dispose();
+    dispose() {
+        this.filters.forEach((filterData) => {
+            filterData.subscription.dispose();
+            filterData.filter.dispose();
+        });
+        this.emitter.dispose();
         this.subscriptions.dispose();
-        exports.buffers.delete(this.editor.buffer.id);
-        if (this.isFilter())
-            exports.emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
-        exports.emitter.emit("poe-did-destroy-buffer", this.editor.buffer.id);
     }
-    isFilter() {
-        const grammar = this.editor.getGrammar();
-        if (grammar.scopeName === "source.poe")
-            return true;
-        else
-            return false;
+    setupSubscriptions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.validationData.data;
+            this.subscriptions.add(this.registry.observeFilters((editor) => {
+                this.handleNewFilter(editor);
+            }));
+            this.subscriptions.add(this.validationData.onDidUpdateData((data) => {
+                this.filters.forEach((filterData, editorID) => {
+                    filterData.filter.dispose();
+                    this.emitter.emit("did-destroy-filter", filterData.editor.id);
+                    filterData.filter = new item_filter_1.default(this.config, this.validationData, filterData.editor);
+                    this.emitter.emit("did-add-filter", filterData);
+                });
+            }));
+            this.subscriptions.add(this.registry.onDidDestroyFilter((editorID) => {
+                this.handleDestroyedFilter(editorID);
+            }));
+            return;
+        });
     }
-    registerFilter() {
-        if (!this.filterSubs)
-            this.filterSubs = new atom_1.CompositeDisposable;
-        this.filterSubs.add(this.editor.buffer.onDidChange((event) => {
-            if (this.changes) {
-                this.changes.oldRange = event.oldRange.union(this.changes.oldRange);
-                this.changes.newRange = event.newRange.union(this.changes.newRange);
+    onDidAddFilter(callback) {
+        return this.emitter.on("did-add-filter", (filterData) => {
+            callback(filterData);
+        });
+    }
+    onDidDestroyFilter(callback) {
+        return this.emitter.on("did-destroy-filter", (editorID) => {
+            callback(editorID);
+        });
+    }
+    observeFilters(callback) {
+        this.filters.forEach((filterData) => {
+            callback(filterData);
+        });
+        return this.onDidAddFilter(callback);
+    }
+    onDidProcessFilter(callback) {
+        return this.emitter.on("did-process-filter", (processedData) => {
+            callback(processedData);
+        });
+    }
+    onDidReprocessFilter(callback) {
+        return this.emitter.on("did-reprocess-filter", (processedData) => {
+            callback(processedData);
+        });
+    }
+    observeProcessedFilters(callback) {
+        this.observedFilters.forEach((editorID) => {
+            const filterData = this.filters.get(editorID);
+            if (filterData) {
+                filterData.filter.lines.then((ld) => {
+                    callback({
+                        editor: filterData.editor,
+                        filter: filterData.filter,
+                        lines: ld
+                    });
+                });
             }
             else {
-                this.changes = { oldRange: event.oldRange.copy(), newRange: event.newRange.copy() };
+                throw new Error("observed filter with no associated filter data");
             }
-        }));
-        this.filterSubs.add(this.editor.buffer.onDidStopChanging(() => __awaiter(this, void 0, void 0, function* () {
-            this.processFilterChanges();
-        })));
-        this.filterSubs.add(settings.config.linterSettings.enableWarnings.onDidChange(() => {
-            this.processFilter();
-        }));
-        exports.emitter.emit("poe-did-register-filter", this.editor.buffer.id);
-    }
-    processIfFilter() {
-        if (this.isFilter())
-            this.processFilter();
-        else if (this.filter) {
-            this.filter = undefined;
-            exports.emitter.emit("poe-did-unregister-filter", this.editor.buffer.id);
-        }
-    }
-    processFilter() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const oldRange = new atom_1.Range([0, 0], [0, 0]);
-            const lastRow = this.editor.getLastBufferRow();
-            const lastRowText = this.editor.lineTextForBufferRow(lastRow);
-            const lastColumn = lastRowText.length - 1;
-            const newRange = new atom_1.Range([0, 0], [lastRow, lastColumn]);
-            const data = yield jsonData.promise;
-            const result = new Promise((resolve, reject) => {
-                const lineInfo = fp.parseLineInfo({
-                    changes: { oldRange, newRange },
-                    editor: this.editor,
-                    filter: undefined,
-                    itemData: data.linter,
-                    reset: true
-                });
-                resolve(lineInfo);
-            });
-            const lineInfo = yield result;
-            exports.emitter.emit("poe-did-process-filter", { editor: this.editor, lines: lineInfo });
-            this.filter = result;
+        });
+        return this.emitter.on("did-process-filter", (filterData) => {
+            if (!this.observedFilters.includes(filterData.editor.id)) {
+                this.observedFilters.push(filterData.editor.id);
+                callback(filterData);
+            }
+            else {
+                throw new Error("observed the same editor twice");
+            }
         });
     }
-    processFilterChanges() {
+    handleNewFilter(editor) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.changes || !this.filter)
-                return;
-            const data = yield jsonData.promise;
-            const previousData = yield this.filter;
-            const result = new Promise((resolve, reject) => {
-                const lineInfo = fp.parseLineInfo({
-                    changes: this.changes,
-                    editor: this.editor,
-                    filter: previousData,
-                    itemData: data.linter,
-                    reset: false
-                });
-                resolve(lineInfo);
+            const subscription = editor.onDidStopChanging((event) => {
+                if (event.changes.length == 0)
+                    return;
+                const filterData = this.filters.get(editor.id);
+                if (filterData) {
+                    const changes = transformChanges(event.changes);
+                    filterData.filter.update(changes).then((filter) => {
+                        this.emitter.emit("did-reprocess-filter", {
+                            editor: filterData.editor,
+                            filter: filterData.filter,
+                            lines: filter,
+                            changes
+                        });
+                    });
+                }
+                else {
+                    throw new Error("filter data missing within a change event");
+                }
             });
-            this.changes = undefined;
-            const lineInfo = yield result;
-            exports.emitter.emit("poe-did-process-filter", { editor: this.editor, lines: lineInfo });
-            this.filter = result;
-        });
-    }
-}
-var subscriptions;
-exports.buffers = new Map();
-function activate() {
-    assert(exports.buffers.size == 0, "activation called unexpectedly.");
-    if (subscriptions)
-        subscriptions.dispose();
-    if (exports.emitter)
-        exports.emitter.dispose();
-    exports.emitter = new atom_1.Emitter;
-    subscriptions = new atom_1.CompositeDisposable;
-    subscriptions.add(atom.workspace.observeTextEditors((editor) => {
-        if (exports.buffers.has(editor.buffer.id))
+            const filter = new item_filter_1.default(this.config, this.validationData, editor);
+            const filterData = { editor, filter, subscription };
+            this.filters.set(editor.id, filterData);
+            this.emitter.emit("did-add-filter", filterData);
+            const lines = yield filter.lines;
+            this.emitter.emit("did-process-filter", {
+                editor,
+                filter,
+                lines
+            });
             return;
-        exports.buffers.set(editor.buffer.id, new FilterManager(editor));
-    }));
+        });
+    }
+    handleDestroyedFilter(editorID) {
+        const filterData = this.filters.get(editorID);
+        if (filterData) {
+            filterData.subscription.dispose();
+            filterData.filter.dispose();
+            this.filters.delete(editorID);
+            _.pull(this.observedFilters, editorID);
+        }
+        else {
+            throw new Error("attempted to destroy an unknown item filter");
+        }
+        return;
+    }
 }
-exports.activate = activate;
-function deactivate() {
-    exports.emitter.clear();
-    exports.buffers.forEach((buffer) => buffer.destructor());
-    exports.buffers.clear();
-}
-exports.deactivate = deactivate;
+exports.default = FilterManager;

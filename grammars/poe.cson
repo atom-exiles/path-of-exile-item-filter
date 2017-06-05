@@ -244,7 +244,8 @@
 'repository':
   'commented_line':
     'name': 'comment.line.poe'
-    'match': '(^|\uFEFF)\\s*#+.*$' # A byte-order mark will appear in some files.
+    # A byte-order mark will appear in some files.
+    'match': '(^|\uFEFF)\\s*#+.*$'
   'unknown_line':
     'name': 'line.unknown.poe'
     'match': '(^|\uFEFF)[^\r\n]+$'

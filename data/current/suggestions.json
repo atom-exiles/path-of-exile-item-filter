@@ -1,0 +1,218 @@
+{
+  "actions": [
+    { "displayText": "SetBackgroundColor", "snippet": "SetBackgroundColor ${1:255} ${2:255} ${3:255}" },
+    { "displayText": "SetBorderColor", "snippet": "SetBorderColor ${1:255} ${2:255} ${3:255}" },
+    { "displayText": "SetTextColor", "snippet": "SetTextColor ${1:255} ${2:255} ${3:255}" },
+    { "displayText": "PlayAlertSound", "snippet": "PlayAlertSound ${1:1} ${2:100}" },
+    { "displayText": "SetFontSize", "snippet": "SetFontSize ${1:32}" }
+  ],
+  "blocks": [
+    {
+      "displayText": "Show",
+      "text": "Show\n\t"
+    },
+    {
+      "displayText": "Hide",
+      "text": "Hide\n\t"
+    }
+  ],
+  "booleans": [
+    { "text": "True" },
+    { "text": "False" }
+  ],
+  "filters": [
+    { "text": "BaseType" },
+    { "text": "Class" },
+    { "text": "Rarity" },
+    { "text": "Identified" },
+    { "text": "Corrupted" },
+    { "text": "ItemLevel" },
+    { "text": "DropLevel" },
+    { "text": "Quality" },
+    { "text": "Sockets" },
+    { "text": "LinkedSockets" },
+    { "text": "Height" },
+    { "text": "Width" },
+    { "text": "SocketGroup" }
+  ],
+  "operators": [
+    { "text": ">" },
+    { "text": ">=" },
+    { "text": "=" },
+    { "text": "<=" },
+    { "text": "<" }
+  ],
+  "rarities": [
+    { "text": "Normal" },
+    { "text": "Magic" },
+    { "text": "Rare" },
+    { "text": "Unique" }
+  ],
+  "sockets": [
+    {
+      "displayText": "Red",
+      "text": "R"
+    },
+    {
+      "displayText": "Green",
+      "text": "G"
+    },
+    {
+      "displayText": "Blue",
+      "text": "B"
+    },
+    {
+      "displayText": "White",
+      "text": "W"
+    }
+  ],
+  "extras": {
+    "bases": [
+      { "displayText": "Cartographer's Seal", "text": "\"Cartographer's Seal\"" },
+      { "displayText": "Essence of Envy", "text": "\"Essence of Envy\"" },
+      { "displayText": "Essence of Scorn", "text": "\"Essence of Scorn\"" },
+      { "displayText": "Essence of Dread", "text": "\"Essence of Dread\"" },
+      { "displayText": "Essence of Misery", "text": "\"Essence of Misery\"" },
+      { "displayText": "Essence of Zeal", "text": "\"Essence of Zeal\"" },
+      { "displayText": "Essence of Spite", "text": "\"Essence of Spite\"" },
+      { "displayText": "Essence of Loathing", "text": "\"Essence of Loathing\"" },
+      { "displayText": "Essence of Anguish", "text": "\"Essence of Anguish\"" },
+      { "displayText": "Essence of Doubt", "text": "\"Essence of Doubt\"" },
+      { "displayText": "Essence of Wrath", "text": "\"Essence of Wrath\"" },
+      { "displayText": "Essence of Rage", "text": "\"Essence of Rage\"" },
+      { "displayText": "Essence of Suffering", "text": "\"Essence of Suffering\"" },
+      { "displayText": "Essence of Fear", "text": "\"Essence of Fear\"" },
+      { "displayText": "Essence of Torment", "text": "\"Essence of Torment\"" },
+      { "displayText": "Essence of Anger", "text": "\"Essence of Anger\"" },
+      { "displayText": "Essence of Sorrow", "text": "\"Essence of Sorrow\"" },
+      { "displayText": "Essence of Contempt", "text": "\"Essence of Contempt\"" },
+      { "displayText": "Essence of Greed", "text": "\"Essence of Greed\"" },
+      { "displayText": "Essence of Woe", "text": "\"Essence of Woe\"" },
+      { "displayText": "Essence of Hatred", "text": "\"Essence of Hatred\"" },
+      { "text": "Essence" },
+      { "displayText": "Cartographer's Sextant", "text": "\"Cartographer's Sextant\"" },
+      { "text": "Blessing" },
+      { "text": "Splinter" },
+      { "text": "Leaguestone" },
+      { "text": "Breachstone" },
+      { "displayText": "Mana Flask", "text": "\"Mana Flask\"" },
+      { "displayText": "Life Flask", "text": "\"Life Flask\"" },
+      { "displayText": "Hybrid Flask", "text": "\"Hybrid Flask\"" },
+      { "text": "Jewel" },
+      { "text": "Talisman" },
+      { "displayText": "Shaper's Orb", "text": "\"Shaper's Orb\"" },
+      {
+        "displayText": "Bases - Atlas of Worlds",
+        "text": "\"Blue Pearl Amulet\" \"Bone Helmet\" \"Crystal Belt\" \"Fingerless Silk Gloves\" \"Gripped Gloves\" \"Marble Amulet\" \"Opal Ring\" \"Spiked Gloves\" \"Steel Ring\" \"Two-Toned Boots\" \"Vanguard Belt\""
+      },
+      {
+        "displayText": "Bases - Maraketh - Low Level",
+        "text": "\"Pagan Wand\" \"Curved Blade\" Smallsword \"Hook Sword\" \"Crescent Staff\" \"Morning Star\" \"Horned Sceptre\" \"Wyrm Mace\" \"Prong Dagger\" \"Double Claw\" \"Reflex Bow\" \"Dagger Axe\" \"Etched Hatchet\""
+      },
+      {
+        "displayText": "Bases - Maraketh - Mid Level",
+        "text": "\"Engraved Hatchet\" \"Talon Axe\" \"Steelwood Bow\" \"Twin Claw\" Trisula \"Dragon Mace\" \"Stag Sceptre\" \"Solar Maul\" \"Moon Staff\" Grappler \"Courtesan Sword\" \"Lithe Blade\" \"Heathen Wand\""
+      },
+      {
+        "displayText": "Bases - Maraketh - High Level",
+        "text": "\"Runic Hatchet\" Fleshripper \"Maraketh Bow\" \"Gemini Claw\" Sai \"Behemoth Mace\" \"Sambar Sceptre \" \"Coronal Maul\" \"Eclipse Staff\" \"Tiger Hook\" \"Dragoon Sword\" \"Exquisite Blade\" \"Profane Wand\""
+      },
+      {
+        "displayText": "Set - Atziri",
+        "text": "\"Sacrifice at Dusk\" \"Sacrifice at Midnight\" \"Sacrifice at Dawn\" \"Sacrifice at Noon\""
+      },
+      {
+        "displayText": "Set - Uber Atziri",
+        "text": "\"Mortal Grief\" \"Mortal Rage\" \"Mortal Hope\" \"Mortal Ignorance\""
+      },
+      {
+        "displayText": "Set - Pale Council",
+        "text": "\"Volkuur's Key\" \"Eber's Key\" \"Yriel's Key\" \"Inya's Key\""
+      },
+      {
+        "displayText": "Set - Shaper",
+        "text": "\"Fragment of the Hydra\" \"Fragment of the Phoenix\" \"Fragment of the Minotaur\" \"Fragment of the Chimera\""
+      }
+    ],
+    "blocks": [
+      {
+        "displayText": "## Heading ##",
+        "snippet": "##############################\n##  ${1:        Heading       }  ##\n##############################\n$2"
+      },
+      {
+        "displayText": "Maps - Tier 1",
+        "text": "\n# Maps - Tier 1\nShow\n\tClass Maps\n\tDropLevel <= 68"
+      },
+      {
+        "displayText": "Maps - Tier 2",
+        "text": "\n# Maps - Tier 2\nShow\n\tClass Maps\n\tDropLevel = 69"
+      },
+      {
+        "displayText": "Maps - Tier 3",
+        "text": "\n# Maps - Tier 3\nShow\n\tClass Maps\n\tDropLevel = 70"
+      },
+      {
+        "displayText": "Maps - Tier 4",
+        "text": "\n# Maps - Tier 4\nShow\n\tClass Maps\n\tDropLevel = 71"
+      },
+      {
+        "displayText": "Maps - Tier 5",
+        "text": "\n# Maps - Tier 5\nShow\n\tClass Maps\n\tDropLevel = 72"
+      },
+      {
+        "displayText": "Maps - Tier 6",
+        "text": "\n# Maps - Tier 6\nShow\n\tClass Maps\n\tDropLevel = 73"
+      },
+      {
+        "displayText": "Maps - Tier 7",
+        "text": "\n# Maps - Tier 7\nShow\n\tClass Maps\n\tDropLevel = 74"
+      },
+      {
+        "displayText": "Maps - Tier 8",
+        "text": "\n# Maps - Tier 8\nShow\n\tClass Maps\n\tDropLevel = 75"
+      },
+      {
+        "displayText": "Maps - Tier 9",
+        "text": "\n# Maps - Tier 9\nShow\n\tClass Maps\n\tDropLevel = 76"
+      },
+      {
+        "displayText": "Maps - Tier 10",
+        "text": "\n# Maps - Tier 10\nShow\n\tClass Maps\n\tDropLevel = 77"
+      },
+      {
+        "displayText": "Maps - Tier 11",
+        "text": "\n# Maps - Tier 11\nShow\n\tClass Maps\n\tDropLevel = 78"
+      },
+      {
+        "displayText": "Maps - Tier 12",
+        "text": "\n# Maps - Tier 12\nShow\n\tClass Maps\n\tDropLevel = 79"
+      },
+      {
+        "displayText": "Maps - Tier 13",
+        "text": "\n# Maps - Tier 13\nShow\n\tClass Maps\n\tDropLevel = 80"
+      },
+      {
+        "displayText": "Maps - Tier 14",
+        "text": "\n# Maps - Tier 14\nShow\n\tClass Maps\n\tDropLevel = 81"
+      },
+      {
+        "displayText": "Maps - Tier 15",
+        "text": "\n# Maps - Tier 15\nShow\n\tClass Maps\n\tDropLevel = 82"
+      },
+      {
+        "displayText": "Maps - Tier 16",
+        "text": "\n# Maps - Tier 16\nShow\n\tClass Maps\n\tDropLevel >= 83"
+      }
+    ],
+    "classes": [
+      { "text": "Currency" },
+      { "text": "Card" },
+      { "text": "Gems" },
+      { "displayText": "Skill Gems", "text": "\"Skill Gems\"" },
+      { "text": "Swords" },
+      { "text": "Axes" },
+      { "text": "Maces" },
+      { "displayText": "Map Items", "text": "\"Map Items\"" }
+    ]
+  }
+}

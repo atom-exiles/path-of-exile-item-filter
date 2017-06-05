@@ -1,5 +1,5 @@
 {
-  "generalSettings": {
+  "general": {
     "title": "General",
     "type": "object",
     "order": 1,
@@ -18,54 +18,43 @@
         "default": true,
         "order": 2
       },
-      "enableAlertDecorations": {
-        "title": "Enable Sound Decorations",
-        "description": "Enable the gutter decoration for rules with a sound.",
+      "enableGutter": {
+        "title": "Enable Editor Gutter",
+        "description": "Enable the decoration gutter within the editor whenever an item filter is open.",
         "type": "boolean",
         "default": true,
         "order": 3
       },
-      "enableSetColorDecorations": {
-        "title": "Enable Color Decorations",
-        "description": "Enable the gutter decoration for rules with a color.",
-        "type": "boolean",
-        "default": true,
+      "chunkSize": {
+        "title": "Validation Chunk Size",
+        "description": "The number of item filter lines to process at once. If you encounter mousewheel lag when opening large files, then lower this number.",
+        "type": "number",
+        "default": 500,
         "order": 4
       }
     }
   },
-  "dataSettings": {
+  "data": {
     "title": "Data",
     "type": "object",
     "order": 2,
     "properties": {
-      "enableLeague": {
-        "title": "League-specific Items",
-        "description": "Allow the use of league-specific items within item filters.",
-        "type": "boolean",
-        "default": true,
-        "order": 1
-      },
-      "enableLegacy": {
-        "title": "Legacy Items",
-        "description": "Allow the use of items that are unobtainable in the current temporary leagues.",
-        "type": "boolean",
-        "default": true,
-        "order": 2
-      },
-      "enableRecipe": {
-        "title": "Vendor Recipe Items",
-        "description": "Allow the use of items which are only obtainable through vendor recipes.",
-        "type": "boolean",
-        "default": true,
-        "order": 3
+      "dataset": {
+        "title": "Dataset",
+        "description": "Determines the dataset used by the package.",
+        "type": "string",
+        "default": "current",
+        "order": 1,
+        "enum": [
+          { "value": "current", "description": "Current: load data for the current version of the game." }
+        ]
       },
       "classWhitelist": {
         "title": "Item Class Whitelist",
         "description": "Allow the following additonal item classes to be used within filter files. Multiple entries should be separated by a comma.",
         "type": "array",
         "default": [],
-        "order": 4,
+        "order": 5,
         "items": { "type": "string" }
       },
       "baseWhitelist": {
@@ -73,13 +62,13 @@
         "description": "Allow the following additonal base types to be used within filter files. Multiple entries should be separated by a comma.",
         "type": "array",
         "default": [],
-        "order": 5,
+        "order": 6,
         "items": { "type": "string" }
       }
     }
   },
-  "completionSettings": {
-    "title": "Autocompletion",
+  "completion": {
+    "title": "Autocomplete",
     "type": "object",
     "order": 3,
     "properties": {
@@ -96,28 +85,50 @@
         "type": "boolean",
         "default": true,
         "order": 2
-      },
-      "enableIcon": {
-        "title": "Icons",
-        "description": "Enable the icon decoration.",
-        "type": "boolean",
-        "default": true,
-        "order": 3
       }
     }
   },
-  "linterSettings": {
+  "linter": {
     "title": "Linter",
     "type": "object",
     "order": 4,
     "properties": {
       "enableWarnings": {
         "title": "Warnings",
-        "description": "Enable linter warnings within the editor.",
+        "description": "Enable linter warning messages within the editor.",
         "type": "boolean",
         "default": true,
         "order": 1
+      },
+      "enableInfo": {
+        "title": "Info",
+        "description": "Enable linter information messages within the editor.",
+        "type": "boolean",
+        "default": true,
+        "order": 2
       }
     }
+  },
+  "gutter": {
+    "title": "Editor Gutter",
+    "type": "object",
+    "order": 5,
+    "properties": {
+      "enableAlertDecorations": {
+        "title": "Enable Sound Decorations",
+        "description": "Enable the gutter decoration for rules with a sound.",
+        "type": "boolean",
+        "default": true,
+        "order": 1
+      },
+      "enableSetColorDecorations": {
+        "title": "Enable Color Decorations",
+        "description": "Enable the gutter decoration for rules with a color.",
+        "type": "boolean",
+        "default": true,
+        "order": 2
+      }
+    }
+
   }
 }

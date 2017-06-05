@@ -2,7 +2,7 @@
   "name": "path-of-exile-item-filter",
   "main": "./dist/main",
   "version": "1.0.9",
-  "description": "A grammar implementation for Path of Exile item filters",
+  "description": "An Atom package designed to make editing Path of Exile item filters easier.",
   "keywords": [
     "poe",
     "exile",
@@ -14,14 +14,15 @@
   "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.4.0 <2.0.0"
+    "atom": ">=1.17.0 <2.0.0"
   },
   "dependencies": {
-    "atom-package-deps": "^4.5.0"
+    "atom-package-deps": "^4.6.0",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "@types/jquery": "^2.0.41",
-    "@types/node": "^7.0.8"
+    "@types/lodash": "^4.14.65",
+    "atom-typings": "^1.17.3"
   },
   "package-deps": [
     "linter:2.0.0"

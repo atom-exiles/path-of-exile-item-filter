@@ -1,69 +1,100 @@
+## Version 1.1.0
+### Overview
+* Added support for datasets, which will allow you to write filters for future versions of the game. There is currently only one dataset.
+* Begin using our own gutter, rather than piggybacking on the Linter's. This gutter will only be added to editors containing item filters.
+
+#### Configuration Variables
+##### New Variables
+- General.chunkSize: allows you to control the maximum number of lines processed at any given time.
+- Data.dataset: allows the selection of a dataset.
+- Linter.enableInfo: determines whether or not information messages will be displayed by the Linter.
+- Gutter.enableGutter: sets the visibility of our gutter in the editor.
+
+##### Remove Variables
+
+The current direction of the game has made the following variables irrelevant. It is now clear that item filters should be written with all content, past and present, in mind.
+
+- Data.enableLeague
+- Data.enableLegacy
+- Data.enableRecipe
+
+Temporarily removed the "Autocomplete.enableIcons" configuration option. It will return once icons are implemented.
+
+### Technical
+* Use ES6 Javascript over TypeScript, with the primary reason being improved debugging within Atom.
+* Reworked package initialization. The majority of features will now be available even if the user declines the installation of additional dependencies.
+* Significant changes to the JSON data, including file merges and the addition and removal of some data.
+  * Added DropLevel to all applicable items.
+  * Added the uniques for each base type.
+* Started using a background process to do the initial parse of a filter. Loading large item filters will no longer freeze the editor for several seconds on file open.
+  * If you experience mousewheel lag when opening large files, then it is recommended that you lower the value of "General.chunkSize".
+
 ## Versions 1.0.1-1.0.9
-* Added linter errors for trailing comments on rules where it's an error in-game
-* Extension renames for opened files are now properly handled
-* A linter error will no longer flash when converting hexadecimal text
-* Fixed an exception error thrown when editing an unnamed item filter
-* Added a Linter error for SetFontSize when it appears with an operator
-* Eternal Orb and Item Quantity Support moved to league data list
-* Fixed an issue which occurred when RGBA rules contained a 0
-* Better support for filter files not yet on disk
-* Fixed filter decorations vanishing on other tabs whenever a filter is closed
-* Partial support for the new version of our Linter dependency
-* Gutter decorations and Linter messages should now behave properly when editing multiple lines
-* Linter improvements, including descriptions and solutions where appropriate
-* Added extra suggestions for each endgame set
-* The option to enable and disable the linter works properly once again
-* Tabs containing a filter will no longer be processed twice whenever the editor is launched
+* Added linter errors for trailing comments on rules where it's an error in-game.
+* Extension renames for opened files are now properly handled.
+* A linter error will no longer flash when converting hexadecimal text.
+* Fixed an exception error thrown when editing an unnamed item filter.
+* Added a Linter error for SetFontSize when it appears with an operator.
+* Eternal Orb and Item Quantity Support moved to league data list.
+* Fixed an issue which occurred when RGBA rules contained a 0.
+* Better support for filter files not yet on disk.
+* Fixed filter decorations vanishing on other tabs whenever a filter is closed.
+* Partial support for the new version of our Linter dependency.
+* Gutter decorations and Linter messages should now behave properly when editing multiple lines.
+* Linter improvements, including descriptions and solutions where appropriate.
+* Added extra suggestions for each endgame set.
+* The option to enable and disable the linter works properly once again.
+* Tabs containing a filter will no longer be processed twice whenever the editor is launched.
 
 ## Version 1.0.0
-* Support for 2.6 and Legacy league
-* Added a linter, which provides error checking outside of the game
-* Decorations for previewing sound alerts and colors for each appropriate line
-* Added configuration settings, including class and base whitelists
-* Autocompletion improvements and bug fixes
-* Added completion decorations, which can be turned off in settings
-* Improvements to the grammar
-* Began using JSON files for our data
-* Hide blocks can now have action rules, such as SetFontSize
-* Most action rules can now have a trailing comment
-* Added completions for Map tiers, each of which inserts a new Show block
-* Automatic conversion of hex values for the rules taking an RGBA color value
-* Stopped using snippets for filter keywords
+* Support for 2.6 and Legacy league.
+* Added a linter, which provides error checking outside of the game.
+* Decorations for previewing sound alerts and colors for each appropriate line.
+* Added configuration settings, including class and base whitelists.
+* Autocompletion improvements and bug fixes.
+* Added completion decorations, which can be turned off in settings.
+* Improvements to the grammar.
+* Began using JSON files for our data.
+* Hide blocks can now have action rules, such as SetFontSize.
+* Most action rules can now have a trailing comment.
+* Added completions for Map tiers, each of which inserts a new Show block.
+* Automatic conversion of hex values for the rules taking an RGBA color value.
+* Stopped using snippets for filter keywords.
 
 ## Version 0.1.8
-* Added the 15 new divination cards from 2.5.1
-* Allow empty lines in Show and Hide blocks
-* Fix for the Corrupted rule, as it is case sensitive after all
-* Added fishing rods
-* Fixed a typo in Alder Spiked Shield
+* Added the 15 new divination cards from 2.5.1.
+* Allow empty lines in Show and Hide blocks.
+* Fix for the Corrupted rule, as it is case sensitive after all.
+* Added fishing rods.
+* Fixed a typo in Alder Spiked Shield.
 
 ## Version 0.1.7
-* Added 'toggle-line-comments' support
-* Revamp of the grammar to work well with syntax themes
-* Added the new 2.4.2 active gems
-* Support for 2.5 and Breach league
-* Added support for Corrupted filter
+* Added 'toggle-line-comments' support.
+* Revamp of the grammar to work well with syntax themes.
+* Added the new 2.4.2 active gems.
+* Support for 2.5 and Breach league.
+* Added support for Corrupted filter.
 
 ## Version 0.1.5
-* Fixed several typos in map names
+* Fixed several typos in map names.
 
 ## Version 0.1.4
-* Divination Cards
-* Improved suggestion filtering
-* Added text highlighting
+* Added divination cards to the item lists.
+* Improved suggestion filtering.
+* Added a color differential between filter and action rules.
 
 ## Version 0.1.3
-* Atlas of Worlds
-* Quivers
-* Spelling mistakes
+* Support for Atlas of Worlds.
+* Added quivers to the item list.
+* Fixed spelling mistakes in value names.
 
 ## Version 0.1.2
-* Identified command
+* Support for the Identified rule.
 
 ## Version 0.1.1
-* Prophecy
-* Talisman
-* Perandus
+* Support for Prophecy.
+* Support for Talisman.
+* Support for Perandus.
 
 ## Version 0.1.0
-* Path of Exile item filter grammar supported
+* Grammar for Path of Exile item filters added.

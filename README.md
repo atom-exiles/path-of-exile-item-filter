@@ -29,3 +29,8 @@ Error checking for item filters within Atom.
 There are several configuration variables available, allowing you to turn off features that you don't personally like. These options can be found in the Atom settings panel for this package.
 
 Whitelists for both classes and bases are also available in that configuration menu. These will allow you to edit a filter for future versions of the game.
+
+## Developer References
+
+- [Item Filter Syntax](docs/syntax.md)
+- [Unused Unique Items](docs/unused-uniques.md)

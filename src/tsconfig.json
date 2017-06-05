@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": [ "dom", "es6", "es2016.array.include" ],
+    "noLib": false,
+    "declaration": false,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "outDir": "../dist",
+    "rootDir": ".",
+    "sourceMap": false,
+    "removeComments": true,
+    "paths": {
+    }
+  },
+  "compileOnSave": true
+}
