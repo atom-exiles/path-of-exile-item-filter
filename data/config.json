@@ -108,27 +108,5 @@
         "order": 2
       }
     }
-  },
-  "gutter": {
-    "title": "Editor Gutter",
-    "type": "object",
-    "order": 5,
-    "properties": {
-      "enableAlertDecorations": {
-        "title": "Enable Sound Decorations",
-        "description": "Enable the gutter decoration for rules with a sound.",
-        "type": "boolean",
-        "default": true,
-        "order": 1
-      },
-      "enableSetColorDecorations": {
-        "title": "Enable Color Decorations",
-        "description": "Enable the gutter decoration for rules with a color.",
-        "type": "boolean",
-        "default": true,
-        "order": 2
-      }
-    }
-
   }
 }

@@ -1,4 +1,4 @@
-'scopeName': 'source.poe'
+'scopeName': 'source.filter'
 'name': 'POE Item Filter'
 'fileTypes': [
   'filter'
@@ -6,26 +6,26 @@
 'patterns': [
   { 'include': '#commented_line' }
   {
-    'name': 'block.poe'
+    'name': 'block.filter'
     'begin': "^\\s*((Show)|(Hide))((\\s+(#+.*))|\\s.*)$"
     'beginCaptures':
       '2':
-        'name': 'keyword.block.show.poe'
+        'name': 'keyword.block.show.filter'
       '3':
-        'name': 'keyword.block.hide.poe'
+        'name': 'keyword.block.hide.filter'
       '6':
-        'name': 'comment.trailing.poe'
+        'name': 'comment.trailing.filter'
     'end': "(?=^\\s*(Show|Hide))"
     'patterns': [
       { 'include': '#commented_line' }
       { 'include': '#empty_line' }
       # Conditionals
       {
-        'name': 'filter.class.poe'
+        'name': 'class.filter'
         'begin': '^\\s*(Class)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.class.poe'
+            'name': 'keyword.cond.class.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#string' }
@@ -34,11 +34,11 @@
         ]
       }
       {
-        'name': 'filter.base-type.poe'
+        'name': 'base-type.filter'
         'begin': '^\\s*(BaseType)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.base-type.poe'
+            'name': 'keyword.cond.base-type.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#string' }
@@ -47,33 +47,33 @@
         ]
       }
       {
-        'name': 'filter.identified.poe'
+        'name': 'identified.filter'
         'begin': '^\\s*(Identified)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.identified.poe'
+            'name': 'keyword.cond.identified.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#boolean' }
         ]
       }
       {
-        'name': 'filter.corrupted.poe'
+        'name': 'corrupted.filter'
         'begin': '^\\s*(Corrupted)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.corrupted.poe'
+            'name': 'keyword.cond.corrupted.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#boolean' }
         ]
       }
       {
-        'name': 'filter.item-level.poe'
+        'name': 'item-level.filter'
         'begin': '^\\s*(ItemLevel)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.item-level.poe'
+            'name': 'keyword.cond.item-level.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -81,11 +81,11 @@
         ]
       }
       {
-        'name': 'filter.drop-level.poe'
+        'name': 'drop-level.filter'
         'begin': '^\\s*(DropLevel)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.drop-level.poe'
+            'name': 'keyword.cond.drop-level.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -93,11 +93,11 @@
         ]
       }
       {
-        'name': 'filter.quality.poe'
+        'name': 'quality.filter'
         'begin': '^\\s*(Quality)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.quality.poe'
+            'name': 'keyword.cond.quality.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -105,11 +105,11 @@
         ]
       }
       {
-        'name': 'filter.rarity.poe'
+        'name': 'rarity.filter'
         'begin': '^\\s*(Rarity)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.rarity.poe'
+            'name': 'keyword.cond.rarity.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -117,11 +117,11 @@
         ]
       }
       {
-        'name': 'filter.sockets.poe'
+        'name': 'sockets.filter'
         'begin': '^\\s*(Sockets)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.sockets.poe'
+            'name': 'keyword.cond.sockets.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -129,11 +129,11 @@
         ]
       }
       {
-        'name': 'filter.linked-sockets.poe'
+        'name': 'linked-sockets.filter'
         'begin': '^\\s*(LinkedSockets)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.linked-sockets.poe'
+            'name': 'keyword.cond.linked-sockets.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -141,22 +141,22 @@
         ]
       }
       {
-        'name': 'filter.socket-group.poe'
+        'name': 'socket-group.filter'
         'begin': '^\\s*(SocketGroup)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.socket-group.poe'
+            'name': 'keyword.cond.socket-group.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#socket_group' }
         ]
       }
       {
-        'name': 'filter.height.poe'
+        'name': 'height.filter'
         'begin': '^\\s*(Height)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.height.poe'
+            'name': 'keyword.cond.height.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -164,11 +164,11 @@
         ]
       }
       {
-        'name': 'filter.width.poe'
+        'name': 'width.filter'
         'begin': '^\\s*(Width)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.cond.width.poe'
+            'name': 'keyword.cond.width.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#operator' }
@@ -177,11 +177,11 @@
       }
       # Actions
       {
-        'name': 'filter.set-border-color.poe'
+        'name': 'set-border-color.filter'
         'begin': '^\\s*(SetBorderColor)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.action.set-border-color.poe'
+            'name': 'keyword.action.set-border-color.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#number' }
@@ -189,11 +189,11 @@
         ]
       }
       {
-        'name': 'filter.set-text-color.poe'
+        'name': 'set-text-color.filter'
         'begin': '^\\s*(SetTextColor)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.action.set-text-color.poe'
+            'name': 'keyword.action.set-text-color.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#number' }
@@ -201,11 +201,11 @@
         ]
       }
       {
-        'name': 'filter.set-background-color.poe'
+        'name': 'set-background-color.filter'
         'begin': '^\\s*(SetBackgroundColor)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.action.set-background-color.poe'
+            'name': 'keyword.action.set-background-color.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#number' }
@@ -213,11 +213,11 @@
         ]
       }
       {
-        'name': 'filter.play-alert-sound.poe'
+        'name': 'play-alert-sound.filter'
         'begin': '^\\s*(PlayAlertSound)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.action.play-alert-sound.poe'
+            'name': 'keyword.action.play-alert-sound.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#number' }
@@ -225,11 +225,11 @@
         ]
       }
       {
-        'name': 'filter.set-font-size.poe'
+        'name': 'set-font-size.filter'
         'begin': '^\\s*(SetFontSize)\\s'
         'beginCaptures':
           '1':
-            'name': 'keyword.action.set-font-size.poe'
+            'name': 'keyword.action.set-font-size.filter'
         'end': '\\s*$'
         'patterns': [
           { 'include': '#number' }
@@ -243,56 +243,56 @@
 ]
 'repository':
   'commented_line':
-    'name': 'comment.line.poe'
+    'name': 'comment.line.filter'
     # A byte-order mark will appear in some files.
     'match': '(^|\uFEFF)\\s*#+.*$'
   'unknown_line':
-    'name': 'line.unknown.poe'
+    'name': 'line.unknown.filter'
     'match': '(^|\uFEFF)[^\r\n]+$'
   'empty_line':
-    'name': 'line.empty.poe'
+    'name': 'line.empty.filter'
     'match': '(^|\uFEFF)\\s*$'
   'trailing_comment':
-    'name': 'comment.trailing.poe'
+    'name': 'comment.trailing.filter'
     'match': '#.+$'
   'unknown':
-    'name': 'line.unknown.poe'
+    'name': 'line.unknown.filter'
     'match': '^.*$'
   'number':
     'match': '\\s*(([0-9]+)|("[0-9]+"))'
     'captures':
       '1':
-        'name': 'constant.number.poe'
+        'name': 'constant.number.filter'
   'word':
-    'name': 'string.word.poe'
+    'name': 'string.word.filter'
     'match': '\\s*([A-Za-z\u00F6\\-]+)'
   'string':
     'match': '\\s*(\"[^"]*\")'
     'captures':
       '1':
-        'name': 'string.quotation.poe'
+        'name': 'string.quotation.filter'
   'partial_string':
     'match': '\\s*(\"[^"\n\r]*)$'
     'captures':
       '1':
-        'name': 'string.partial-quotation.poe'
+        'name': 'string.partial-quotation.filter'
   'boolean':
     'match': '(?i)\\s*((True|False)|("(True|False)"))'
     'captures':
       '1':
-        'name': 'string.boolean.poe'
+        'name': 'string.boolean.filter'
   'rarity':
     'match': '\\s*(("(Normal|Magic|Rare|Unique)")|(Normal|Magic|Rare|Unique))'
     'captures':
       '1':
-        'name': 'string.rarity.poe'
+        'name': 'string.rarity.filter'
   'socket_group':
     'match': '(?i)\\s*(([rgbw]+)|("[rgbw]+"))'
     'captures':
       '1':
-        'name': 'string.socket-group.poe'
+        'name': 'string.socket-group.filter'
   'operator':
     'match': '\\s*(>=|<=|>|<|=)'
     'captures':
       '1':
-        'name': 'keyword.operator.poe'
+        'name': 'keyword.operator.filter'

@@ -37,8 +37,22 @@ class ItemFilter {
         this.editor = editor;
         const p1 = this.validationData.data;
         const p2 = this.config.general.chunkSize.promise;
-        this.lines = Promise.all([p1, p2])
-            .then((params) => { return this.processFilter(params[0], params[1]); });
+        this.lines = Promise.all([p1, p2]).then((params) => {
+            var chunkSize = params[1];
+            if (chunkSize <= 0) {
+                atom.notifications.addWarning("Configuration Variable 'chunkSize' reset.", {
+                    dismissable: true,
+                    description: "The value of chunkSize was set to a value equal to or less than zero." +
+                        " It has been reset to the default."
+                });
+                this.config.general.chunkSize.unset();
+                const defaultValue = this.config.general.chunkSize.value;
+                if (defaultValue == null)
+                    throw new Error("reset of chunkSize failed");
+                chunkSize = defaultValue;
+            }
+            return this.processFilter(params[0], chunkSize);
+        });
     }
     dispose() { }
     update(changes) {
@@ -111,19 +125,13 @@ class ItemFilter {
                         detail: 'The filter will still be processed, but a separate process will not be used.' +
                             '\nAtom may hang for several seconds when opening large item filters.'
                     });
-                    const chunkSize = this.config.general.chunkSize.value;
-                    if (chunkSize) {
-                        const filter = filter_processor_1.processLines({
-                            lines,
-                            data,
-                            row: 0,
-                            file: this.editor.buffer.getPath()
-                        });
-                        resolve(filter);
-                    }
-                    else {
-                        throw new Error("expected chunkSize to be defined");
-                    }
+                    const filter = filter_processor_1.processLines({
+                        lines,
+                        data,
+                        row: 0,
+                        file: this.editor.buffer.getPath()
+                    });
+                    resolve(filter);
                 }
             });
         });

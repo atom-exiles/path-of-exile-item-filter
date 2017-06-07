@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
+const Helpers = require("./helpers");
 function gatherMessages(filter) {
     const output = {
         errors: [],
@@ -44,6 +45,29 @@ function transformMessage(message, severity) {
     };
     return output;
 }
+function postProcessFilter(filter, file) {
+    for (var line of filter) {
+        if (Helpers.Guards.isBlock(line)) {
+            return;
+        }
+        else if (Helpers.Guards.isEmpty(line) || Helpers.Guards.isUnknown(line) ||
+            Helpers.Guards.isLineComment(line)) {
+            continue;
+        }
+        else {
+            line.messages.errors.length = 0;
+            line.messages.warnings.length = 0;
+            line.messages.info.length = 0;
+            line.invalid = true;
+            line.messages.errors.push({
+                excerpt: "A filter rule must be contained within a block.",
+                file: file,
+                range: line.range,
+                url: "http://pathofexile.gamepedia.com/Item_filter"
+            });
+        }
+    }
+}
 function adjustMessagePaths(messages, newPath) {
     for (var message of messages.errors)
         message.file = newPath;
@@ -68,9 +92,11 @@ class LinterProvider {
             this.editorSubs.set(editor.id, editor.onDidChangePath((newPath) => {
                 this.handlePathChange(editor.id, newPath);
             }));
+            postProcessFilter(data.lines, editor.getPath());
             this.handleNewFilter(data);
         }));
         this.subscriptions.add(filterManager.onDidReprocessFilter((data) => {
+            postProcessFilter(data.lines, data.editor.getPath());
             this.handleFilterUpdate(data);
         }));
         this.subscriptions.add(filterManager.onDidDestroyFilter((editorID) => {
@@ -131,8 +157,8 @@ class LinterProvider {
         }
         if (messages != null) {
             this.filterMessages.set(editorID, adjustMessagePaths(messages, newPath));
-            this.resetMessageCache();
         }
+        this.resetMessageCache();
     }
     processMessages(input) {
         const messages = [];

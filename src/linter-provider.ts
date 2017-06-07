@@ -2,6 +2,7 @@ import { CompositeDisposable, Disposable, Range } from "atom";
 
 import ConfigManager from "./config-manager";
 import FilterManager from "./filter-manager";
+import * as Helpers from "./helpers";
 
 function gatherMessages(filter: Filter.Line[]) {
   const output: DataFormat.ValidationMessages = {
@@ -53,6 +54,32 @@ function transformMessage(message: DataFormat.ValidationMessage, severity: "erro
   return output;
 }
 
+function postProcessFilter(filter: Filter.Line[], file?: string) {
+  // This will eventually be much more elaborate, but for now we're just going
+  // to warn if any rules precede the first block.
+  for(var line of filter) {
+    if(Helpers.Guards.isBlock(line)) {
+      return;
+    } else if(Helpers.Guards.isEmpty(line) || Helpers.Guards.isUnknown(line) ||
+        Helpers.Guards.isLineComment(line)) {
+      continue;
+    } else {
+      // This error should take precedence over all others.
+      line.messages.errors.length = 0;
+      line.messages.warnings.length = 0;
+      line.messages.info.length = 0;
+
+      line.invalid = true;
+      line.messages.errors.push({
+        excerpt: "A filter rule must be contained within a block.",
+        file: file,
+        range: line.range,
+        url: "http://pathofexile.gamepedia.com/Item_filter"
+      });
+    }
+  }
+}
+
 function adjustMessagePaths(messages: DataFormat.ValidationMessages, newPath: string) {
   for(var message of messages.errors) message.file = newPath;
   for(var message of messages.warnings) message.file = newPath;
@@ -89,10 +116,12 @@ export default class LinterProvider {
         this.handlePathChange(editor.id, newPath);
       }));
 
+      postProcessFilter(data.lines, editor.getPath());
       this.handleNewFilter(data);
     }));
 
     this.subscriptions.add(filterManager.onDidReprocessFilter((data) => {
+      postProcessFilter(data.lines, data.editor.getPath());
       this.handleFilterUpdate(data);
     }));
 
@@ -159,8 +188,8 @@ export default class LinterProvider {
 
     if(messages != null) {
       this.filterMessages.set(editorID, adjustMessagePaths(messages, newPath));
-      this.resetMessageCache();
     }
+    this.resetMessageCache();
   }
 
   processMessages(input: DataFormat.ValidationMessages) {

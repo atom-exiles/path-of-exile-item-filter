@@ -1,4 +1,4 @@
-'.source.poe':
+'.source.filter':
   'editor':
     'commentStart': '# '
     'increaseIndentPattern': '(?x)

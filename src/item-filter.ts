@@ -7,7 +7,6 @@ import ConfigManager from "./config-manager";
 import ValidationData from "./validation-data";
 import { processLines } from "./filter-processor";
 
-/** Shifts all ranges within each item filter line by given number of rows. */
 function recursivelyShiftRanges(obj: any, shift: number) {
   for(var property of Object.keys(obj)) {
     const value = obj[property];
@@ -20,6 +19,7 @@ function recursivelyShiftRanges(obj: any, shift: number) {
   }
 }
 
+/** Shifts all ranges within each item filter line by given number of rows. */
 function shiftLineRanges(lines: Filter.Line[], shift: number) {
   for(var line of lines) {
     recursivelyShiftRanges(line, shift);
@@ -39,8 +39,22 @@ export default class ItemFilter {
 
     const p1: Promise<DataFormat.ValidationData> = this.validationData.data;
     const p2: Promise<number> = this.config.general.chunkSize.promise;
-    this.lines = Promise.all([p1, p2])
-      .then((params) => { return this.processFilter(params[0], params[1]); });
+    this.lines = Promise.all([p1, p2]).then((params) => {
+      var chunkSize = params[1];
+      if(chunkSize <= 0) {
+        atom.notifications.addWarning("Configuration Variable 'chunkSize' reset.", {
+          dismissable: true,
+          description: "The value of chunkSize was set to a value equal to or less than zero." +
+              " It has been reset to the default."
+        });
+
+        this.config.general.chunkSize.unset();
+        const defaultValue = this.config.general.chunkSize.value;
+        if(defaultValue == null) throw new Error("reset of chunkSize failed");
+        chunkSize = defaultValue;
+      }
+      return this.processFilter(params[0], chunkSize);
+    });
   }
 
   dispose() {}
@@ -70,7 +84,6 @@ export default class ItemFilter {
             row: change.start,
             file: this.editor.buffer.getPath()
           });
-          // processedLines = postProcessLines(processedLines);
 
           result = result.concat(processedLines);
           currentIndex += processedLines.length;
@@ -111,7 +124,6 @@ export default class ItemFilter {
           chunkSize
         }, () => {
           resolve(container);
-          // resolve(postProcessLines(filter));
         });
         task.on("did-process-chunk", (chunk: Array<number>) => {
           container.push.apply(container, chunk);
@@ -124,19 +136,13 @@ export default class ItemFilter {
             '\nAtom may hang for several seconds when opening large item filters.'
         });
 
-        const chunkSize = this.config.general.chunkSize.value;
-        if(chunkSize) {
-          const filter = processLines({
-            lines,
-            data,
-            row: 0,
-            file: this.editor.buffer.getPath()
-          });
-          resolve(filter);
-          // resolve(postProcessLines(filter));
-        } else {
-          throw new Error("expected chunkSize to be defined");
-        }
+        const filter = processLines({
+          lines,
+          data,
+          row: 0,
+          file: this.editor.buffer.getPath()
+        });
+        resolve(filter);
       }
     });
   }

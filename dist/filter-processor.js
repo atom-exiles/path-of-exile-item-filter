@@ -1,16 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const line_parser_1 = require("./line-parser");
-function reportTrailingText(lineInfo) {
+function reportTrailingText(lineInfo, severity = "error") {
     if (lineInfo.parser.empty)
         return;
     const range = {
         start: { row: lineInfo.row, column: lineInfo.parser.currentIndex },
         end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
     };
-    lineInfo.invalid = true;
-    lineInfo.messages.errors.push({
-        excerpt: "This trailing text will be considered an error by Path of Exile.",
+    let container;
+    let excerpt;
+    if (severity == "error") {
+        lineInfo.invalid = true;
+        excerpt = "This trailing text will be considered an error by Path of Exile.";
+        container = lineInfo.messages.errors;
+    }
+    else {
+        excerpt = "This trailing text will be ignored by Path of Exile.";
+        container = lineInfo.messages.warnings;
+    }
+    container.push({
+        excerpt,
         file: lineInfo.file,
         url: "http://pathofexile.gamepedia.com/Item_filter_guide",
         range
@@ -89,7 +99,7 @@ function parseBlock(lineInfo) {
             trailingComment = { text: commentResult.value, range: commentResult.range };
         }
     }
-    reportTrailingText(lineInfo);
+    reportTrailingText(lineInfo, "warning");
     let result = {
         type: "block",
         keyword: lineInfo.keyword,

@@ -95,13 +95,6 @@ export default class ConfigManager {
     enableWarnings: ConfigValue<boolean>,
     enableInfo: ConfigValue<boolean>
   };
-  /** Customization options for our gutter. */
-  readonly gutter: {
-    /** Whether or not PlayAlertSound decorations should appear in the gutter. */
-    enableAlertDecorations: ConfigValue<boolean>
-    /** Whether or not the color decorations should appear in the gutter. */
-    enableSetColorDecorations: ConfigValue<boolean>
-  };
 
   constructor(packageName: string) {
     this.general = {
@@ -123,10 +116,6 @@ export default class ConfigManager {
       enableWarnings: new ConfigValue<boolean>(packageName, "linter.enableWarnings"),
       enableInfo: new ConfigValue<boolean>(packageName, "linter.enableInfo")
     };
-    this.gutter = {
-      enableAlertDecorations: new ConfigValue<boolean>(packageName, "gutter.enableAlertDecorations"),
-      enableSetColorDecorations: new ConfigValue<boolean>(packageName, "gutter.enableSetColorDecorations")
-    };
   }
 
   /** Disposes of each ConfigValue instance within the given Object. */
@@ -144,7 +133,6 @@ export default class ConfigManager {
     this.groupDisposal(this.data);
     this.groupDisposal(this.completion);
     this.groupDisposal(this.linter);
-    this.groupDisposal(this.gutter);
 
     return;
   }

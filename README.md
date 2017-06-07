@@ -21,7 +21,6 @@ Providing you with suggestions, including items from the game where appropriate,
 Error checking for item filters within Atom.
 
 ### Smaller Features
-- Automatic conversion of hexidecimal color codes for rules with a color.
 - Gutter decorations for rules where it's appropriate.
 
 ## Configuration
@@ -33,4 +32,3 @@ Whitelists for both classes and bases are also available in that configuration m
 ## Developer References
 
 - [Item Filter Syntax](docs/syntax.md)
-- [Unused Unique Items](docs/unused-uniques.md)

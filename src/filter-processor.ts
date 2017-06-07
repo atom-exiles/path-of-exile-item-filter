@@ -15,7 +15,7 @@ interface LineInfo extends ProcessLine {
   range: Filter.Components.Range
 }
 
-function reportTrailingText(lineInfo: LineInfo) {
+function reportTrailingText(lineInfo: LineInfo, severity: "error"|"warning" = "error") {
   if(lineInfo.parser.empty) return;
 
   const range: Filter.Components.Range = {
@@ -23,9 +23,19 @@ function reportTrailingText(lineInfo: LineInfo) {
     end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
   }
 
-  lineInfo.invalid = true;
-  lineInfo.messages.errors.push({
-    excerpt: "This trailing text will be considered an error by Path of Exile.",
+  let container: DataFormat.ValidationMessage[];
+  let excerpt: string;
+  if(severity == "error") {
+    lineInfo.invalid = true;
+    excerpt = "This trailing text will be considered an error by Path of Exile.";
+    container = lineInfo.messages.errors;
+  } else {
+    excerpt = "This trailing text will be ignored by Path of Exile.";
+    container = lineInfo.messages.warnings;
+  }
+
+  container.push({
+    excerpt,
     file: lineInfo.file,
     url: "http://pathofexile.gamepedia.com/Item_filter_guide",
     range
@@ -110,7 +120,7 @@ function parseBlock(lineInfo: LineInfo) {
     }
   }
 
-  reportTrailingText(lineInfo);
+  reportTrailingText(lineInfo, "warning");
 
   let result: Filter.Block = {
     type: "block",

@@ -57,10 +57,6 @@ class ConfigManager {
             enableWarnings: new ConfigValue(packageName, "linter.enableWarnings"),
             enableInfo: new ConfigValue(packageName, "linter.enableInfo")
         };
-        this.gutter = {
-            enableAlertDecorations: new ConfigValue(packageName, "gutter.enableAlertDecorations"),
-            enableSetColorDecorations: new ConfigValue(packageName, "gutter.enableSetColorDecorations")
-        };
     }
     groupDisposal(group) {
         for (var key in group) {
@@ -73,7 +69,6 @@ class ConfigManager {
         this.groupDisposal(this.data);
         this.groupDisposal(this.completion);
         this.groupDisposal(this.linter);
-        this.groupDisposal(this.gutter);
         return;
     }
 }

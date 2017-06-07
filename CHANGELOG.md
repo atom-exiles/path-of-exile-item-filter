@@ -1,32 +1,24 @@
-## Version 1.1.0
-### Overview
+## Version 1.0.10
 * Added support for datasets, which will allow you to write filters for future versions of the game. There is currently only one dataset.
-* Begin using our own gutter, rather than piggybacking on the Linter's. This gutter will only be added to editors containing item filters.
-
-#### Configuration Variables
-##### New Variables
-- General.chunkSize: allows you to control the maximum number of lines processed at any given time.
-- Data.dataset: allows the selection of a dataset.
-- Linter.enableInfo: determines whether or not information messages will be displayed by the Linter.
-- Gutter.enableGutter: sets the visibility of our gutter in the editor.
-
-##### Remove Variables
-
-The current direction of the game has made the following variables irrelevant. It is now clear that item filters should be written with all content, past and present, in mind.
-
-- Data.enableLeague
-- Data.enableLegacy
-- Data.enableRecipe
-
-Temporarily removed the "Autocomplete.enableIcons" configuration option. It will return once icons are implemented.
-
-### Technical
+* Added our own gutter to the editor, which is used to hold our decorations. This gutter will only be added to editors containing item filters.
 * Reworked package initialization. The majority of features will now be available even if the user declines the installation of additional dependencies.
 * Significant changes to the JSON data, including file merges and the addition and removal of some data.
-  * Added DropLevel to all applicable items.
-  * Added the uniques for each base type.
 * Started using a background process to do the initial parse of a filter. Loading large item filters will no longer freeze the editor for several seconds on file open.
-  * If you experience mousewheel lag when opening large files, then it is recommended that you lower the value of "General.chunkSize".
+* The following configuration variables have been added:
+  * General -> Chunk Size: allows you to control the maximum number of lines processed at any given time.
+  * General -> Enable Editor Gutter: sets the visibility of our gutter in the editor.
+  * Data -> Dataset: allows the selection of a dataset.
+  * Linter -> Enable Warnings: toggles the display of Linter warning messages.
+  * Linter -> Enable Information: toggles the display of Linter information messages.
+* The following configuration variables have been removed:
+  * Data -> Enable League Data
+  * Data -> Enable Legacy Data
+  * Data -> Enable Recipe Data
+  * Autocomplete -> Enable Icons
+  * Gutter -> Enable Color Decorations
+  * Gutter -> Enable Sound Decorations
+
+Automatic conversion of hexadecimal values to the format used by Path of Exile has been temporarily removed. This feature will return, with the goal being to support all formats outputted by the Atom [color-picker](https://github.com/thomaslindstrom/color-picker) package.
 
 ## Versions 1.0.1-1.0.9
 * Added linter errors for trailing comments on rules where it's an error in-game.

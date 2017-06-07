@@ -166,10 +166,8 @@ export default class FilterManager {
     return this.emitter.on<Filter.Params.ProcessedFilterData>("did-process-filter", (filterData) => {
       if(!this.observedFilters.includes(filterData.editor.id)) {
         this.observedFilters.push(filterData.editor.id);
-        callback(filterData);
-      } else {
-        throw new Error("observed the same editor twice");
       }
+      callback(filterData);
     });
   }
 

@@ -9,16 +9,16 @@ describe("Guards", function() {
     const empty = { type: "empty" }
     const lineComment = { type: "comment" }
     const unknown = { type: "unknown" }
-    const isBlock = Helpers.Guards.FilterElements.isBlock
-    const isRule = Helpers.Guards.FilterElements.isRule
-    const isEmpty = Helpers.Guards.FilterElements.isEmpty
-    const isLineComment = Helpers.Guards.FilterElements.isLineComment
-    const isUnknown = Helpers.Guards.FilterElements.isUnknown
+    const isBlock = Helpers.Guards.isBlock
+    const isRule = Helpers.Guards.isRule
+    const isEmpty = Helpers.Guards.isEmpty
+    const isLineComment = Helpers.Guards.isLineComment
+    const isUnknown = Helpers.Guards.isUnknown
 
     const showBlock = { type: "block", ruleType: "show" }
     const hideBlock = { type: "block", ruleType: "hide" }
-    const isShowBlock = Helpers.Guards.FilterElements.isShowBlock
-    const isHideBlock = Helpers.Guards.FilterElements.isHideBlock
+    const isShowBlock = Helpers.Guards.isShowBlock
+    const isHideBlock = Helpers.Guards.isHideBlock
 
     const filterRule = { type: "rule", ruleType: "filter" }
     const itemLevelRule = { type: "rule", ruleType: "filter", filterName: "ItemLevel" }
@@ -34,20 +34,20 @@ describe("Guards", function() {
     const widthRule = { type: "rule", ruleType: "filter", filterName: "Width" }
     const identifiedRule = { type: "rule", ruleType: "filter", filterName: "Identified" }
     const corruptedRule = { type: "rule", ruleType: "filter", filterName: "Corrupted" }
-    const isFilterRule = Helpers.Guards.FilterElements.isFilterRule
-    const isItemLevelRule = Helpers.Guards.FilterElements.isItemLevelRule
-    const isDropLevelRule = Helpers.Guards.FilterElements.isDropLevelRule
-    const isQualityRule = Helpers.Guards.FilterElements.isQualityRule
-    const isRarityRule = Helpers.Guards.FilterElements.isRarityRule
-    const isClassRule = Helpers.Guards.FilterElements.isClassRule
-    const isBaseTypeRule = Helpers.Guards.FilterElements.isBaseTypeRule
-    const isSocketsRule = Helpers.Guards.FilterElements.isSocketsRule
-    const isLinkedSocketsRule = Helpers.Guards.FilterElements.isLinkedSocketsRule
-    const isSocketGroupRule = Helpers.Guards.FilterElements.isSocketGroupRule
-    const isHeightRule = Helpers.Guards.FilterElements.isHeightRule
-    const isWidthRule = Helpers.Guards.FilterElements.isWidthRule
-    const isIdentifiedRule = Helpers.Guards.FilterElements.isIdentifiedRule
-    const isCorruptedRule = Helpers.Guards.FilterElements.isCorruptedRule
+    const isFilterRule = Helpers.Guards.isFilterRule
+    const isItemLevelRule = Helpers.Guards.isItemLevelRule
+    const isDropLevelRule = Helpers.Guards.isDropLevelRule
+    const isQualityRule = Helpers.Guards.isQualityRule
+    const isRarityRule = Helpers.Guards.isRarityRule
+    const isClassRule = Helpers.Guards.isClassRule
+    const isBaseTypeRule = Helpers.Guards.isBaseTypeRule
+    const isSocketsRule = Helpers.Guards.isSocketsRule
+    const isLinkedSocketsRule = Helpers.Guards.isLinkedSocketsRule
+    const isSocketGroupRule = Helpers.Guards.isSocketGroupRule
+    const isHeightRule = Helpers.Guards.isHeightRule
+    const isWidthRule = Helpers.Guards.isWidthRule
+    const isIdentifiedRule = Helpers.Guards.isIdentifiedRule
+    const isCorruptedRule = Helpers.Guards.isCorruptedRule
 
     const actionRule = { type: "rule", ruleType: "action" }
     const setBorderColorRule = { type: "rule", ruleType: "action", actionName: "SetBorderColor" }
@@ -55,12 +55,12 @@ describe("Guards", function() {
 		const setBackgroundColorRule = { type: "rule", ruleType: "action", actionName: "SetBackgroundColor" }
 		const playAlertSoundRule = { type: "rule", ruleType: "action", actionName: "PlayAlertSound" }
 		const setFontSizeRule = { type: "rule", ruleType: "action", actionName: "SetFontSize" }
-    const isActionRule = Helpers.Guards.FilterElements.isActionRule
-    const isSetBorderColorRule = Helpers.Guards.FilterElements.isSetBorderColorRule
-    const isSetTextColorRule = Helpers.Guards.FilterElements.isSetTextColorRule
-    const isSetBackgroundColorRule = Helpers.Guards.FilterElements.isSetBackgroundColorRule
-    const isPlayAlertSoundRule = Helpers.Guards.FilterElements.isPlayAlertSoundRule
-    const isSetFontSizeRule = Helpers.Guards.FilterElements.isSetFontSizeRule
+    const isActionRule = Helpers.Guards.isActionRule
+    const isSetBorderColorRule = Helpers.Guards.isSetBorderColorRule
+    const isSetTextColorRule = Helpers.Guards.isSetTextColorRule
+    const isSetBackgroundColorRule = Helpers.Guards.isSetBackgroundColorRule
+    const isPlayAlertSoundRule = Helpers.Guards.isPlayAlertSoundRule
+    const isSetFontSizeRule = Helpers.Guards.isSetFontSizeRule
 
     describe("isBlock()", function() {
       it("returns true when given a filter Block", function() {
@@ -442,20 +442,20 @@ describe("Guards", function() {
 
     describe("isActionRule()", function() {
       it("returns true when given an Action rule", function() {
-        expect(Helpers.Guards.FilterElements.isActionRule(actionRule)).toBe(true)
+        expect(Helpers.Guards.isActionRule(actionRule)).toBe(true)
       })
 
       it("returns false when give a Filter rule", function() {
-        expect(Helpers.Guards.FilterElements.isActionRule(filterRule)).toBe(false)
+        expect(Helpers.Guards.isActionRule(filterRule)).toBe(false)
       })
 
       it("returns false when given a Rule", function() {
-        expect(Helpers.Guards.FilterElements.isActionRule(rule)).toBe(false)
+        expect(Helpers.Guards.isActionRule(rule)).toBe(false)
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.FilterElements.isActionRule(empty)).toBe(false)
-        expect(Helpers.Guards.FilterElements.isActionRule(itemLevelRule)).toBe(false)
+        expect(Helpers.Guards.isActionRule(empty)).toBe(false)
+        expect(Helpers.Guards.isActionRule(itemLevelRule)).toBe(false)
       })
     })
 
@@ -576,34 +576,34 @@ describe("Guards", function() {
 
     describe("isEmpty()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(Helpers.Guards.FilterElements.isEmpty(empty)).toBe(true)
+        expect(Helpers.Guards.isEmpty(empty)).toBe(true)
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.FilterElements.isEmpty(lineComment)).toBe(false)
-        expect(Helpers.Guards.FilterElements.isEmpty(unknown)).toBe(false)
+        expect(Helpers.Guards.isEmpty(lineComment)).toBe(false)
+        expect(Helpers.Guards.isEmpty(unknown)).toBe(false)
       })
     })
 
     describe("isLineComment()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(Helpers.Guards.FilterElements.isLineComment(lineComment)).toBe(true)
+        expect(Helpers.Guards.isLineComment(lineComment)).toBe(true)
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.FilterElements.isLineComment(empty)).toBe(false)
-        expect(Helpers.Guards.FilterElements.isLineComment(unknown)).toBe(false)
+        expect(Helpers.Guards.isLineComment(empty)).toBe(false)
+        expect(Helpers.Guards.isLineComment(unknown)).toBe(false)
       })
     })
 
     describe("isUnknown()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(Helpers.Guards.FilterElements.isUnknown(unknown)).toBe(true)
+        expect(Helpers.Guards.isUnknown(unknown)).toBe(true)
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.FilterElements.isUnknown(empty)).toBe(false)
-        expect(Helpers.Guards.FilterElements.isUnknown(rule)).toBe(false)
+        expect(Helpers.Guards.isUnknown(empty)).toBe(false)
+        expect(Helpers.Guards.isUnknown(rule)).toBe(false)
       })
     })
   })

@@ -8,7 +8,7 @@ import SoundPlayer from "./sound-player";
 import ValidationData from "./validation-data";
 import EditorRegistry from "./editor-registry";
 import FilterManager from "./filter-manager";
-// import DecorationManager from "./decoration-manager";
+import DecorationManager  from "./decoration-manager";
 import LinterProvider from "./linter-provider";
 
 export const config = require("../data/config.json");
@@ -16,10 +16,6 @@ const packageName = require("../package.json").name;
 var subscriptions: CompositeDisposable;
 var completionProvider: Autocomplete.Provider;
 var linterDelegate: Linter.IndieDelegate;
-
-// TODO(glen): determine whether or not we need to dispose of the linter delegate.
-//  Need to know if the linter will call into consumeLinter() again whenever we are
-//  reactivated.
 
 interface PackageState {}
 
@@ -59,16 +55,18 @@ export function activate(state: PackageState) {
   const soundPlayer = new SoundPlayer();
   subscriptions.add(soundPlayer);
 
-  // const decorationManager = new DecorationManager(config, editorRegistry,
-  //     filterManager, soundPlayer, packageName);
-  // this.subscriptions.add(decorationManager);
+  const decorationManager = new DecorationManager(filterManager, soundPlayer, packageName);
+  subscriptions.add(decorationManager);
 
   require('atom-package-deps')
     .install(packageName)
-    .then(() => { readyToActivate(configManager, filterManager); });
+    .then(() => {
+      readyToActivate(configManager, filterManager);
+    });
 }
 
 export function deactivate() {
+  if(linterDelegate) linterDelegate.dispose();
   subscriptions.dispose();
   return {};
 }

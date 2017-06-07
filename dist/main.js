@@ -9,6 +9,7 @@ const sound_player_1 = require("./sound-player");
 const validation_data_1 = require("./validation-data");
 const editor_registry_1 = require("./editor-registry");
 const filter_manager_1 = require("./filter-manager");
+const decoration_manager_1 = require("./decoration-manager");
 const linter_provider_1 = require("./linter-provider");
 exports.config = require("../data/config.json");
 const packageName = require("../package.json").name;
@@ -38,12 +39,18 @@ function activate(state) {
     subscriptions.add(filterManager);
     const soundPlayer = new sound_player_1.default();
     subscriptions.add(soundPlayer);
+    const decorationManager = new decoration_manager_1.default(filterManager, soundPlayer, packageName);
+    subscriptions.add(decorationManager);
     require('atom-package-deps')
         .install(packageName)
-        .then(() => { readyToActivate(configManager, filterManager); });
+        .then(() => {
+        readyToActivate(configManager, filterManager);
+    });
 }
 exports.activate = activate;
 function deactivate() {
+    if (linterDelegate)
+        linterDelegate.dispose();
     subscriptions.dispose();
     return {};
 }

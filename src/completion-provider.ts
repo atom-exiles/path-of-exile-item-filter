@@ -15,8 +15,8 @@ export default class CompletionProvider implements Autocomplete.Provider {
   constructor(config: ConfigManager, suggestions: SuggestionData) {
     this.config = config;
     this.suggestions = suggestions;
-    this.selector = ".source.poe";
-    this.disableForSelector = ".source.poe .comment";
+    this.selector = ".source.filter";
+    this.disableForSelector = ".source.filter .comment";
     this.inclusionPriority = 1;
     this.excludeLowerPriority = true;
   }
@@ -38,13 +38,13 @@ export default class CompletionProvider implements Autocomplete.Provider {
     const lastScope = cursorScopes[cursorScopes.length - 1];
 
     let shouldPruneSuggestions = true;
-    if(lastScope == "source.poe") {
+    if(lastScope == "source.filter") {
       result = result.concat(suggestionData.blocks);
       if(enableExtraSuggestions) {
         result = result.concat(suggestionData.extraBlocks);
       }
-    } else if(lastScope == "line.empty.poe" || lastScope == "line.unknown.poe") {
-      if(cursorScopes.indexOf("block.poe") != -1) {
+    } else if(lastScope == "line.empty.filter" || lastScope == "line.unknown.filter") {
+      if(cursorScopes.indexOf("block.filter") != -1) {
         result = result.concat(suggestionData.blocks,
             suggestionData.actions, suggestionData.filters);
         if(enableExtraSuggestions) {
@@ -52,32 +52,32 @@ export default class CompletionProvider implements Autocomplete.Provider {
         }
       }
     } else {
-      if(cursorScopes.indexOf("filter.rarity.poe") != -1) {
+      if(cursorScopes.includes("rarity.filter")) {
         if(this.isFirstValue(editor, bufferPosition, true)) {
           result = result.concat(suggestionData.rarities);
         }
         if(this.isPotentialOperator(editor, bufferPosition)) {
           result = result.concat(suggestionData.operators);
         }
-      } else if(cursorScopes.indexOf("filter.identified.poe") != -1) {
+      } else if(cursorScopes.includes("identified.filter")) {
         if(this.isFirstValue(editor, bufferPosition, true)) {
           result = result.concat(suggestionData.booleans);
         }
-      } else if(cursorScopes.indexOf("filter.corrupted.poe") != -1) {
+      } else if(cursorScopes.includes("corrupted.filter")) {
         if(this.isFirstValue(editor, bufferPosition, true)) {
           result = result.concat(suggestionData.booleans);
         }
-      } else if(cursorScopes.indexOf("filter.class.poe") != -1) {
+      } else if(cursorScopes.includes("class.filter")) {
         result = result.concat(suggestionData.classes, suggestionData.classWhitelist);
         if(enableExtraSuggestions)  {
           result = result.concat(suggestionData.extraClasses);
         }
-      } else if(cursorScopes.indexOf("filter.base-type.poe") != -1) {
+      } else if(cursorScopes.includes("base-type.filter")) {
         result = result.concat(suggestionData.bases, suggestionData.baseWhitelist);
         if(enableExtraSuggestions) {
           result = result.concat(suggestionData.extraBases);
         }
-      } else if(cursorScopes.indexOf("filter.socket-group.poe") != -1) {
+      } else if(cursorScopes.includes("socket-group.filter")) {
         // Not pruning the suggestions, so this is necessary.
         if(!(prefix == "SocketGroup")) {
           shouldPruneSuggestions = false;
@@ -87,13 +87,13 @@ export default class CompletionProvider implements Autocomplete.Provider {
           }
         }
       } else {
-        const numberValueRule = cursorScopes.indexOf("filter.item-level.poe") != -1 ||
-            cursorScopes.indexOf("filter.drop-level.poe") != -1 ||
-            cursorScopes.indexOf("filter.quality.poe") != -1 ||
-            cursorScopes.indexOf("filter.sockets.poe") != -1 ||
-            cursorScopes.indexOf("filter.linked-sockets.poe") != -1 ||
-            cursorScopes.indexOf("filter.height.poe") != -1 ||
-            cursorScopes.indexOf("filter.width.poe") != -1;
+        const numberValueRule = cursorScopes.includes("item-level.filter") ||
+            cursorScopes.includes("drop-level.filter") ||
+            cursorScopes.includes("quality.filter") ||
+            cursorScopes.includes("sockets.filter") ||
+            cursorScopes.includes("linked-sockets.filter") ||
+            cursorScopes.includes("height.filter") ||
+            cursorScopes.includes("width.filter");
         if(numberValueRule) {
           if(this.isPotentialOperator(editor, bufferPosition)) {
             result = result.concat(suggestionData.operators);
@@ -175,15 +175,15 @@ export default class CompletionProvider implements Autocomplete.Provider {
     const previousText = editor.getTextInBufferRange([[position.row, 0], position]);
     let prefix: string|undefined;
     if(previousPositionScopes && previousPositionScopes.indexOf(
-        "string.partial-quotation.poe") != -1) {
+        "string.partial-quotation.filter") != -1) {
       const prefixRegex = /(\"[^"]*)$/;
       const result = prefixRegex.exec(previousText);
       if(result) prefix = result[1];
     } else if(previousPositionScopes && previousPositionScopes.indexOf(
-        "string.quotation.poe") != -1) {
+        "string.quotation.filter") != -1) {
       // The closing quotation mark might be further in on the line, which
       // requires a different regex.
-      const stringRange = editor.bufferRangeForScopeAtCursor("string.quotation.poe");
+      const stringRange = editor.bufferRangeForScopeAtCursor("string.quotation.filter");
       if(stringRange.end.column > position.column) {
         const prefixRegex = /(\"[^"]*)$/;
         const result = prefixRegex.exec(previousText);
