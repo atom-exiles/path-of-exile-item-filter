@@ -1,4 +1,4 @@
-## Version 1.0.10
+## Version 1.1.0
 * Added support for datasets, which will allow you to write filters for future versions of the game. There is currently only one dataset.
 * Added our own gutter to the editor, which is used to hold our decorations. This gutter will only be added to editors containing item filters.
 * Reworked package initialization. The majority of features will now be available even if the user declines the installation of additional dependencies.
