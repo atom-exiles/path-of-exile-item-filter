@@ -1,3 +1,9 @@
+## Versions 1.1.0-1.1.1
+* Added a new dataset for the Fall of Oriath beta.
+* Fixed the gutter background on lines with a cursor.
+* Stop displaying both the invalid format and invalid value messages for Class and BaseType rules.
+* Require Linter 2.2 in order to avoid issues caused by 2.0.
+
 ## Version 1.1.0
 * Added support for datasets, which will allow you to write filters for future versions of the game. There is currently only one dataset.
 * Added our own gutter to the editor, which is used to hold our decorations. This gutter will only be added to editors containing item filters.
