@@ -21,11 +21,11 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.65",
-    "atom-typings": "^1.17.3"
+    "@types/lodash": "^4.14.66",
+    "atom-typings": "^1.18.1"
   },
   "package-deps": [
-    "linter:2.0.0"
+    "linter:2.2.0"
   ],
   "providedServices": {
     "autocomplete.provider": {

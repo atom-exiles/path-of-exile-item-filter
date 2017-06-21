@@ -2,13 +2,16 @@
 @import "syntax-variables.less";
 
 atom-text-editor.editor {
-  .poe-decoration-container {
+  .poe-decoration-row {
     left: 0;
     right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+
+    span.cursor-line {
+      width: 100%;
+    }
   }
 
   .poe-play-alert-sound {
@@ -17,52 +20,53 @@ atom-text-editor.editor {
     border-style: solid;
     border-width: 6px 0 6px 8px;
     border-color: transparent transparent transparent rgb(50, 175, 50);
+    z-index: 1;
   }
 
   .poe-set-color-rule {
     width: 75%;
     height: 60% !important;
-    // border-radius: 3px 3px 3px 3px;
     border-radius: 20% 20% 20% 20%;
     border-style: groove;
     border-width: 1px;
     border-color: contrast(@base-background-color);
+    z-index: 1;
   }
 }
 
 atom-text-editor.editor .syntax--filter {
-  .syntax--keyword {
-    &.syntax--block {
-      color: @syntax-color-class;
-    }
-
-    &.syntax--cond {
-      color: lighten(@syntax-color-function, 5%);
-    }
-
-    &.syntax--action {
-      color: darken(@syntax-color-function, 5%);
-    }
-
-    &.syntax--operator {
-      color: @syntax-text-color;
-    }
-  }
-
-  .syntax--comment {
-    &.syntax--trailing {}
-    &.syntax--line {}
-  }
-
-  .syntax--constant {
-    &.syntax--number {}
-  }
-
-  .syntax--string {
-    &.syntax--word {}
-    &.syntax--quotation {}
-    &.syntax--rarity {}
-    &.syntax--socket-group {}
-    &.syntax--boolean {}
-  }
+//   .syntax--keyword {
+//     &.syntax--block {
+//       color: @syntax-color-class;
+//     }
+//
+//     &.syntax--cond {
+//       color: lighten(@syntax-color-function, 5%);
+//     }
+//
+//     &.syntax--action {
+//       color: darken(@syntax-color-function, 5%);
+//     }
+//
+//     &.syntax--operator {
+//       color: @syntax-text-color;
+//     }
+//   }
+//
+//   .syntax--comment {
+//     &.syntax--trailing {}
+//     &.syntax--line {}
+//   }
+//
+//   .syntax--constant {
+//     &.syntax--number {}
+//   }
+//
+//   .syntax--string {
+//     &.syntax--word {}
+//     &.syntax--quotation {}
+//     &.syntax--rarity {}
+//     &.syntax--socket-group {}
+//     &.syntax--boolean {}
+//   }
 }

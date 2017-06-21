@@ -46,7 +46,8 @@
         "default": "current",
         "order": 1,
         "enum": [
-          { "value": "current", "description": "Current: load data for the current version of the game." }
+          { "value": "current", "description": "Current: load data for the current version of the game." },
+          { "value": "beta", "description": "Beta: load data for the Fall of Oriath beta." }
         ]
       },
       "classWhitelist": {

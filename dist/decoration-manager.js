@@ -9,6 +9,7 @@ class DecorationManager {
         this.packageName = packageName;
         this.subscriptions = new atom_1.CompositeDisposable;
         this.decorations = new Map;
+        this.editorSub = new Map;
         this.setupSubscriptions();
     }
     dispose() {
@@ -24,12 +25,16 @@ class DecorationManager {
     }
     setupSubscriptions() {
         this.subscriptions.add(this.filterManager.observeProcessedFilters((data) => {
+            this.monitorCursors(data.editor);
             this.handleNewFilter(data);
         }));
         this.subscriptions.add(this.filterManager.onDidReprocessFilter((data) => {
             this.handleFilterUpdate(data);
         }));
         this.subscriptions.add(this.filterManager.onDidDestroyFilter((editorID) => {
+            const sub = this.editorSub.get(editorID);
+            if (sub)
+                sub.dispose();
             this.handleFilterDestruction(editorID);
         }));
     }
@@ -87,7 +92,7 @@ class DecorationManager {
             const range = new atom_1.Range([line.range.start.row, 0], [line.range.start.row, 1]);
             const marker = editor.markBufferRange(range, { invalidate: "never" });
             const decoration = editor.decorateMarker(marker, { type: "gutter",
-                gutterName: this.packageName, class: "poe-decoration-container",
+                gutterName: this.packageName, class: "poe-decoration-row",
                 item: element });
             container.push({ marker, decoration });
         });
@@ -95,7 +100,7 @@ class DecorationManager {
     }
     createSoundElement(id, volume) {
         const element = document.createElement("span");
-        element.className = 'poe-play-alert-sound';
+        element.className = "poe-play-alert-sound";
         element.onclick = () => {
             this.soundPlayer.playAlertSound(id, volume);
         };
@@ -114,6 +119,58 @@ class DecorationManager {
             element.setAttribute("style", "background-color:rgb(" + colorCode + ");");
         }
         return element;
+    }
+    monitorCursors(editor) {
+        const previousSub = this.editorSub.get(editor.id);
+        if (previousSub)
+            previousSub.dispose();
+        const editorSub = editor.observeCursors((cursor) => {
+            let marker;
+            let lastRange;
+            let lastEmpty;
+            const handlePositionChange = ((start, end) => {
+                const gutter = editor.gutterWithName(this.packageName);
+                if (!gutter)
+                    return;
+                const currentRange = atom_1.Range.fromObject([start, end]);
+                const linesRange = atom_1.Range.fromObject([[start.row, 0], [end.row, Infinity]]);
+                const currentEmpty = currentRange.isEmpty();
+                if (start.row !== end.row && currentRange.end.column === 0) {
+                    linesRange.end.row--;
+                }
+                if (lastRange && lastRange.isEqual(linesRange) && currentEmpty === lastEmpty)
+                    return;
+                if (marker)
+                    marker.destroy();
+                lastRange = linesRange;
+                lastEmpty = currentEmpty;
+                marker = editor.markScreenRange(linesRange, {
+                    invalidate: "never",
+                });
+                const item = document.createElement("span");
+                item.className = `line-number cursor-line ${currentEmpty ? 'cursor-line-no-selection' : ''}`;
+                gutter.decorateMarker(marker, {
+                    item,
+                    class: "poe-decoration-row",
+                });
+            });
+            const cursorMarker = cursor.getMarker();
+            const cursorSubs = new atom_1.CompositeDisposable;
+            cursorSubs.add(cursorMarker.onDidChange((params) => {
+                const { newHeadScreenPosition, newTailScreenPosition } = params;
+                handlePositionChange(newHeadScreenPosition, newTailScreenPosition);
+            }));
+            cursorSubs.add(cursor.onDidDestroy(() => {
+                cursorSubs.dispose();
+            }));
+            cursorSubs.add(new atom_1.Disposable(function () {
+                if (marker)
+                    marker.destroy();
+            }));
+            const screenRange = cursorMarker.getScreenRange();
+            handlePositionChange(screenRange.start, screenRange.end);
+        });
+        this.editorSub.set(editor.id, editorSub);
     }
 }
 exports.default = DecorationManager;

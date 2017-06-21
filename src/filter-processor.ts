@@ -65,7 +65,7 @@ function expectMultipleStrings(lineInfo: LineInfo, validValues: string[], whitel
     const valueResult = lineInfo.parser.nextString();
 
     if(!valueResult.found) {
-      if(values.length == 0) {
+      if(values.length == 0 && !lineInfo.invalid) {
         lineInfo.invalid = true;
         lineInfo.messages.errors.push({
           excerpt: "A string value was expected, yet not found.",

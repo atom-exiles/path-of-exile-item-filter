@@ -1,4 +1,4 @@
-import { CompositeDisposable, Range } from "atom";
+import { CompositeDisposable, Disposable, Range } from "atom";
 
 import FilterManager from "./filter-manager";
 import SoundPlayer from "./sound-player";
@@ -20,6 +20,7 @@ export default class DecorationManager {
   private readonly packageName: string;
   private readonly subscriptions: CompositeDisposable;
   private decorations: Map<number, Decorations>;
+  private editorSub: Map<number, Disposable>;
 
   constructor(filterManager: FilterManager, soundPlayer: SoundPlayer, packageName: string) {
     this.filterManager = filterManager;
@@ -27,6 +28,7 @@ export default class DecorationManager {
     this.packageName = packageName;
     this.subscriptions = new CompositeDisposable;
     this.decorations = new Map;
+    this.editorSub = new Map;
 
     this.setupSubscriptions();
   }
@@ -47,6 +49,7 @@ export default class DecorationManager {
 
   private setupSubscriptions() {
     this.subscriptions.add(this.filterManager.observeProcessedFilters((data) => {
+      this.monitorCursors(data.editor);
       this.handleNewFilter(data);
     }));
 
@@ -55,6 +58,12 @@ export default class DecorationManager {
     }));
 
     this.subscriptions.add(this.filterManager.onDidDestroyFilter((editorID) => {
+      // We call into handleFilterDestruction on filter updates as well, which
+      // would result the editor subscription(s) being disposed of while the
+      // editor is still open.
+      const sub = this.editorSub.get(editorID);
+      if(sub) sub.dispose();
+
       this.handleFilterDestruction(editorID);
     }));
   }
@@ -117,7 +126,7 @@ export default class DecorationManager {
       const range = new Range([line.range.start.row, 0], [line.range.start.row, 1]);
       const marker = editor.markBufferRange(range, { invalidate: "never" });
       const decoration = editor.decorateMarker(marker, { type: "gutter",
-          gutterName: this.packageName, class: "poe-decoration-container",
+          gutterName: this.packageName, class: "poe-decoration-row",
           item: element });
       container.push({ marker, decoration });
     });
@@ -127,7 +136,7 @@ export default class DecorationManager {
 
   private createSoundElement(id: number, volume?: number) {
     const element = document.createElement("span");
-    element.className = 'poe-play-alert-sound';
+    element.className = "poe-play-alert-sound";
 
     element.onclick = () => {
       this.soundPlayer.playAlertSound(id, volume);
@@ -152,5 +161,74 @@ export default class DecorationManager {
     }
 
     return element;
+  }
+
+  // The code for this function is originally from the "linter-ui-default"
+  // repository. It has been modified slightly to work with our implementation
+  // here. The original code can be found here:
+  //  https://goo.gl/whP9ZY
+  private monitorCursors(editor: AtomCore.TextEditor) {
+    const previousSub = this.editorSub.get(editor.id);
+    if(previousSub) previousSub.dispose();
+
+    const editorSub = editor.observeCursors((cursor) => {
+      let marker: TextBuffer.DisplayMarker;
+      let lastRange: TextBuffer.Range;
+      let lastEmpty: boolean;
+
+      const handlePositionChange = ((start: TextBuffer.IPoint, end: TextBuffer.IPoint) => {
+        const gutter = editor.gutterWithName(this.packageName);
+        if(!gutter) return;
+
+        // We need that Range.fromObject hack below because when we focus index 0 on multi-line selection
+        // end.column is the column of the last line but making a range out of two and then accesing
+        // the end seems to fix it (black magic?)
+        const currentRange = Range.fromObject([start, end]);
+        const linesRange = Range.fromObject([[start.row, 0], [end.row, Infinity]]);
+        const currentEmpty = currentRange.isEmpty();
+
+        // NOTE: Atom does not paint gutter if multi-line and last line has zero index
+        if (start.row !== end.row && currentRange.end.column === 0) {
+          linesRange.end.row--;
+        }
+
+        if (lastRange && lastRange.isEqual(linesRange) && currentEmpty === lastEmpty) return;
+        if (marker) marker.destroy();
+        lastRange = linesRange;
+        lastEmpty = currentEmpty;
+
+        marker = editor.markScreenRange(linesRange, {
+          invalidate: "never",
+        });
+
+        const item = document.createElement("span");
+        item.className = `line-number cursor-line ${currentEmpty ? 'cursor-line-no-selection' : ''}`
+        gutter.decorateMarker(marker, {
+          item,
+          class: "poe-decoration-row",
+        });
+      });
+
+      const cursorMarker = cursor.getMarker();
+      const cursorSubs = new CompositeDisposable;
+
+      cursorSubs.add(cursorMarker.onDidChange((params) => {
+        const { newHeadScreenPosition, newTailScreenPosition } = params;
+        handlePositionChange(newHeadScreenPosition, newTailScreenPosition);
+      }));
+
+      cursorSubs.add(cursor.onDidDestroy(() => {
+        cursorSubs.dispose();
+      }));
+
+      cursorSubs.add(new Disposable(function() {
+        if (marker) marker.destroy();
+      }));
+
+      const screenRange = cursorMarker.getScreenRange();
+      handlePositionChange(screenRange.start, screenRange.end);
+    });
+
+    this.editorSub.set(editor.id, editorSub);
   }
 }
