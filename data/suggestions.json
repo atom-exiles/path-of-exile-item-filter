@@ -133,6 +133,22 @@
       {
         "displayText": "Set - Shaper",
         "text": "\"Fragment of the Hydra\" \"Fragment of the Phoenix\" \"Fragment of the Minotaur\" \"Fragment of the Chimera\""
+      },
+      {
+        "displayText": "Talismans - Tier 1",
+        "text": "\"Ashscale Talisman\" \"Black Maw Talisman\" \"Bonespire Talisman\" \"Breakrib Talisman\" \"Chrysalis Talisman\" \"Deadhand Talisman\" \"Deep One Talisman\" \"Lone Antler Talisman\" \"Mandible Talisman\" \"Rot Head Talisman\" \"Undying Flesh Talisman\" \"Writhing Talisman\""
+      },
+      {
+        "displayText": "Talismans - Tier 2",
+        "text": "\"Avian Twins Talisman\" \"Clutching Talisman\" \"Fangjaw Talisman\" \"Hexclaw Talisman\" \"Horned Talisman\" \"Primal Skull Talisman\" \"Splitnewt Talisman\" \"Wereclaw Talisman\""
+      },
+      {
+        "displayText": "Talismans - Tier 3",
+        "text": "\"Longtooth Talisman\" \"Monkey Paw Talisman\" \"Monkey Twins Talisman\" \"Rotfeather Talisman\" \"Spinefuse Talisman\" \"Three Hands Talisman\" \"Three Rat Talisman\""
+      },
+      {
+        "displayText": "Talismans - Tier 4",
+        "text": "\"Greatwolf Talisman\""
       }
     ],
     "blocks": [
