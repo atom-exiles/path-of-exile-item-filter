@@ -598,7 +598,7 @@ function processSetBackgroundColorRule(lineInfo: LineInfo) {
 function processPlayAlertSoundRule(lineInfo: LineInfo) {
   expectEqualityOperator(lineInfo);
 
-  const id = parseNumberInRange(lineInfo, 1, 9);
+  const id = parseNumberInRange(lineInfo, 1, 16);
 
   let volume: Filter.Components.Value<number>|undefined;
   if(!lineInfo.invalid) {

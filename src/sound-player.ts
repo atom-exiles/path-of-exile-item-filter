@@ -2,6 +2,9 @@ import * as path from "path";
 import * as assert from "assert";
 
 const soundPath = path.join(__dirname + '/../media/sounds');
+// const orbsWithSounds = [
+//   "Alchemy", "Blessed", "Chaos", "Divine", "Exalted", "Fusing", "General", "Mirror", "Regal", "Vaal"
+// ]
 
 export default class SoundPlayer {
   private readonly sounds: Map<number, HTMLAudioElement>;
@@ -21,7 +24,7 @@ export default class SoundPlayer {
    *  at the given volume level. The volume level should be a number from 0 to 300. */
   playAlertSound(id: number, volume?: number) {
     assert(typeof id === 'number', 'sound identifier missing for playAlertSound');
-    assert(id >= 1 && id <= 9, 'sound identifier must be a value from 1 to 9');
+    assert(id >= 1 && id <= 16, 'sound identifier must be a value from 1 to 9');
 
     // Path of Exile uses a range of 0 to 300 to determine volume, with 300
     // equating to 100% volume on the source.
@@ -47,8 +50,9 @@ export default class SoundPlayer {
 
   /** Initializes all HTMLAudioElements used within the package. */
   private setupAlertSounds() {
-    for(var i = 1; i < 10; i++) {
-      this.sounds.set(i, new Audio(path.join(soundPath, '/AlertSound_0' + i + '.mp3')));
+    for(var i = 1; i <= 16; i++) {
+      const prefix = i < 10 ? "0": "";
+      this.sounds.set(i, new Audio(path.join(soundPath, "/AlertSound_" + prefix + i + ".mp3")));
     }
 
     return;

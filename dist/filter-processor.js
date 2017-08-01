@@ -527,7 +527,7 @@ function processSetBackgroundColorRule(lineInfo) {
 }
 function processPlayAlertSoundRule(lineInfo) {
     expectEqualityOperator(lineInfo);
-    const id = parseNumberInRange(lineInfo, 1, 9);
+    const id = parseNumberInRange(lineInfo, 1, 16);
     let volume;
     if (!lineInfo.invalid) {
         volume = parseNumberInRange(lineInfo, 0, 300, false);

@@ -1,3 +1,8 @@
+## Versions 1.1.2
+* Support for Fall of Oriath and the Harbinger league.
+* Added the new sounds for the PlayAlertSound rule.
+* Removal of datasets as a feature with the end of the beta.
+
 ## Versions 1.1.0-1.1.1
 * Added a new dataset for the Fall of Oriath beta.
 * Fixed the gutter background on lines with a cursor.
