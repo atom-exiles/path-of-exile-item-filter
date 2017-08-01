@@ -45,7 +45,6 @@ class ConfigManager {
             chunkSize: new ConfigValue(packageName, "general.chunkSize")
         };
         this.data = {
-            dataset: new ConfigValue(packageName, "data.dataset"),
             classWhitelist: new ConfigValue(packageName, "data.classWhitelist"),
             baseWhitelist: new ConfigValue(packageName, "data.baseWhitelist")
         };

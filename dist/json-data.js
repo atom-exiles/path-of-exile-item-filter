@@ -14,37 +14,10 @@ class JSONData {
     constructor(config) {
         this.config = config;
         this.dataPath = path.join(__dirname, "../data");
-        this.emitter = new atom_1.Emitter;
-        this.data = this.setupSubscription().then(() => {
-            return this.updateData();
-        });
+        this.data = this.updateData();
     }
     dispose() {
-        this.subscription.dispose();
-        this.emitter.dispose();
         return;
-    }
-    onDidUpdateData(callback) {
-        return this.emitter.on("did-update-data", (data) => {
-            callback(data);
-        });
-    }
-    setupSubscription() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.config.data.dataset.promise;
-            this.subscription = this.config.data.dataset.onDidChange(() => {
-                this.data = this.updateData();
-            });
-            return;
-        });
-    }
-    generateFileList(dataset) {
-        const datasetPath = path.join(this.dataPath, dataset);
-        const result = {
-            items: new atom_1.File(path.join(datasetPath, "items.json")),
-            suggestions: new atom_1.File(path.join(datasetPath, "suggestions.json"))
-        };
-        return result;
     }
     processJSONFile(file) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -66,13 +39,14 @@ class JSONData {
     }
     updateData() {
         return __awaiter(this, void 0, void 0, function* () {
-            const dataset = yield this.config.data.dataset.promise;
-            const list = this.generateFileList(dataset);
+            const list = {
+                items: new atom_1.File(path.join(this.dataPath, "items.json")),
+                suggestions: new atom_1.File(path.join(this.dataPath, "suggestions.json"))
+            };
             const result = {
                 items: yield this.processJSONFile(list.items),
                 suggestions: yield this.processJSONFile(list.suggestions)
             };
-            this.emitter.emit("did-update-data", result);
             return result;
         });
     }

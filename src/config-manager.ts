@@ -75,8 +75,6 @@ export default class ConfigManager {
   };
   /** Data settings for the package. */
   readonly data: {
-    /** The name of the currently active dataset. */
-    dataset: ConfigValue<string>
     /** A list of item classes that the user wishes to inject into the dataset. */
     classWhitelist: ConfigValue<string[]>
     /** A list of item bases that the user wishes to inject into the dataset. */
@@ -104,7 +102,6 @@ export default class ConfigManager {
       chunkSize: new ConfigValue<number>(packageName, "general.chunkSize")
     };
     this.data = {
-      dataset: new ConfigValue<string>(packageName, "data.dataset"),
       classWhitelist: new ConfigValue<string[]>(packageName, "data.classWhitelist"),
       baseWhitelist: new ConfigValue<string[]>(packageName, "data.baseWhitelist")
     };

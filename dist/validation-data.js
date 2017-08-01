@@ -36,11 +36,6 @@ class ValidationData {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.config.data.classWhitelist.promise;
             yield this.config.data.baseWhitelist.promise;
-            this.subscriptions.add(this.jsonData.onDidUpdateData((jd) => {
-                this.data = this.processData(jd)
-                    .then((data) => { return this.updateBothWhitelists(data); })
-                    .then((data) => { return this.emitDataUpdate(data); });
-            }));
             this.subscriptions.add(this.config.data.classWhitelist.onDidChange((event) => __awaiter(this, void 0, void 0, function* () {
                 const data = yield this.data;
                 this.data = this.updateClassWhitelist(data)

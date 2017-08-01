@@ -39,17 +39,6 @@
     "type": "object",
     "order": 2,
     "properties": {
-      "dataset": {
-        "title": "Dataset",
-        "description": "Determines the dataset used by the package.",
-        "type": "string",
-        "default": "current",
-        "order": 1,
-        "enum": [
-          { "value": "current", "description": "Current: load data for the current version of the game." },
-          { "value": "beta", "description": "Beta: load data for the Fall of Oriath beta." }
-        ]
-      },
       "classWhitelist": {
         "title": "Item Class Whitelist",
         "description": "Allow the following additonal item classes to be used within filter files. Multiple entries should be separated by a comma.",

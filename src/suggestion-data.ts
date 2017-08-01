@@ -50,12 +50,6 @@ export default class SuggestionData {
       this.handleRightLabelToggle(event.newValue);
     }));
 
-    this.subscriptions.add(this.jsonData.onDidUpdateData((jd) => {
-      this.data = this.processData(jd)
-        .then((data) => { return this.updateBothWhitelists(data); })
-        .then((data) => { return this.emitDataUpdate(data); });
-    }));
-
     this.subscriptions.add(this.config.data.classWhitelist.onDidChange(async () => {
       const data = await this.data;
       this.data = this.updateClassWhitelist(data)
