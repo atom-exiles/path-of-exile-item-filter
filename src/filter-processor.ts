@@ -608,14 +608,26 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
     } else {
       lineInfo.invalid = true;
       lineInfo.messages.errors.push({
-        excerpt: "Invalid word for a PlayAlertSound rule. Only 'orb' is supported.",
+        excerpt: "Invalid value for a PlayAlertSound rule. Only 'orb' is supported.",
         file: lineInfo.file,
         range: orbResult.range,
         url: "https://pathofexile.gamepedia.com/Item_filter"
       });
     }
   } else {
-    id = parseNumberInRange(lineInfo, 1, 16);
+    id = parseNumberInRange(lineInfo, 1, 16, false);
+    if(lineInfo.invalid == false && id == undefined) {
+      lineInfo.invalid = true;
+      lineInfo.messages.errors.push({
+        excerpt: "Invalid format. Expected either the word Orb or a number between 1 and 16.",
+        file: lineInfo.file,
+        range: {
+          start: { row: lineInfo.row, column: lineInfo.keyword.range.end.column + 1 },
+          end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex }
+        },
+        url: "https://pathofexile.gamepedia.com/Item_filter"
+      });
+    }
   }
 
   let volume: Filter.Components.Value<number>|undefined;

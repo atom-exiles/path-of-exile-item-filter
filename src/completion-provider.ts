@@ -86,6 +86,15 @@ export default class CompletionProvider implements Autocomplete.Provider {
             result = result.concat(suggestionData.sockets);
           }
         }
+      } else if(cursorScopes.includes("play-alert-sound.filter")) {
+        if(this.isFirstValue(editor, bufferPosition, true)) {
+          const suggestion: Autocomplete.TextSuggestion = { text: "Orb" };
+          result.push(suggestion);
+
+          const idSuggestions: Autocomplete.TextSuggestions = [];
+          for(var i = 1; i <= 16; ++i) idSuggestions.push({ text: "" + i });
+          result = result.concat(result, idSuggestions);
+        }
       } else {
         const numberValueRule = cursorScopes.includes("item-level.filter") ||
             cursorScopes.includes("drop-level.filter") ||
