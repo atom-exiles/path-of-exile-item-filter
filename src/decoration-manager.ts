@@ -113,7 +113,7 @@ export default class DecorationManager {
         var element = this.createColorElement(line.red.value, line.green.value, line.blue.value, alpha);
         var container = result.colorDecorations;
       } else if(Helpers.Guards.isPlayAlertSoundRule(line)) {
-        if(line.id == null) return;
+        if(line.id == null || line.orb) return;
 
         let volume: number|undefined;
         if(line.volume) volume = line.volume.value;

@@ -299,6 +299,7 @@ declare namespace Filter {
 
     interface PlayAlertSoundRule extends ActionRule {
       actionName: "PlayAlertSound"
+      orb: boolean
       id?: Components.Value<number>
       volume?: Components.Value<number>
       trailingComment?: Components.Comment

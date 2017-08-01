@@ -598,7 +598,25 @@ function processSetBackgroundColorRule(lineInfo: LineInfo) {
 function processPlayAlertSoundRule(lineInfo: LineInfo) {
   expectEqualityOperator(lineInfo);
 
-  const id = parseNumberInRange(lineInfo, 1, 16);
+  let isOrb = false;
+  let id: Filter.Components.Value<number>|undefined;
+
+  const orbResult = lineInfo.parser.nextWord();
+  if(orbResult.found) {
+    if(orbResult.value.toLowerCase() == "orb") {
+      isOrb = true;
+    } else {
+      lineInfo.invalid = true;
+      lineInfo.messages.errors.push({
+        excerpt: "Invalid word for a PlayAlertSound rule. Only 'orb' is supported.",
+        file: lineInfo.file,
+        range: orbResult.range,
+        url: "https://pathofexile.gamepedia.com/Item_filter"
+      });
+    }
+  } else {
+    id = parseNumberInRange(lineInfo, 1, 16);
+  }
 
   let volume: Filter.Components.Value<number>|undefined;
   if(!lineInfo.invalid) {
@@ -616,7 +634,7 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
   if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   const result: Filter.Element.PlayAlertSoundRule = {
-    type: "rule", ruleType: "action", actionName: "PlayAlertSound",
+    type: "rule", ruleType: "action", actionName: "PlayAlertSound", orb: isOrb,
     keyword: lineInfo.keyword, invalid: lineInfo.invalid, messages: lineInfo.messages,
     range: lineInfo.range, id, volume, trailingComment
   }

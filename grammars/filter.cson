@@ -221,6 +221,7 @@
         'end': '\\s*$'
         'patterns': [
           { 'include': '#number' }
+          { 'include': '#word' }
           { 'include': '#trailing_comment' }
         ]
       }

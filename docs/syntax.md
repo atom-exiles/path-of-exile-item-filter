@@ -24,10 +24,11 @@ Identified | Equality | True, False | No
 Corrupted | Equality | True, False | No
 
 ## Action Rules
-Keyword | Operator | Values | Trailing Comment | Theme Element
---- | --- | --- | --- | ---
-SetBorderColor | Equality | 0-255 (3-4 Values) | Yes | Yes
-SetTextColor | Equality | 0-255 (3-4 Values) | Yes | Yes
-SetBackgroundColor | Equality | 0-255 (3-4 Values) | Yes | Yes
-PlayAlertSound | Equality | 1-9 [0-300] | Yes | Yes
-SetFontSize | Equality | 18-45 | No | No
+Keyword | Operator | Values | Trailing Comment | Theme Element | Case Sensitive
+--- | --- | --- | --- | --- | --- |
+SetBorderColor | Equality | 0-255 (3-4 Values) | Yes | Yes | N/A
+SetTextColor | Equality | 0-255 (3-4 Values) | Yes | Yes | N/A
+SetBackgroundColor | Equality | 0-255 (3-4 Values) | Yes | Yes | N/A
+PlayAlertSound | Equality | Orb [0-300] | Yes | Yes | No
+PlayAlertSound | Equality | 1-16 [0-300] | Yes | Yes | N/A
+SetFontSize | Equality | 18-45 | No | No | N/A
