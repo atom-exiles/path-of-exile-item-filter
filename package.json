@@ -1,7 +1,7 @@
 {
   "name": "path-of-exile-item-filter",
   "main": "./dist/main",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "An Atom package designed to make editing Path of Exile item filters easier.",
   "keywords": [
     "poe",
