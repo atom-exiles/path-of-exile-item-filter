@@ -818,6 +818,7 @@ function processLine({ line, row, file, data }: ProcessLine): Filter.Line {
     case "SetBackgroundColor":
       return processSetBackgroundColorRule(lineInfo);
     case "PlayAlertSound":
+    case "PlayAlertSoundPositional":
       return processPlayAlertSoundRule(lineInfo);
     case "SetFontSize":
       return processSetFontSizeRule(lineInfo);

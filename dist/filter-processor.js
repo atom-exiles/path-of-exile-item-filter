@@ -727,6 +727,7 @@ function processLine({ line, row, file, data }) {
         case "SetBackgroundColor":
             return processSetBackgroundColorRule(lineInfo);
         case "PlayAlertSound":
+        case "PlayAlertSoundPositional":
             return processPlayAlertSoundRule(lineInfo);
         case "SetFontSize":
             return processSetFontSizeRule(lineInfo);

@@ -226,6 +226,19 @@
         ]
       }
       {
+        'name': 'play-alert-sound.filter'
+        'begin': '^\\s*(PlayAlertSoundPositional)\\s'
+        'beginCaptures':
+          '1':
+            'name': 'keyword.action.play-alert-sound.filter'
+        'end': '\\s*$'
+        'patterns': [
+          { 'include': '#number' }
+          { 'include': '#word' }
+          { 'include': '#trailing_comment' }
+        ]
+      }
+      {
         'name': 'set-font-size.filter'
         'begin': '^\\s*(SetFontSize)\\s'
         'beginCaptures':

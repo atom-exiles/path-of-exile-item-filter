@@ -5,6 +5,8 @@
     { "displayText": "SetTextColor", "snippet": "SetTextColor ${1:255} ${2:255} ${3:255}" },
     { "displayText": "PlayAlertSound ID", "snippet": "PlayAlertSound ${1:1} ${2:100}" },
     { "displayText": "PlayAlertSound Orb", "snippet": "PlayAlertSound Orb ${1:100}" },
+    { "displayText": "PlayAlertSoundPositional ID", "snippet": "PlayAlertSoundPositional ${1:1} ${2:100}" },
+    { "displayText": "PlayAlertSoundPositional Orb", "snippet": "PlayAlertSoundPositional Orb ${1:100}" },
     { "displayText": "SetFontSize", "snippet": "SetFontSize ${1:32}" }
   ],
   "blocks": [
