@@ -1,11 +1,11 @@
-## Versions 1.1.2
+## Versions 1.1.3
 * Partial support for Fall of Oriath and the Harbinger league.
 * Added support for the new PlayAlertSoundPositional rule.
 * Added the new sounds for the PlayAlertSound rule.
 * The PlayAlertSound rule can now have "Orb" as its first value.
 * Removal of datasets as a feature with the end of the beta.
 
-## Versions 1.1.0-1.1.1
+## Versions 1.1.0-1.1.2
 * Added a new dataset for the Fall of Oriath beta.
 * Fixed the gutter background on lines with a cursor.
 * Stop displaying both the invalid format and invalid value messages for Class and BaseType rules.
