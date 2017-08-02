@@ -151,6 +151,14 @@
       {
         "displayText": "Talismans - Tier 4",
         "text": "\"Greatwolf Talisman\""
+      },
+      {
+        "displayText": "Harbinger - Shards",
+        "text": "\"Chaos Shard\" \"Regal Shard\" \"Exalted Shard\" \"Mirror Shard\" \"Annulment Shard\" \"Engineer's Shard\" \"Binding Shard\" \"Ancient Shard\" \"Harbinger's Shard\" \"Horizon Shard\""
+      },
+      {
+        "displayText": "Harbinger - Orbs",
+        "text": "\"Orb of Annulment\" \"Engineer's Orb\" \"Orb of Binding\" \"Ancient Orb\" \"Harbinger's Orb\" \"Orb of Horizons\""
       }
     ],
     "blocks": [
