@@ -1,5 +1,5 @@
-## Versions 1.1.3
-* Partial support for Fall of Oriath and the Harbinger league.
+## Versions 1.1.3-1.1.4
+* Added full support for Fall of Oriath and the Harbinger league.
 * Added support for the new PlayAlertSoundPositional rule.
 * Added the new sounds for the PlayAlertSound rule.
 * The PlayAlertSound rule can now have "Orb" as its first value.

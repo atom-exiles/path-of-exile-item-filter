@@ -239,7 +239,9 @@
       { "text": "Swords" },
       { "text": "Axes" },
       { "text": "Maces" },
-      { "displayText": "Map Items", "text": "\"Map Items\"" }
+      { "displayText": "Map Items", "text": "\"Map Items\"" },
+      { "displayText": "Fall of Oriath - Classes", "text": "Pantheon Soul" },
+      { "displayText": "Harbinger - Classes", "text": "Piece" }
     ]
   }
 }
