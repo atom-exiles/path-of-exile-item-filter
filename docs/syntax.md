@@ -29,6 +29,6 @@ Keyword | Operator | Values | Trailing Comment | Theme Element | Case Sensitive
 SetBorderColor | Equality | 0-255 (3-4 Values) | Yes | Yes | N/A
 SetTextColor | Equality | 0-255 (3-4 Values) | Yes | Yes | N/A
 SetBackgroundColor | Equality | 0-255 (3-4 Values) | Yes | Yes | N/A
-PlayAlertSound | Equality | Orb [0-300] | Yes | Yes | No
 PlayAlertSound | Equality | 1-16 [0-300] | Yes | Yes | N/A
+PlayAlertSound | Equality | Word from the list of valid sounds | [0-300] | Yes | Yes | Yes
 SetFontSize | Equality | 18-45 | No | No | N/A

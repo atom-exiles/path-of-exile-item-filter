@@ -52,7 +52,7 @@ export function activate(state: PackageState) {
   const filterManager = new FilterManager(configManager, validationData, editorRegistry);
   subscriptions.add(filterManager);
 
-  const soundPlayer = new SoundPlayer();
+  const soundPlayer = new SoundPlayer(jsonData);
   subscriptions.add(soundPlayer);
 
   const decorationManager = new DecorationManager(filterManager, soundPlayer, packageName);

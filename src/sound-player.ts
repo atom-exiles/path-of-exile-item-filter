@@ -1,17 +1,19 @@
 import * as path from "path";
 import * as assert from "assert";
 
+import JSONData from "./json-data";
+
 const soundPath = path.join(__dirname + '/../media/sounds');
-// const orbsWithSounds = [
-//   "Alchemy", "Blessed", "Chaos", "Divine", "Exalted", "Fusing", "General", "Mirror", "Regal", "Vaal"
-// ]
 
 export default class SoundPlayer {
-  private readonly sounds: Map<number, HTMLAudioElement>;
+  private readonly sounds: Map<string, HTMLAudioElement>;
 
-  constructor() {
+  constructor(jsonData: JSONData) {
     this.sounds = new Map;
-    this.setupAlertSounds();
+
+    jsonData.data.then((data) => {
+      this.setupAlertSounds(data);
+    });
   }
 
   dispose() {
@@ -22,9 +24,8 @@ export default class SoundPlayer {
 
   /** Play the alert sound associated with the given ID. Optionally, play the alert
    *  at the given volume level. The volume level should be a number from 0 to 300. */
-  playAlertSound(id: number, volume?: number) {
-    assert(typeof id === 'number', 'sound identifier missing for playAlertSound');
-    assert(id >= 1 && id <= 16, 'sound identifier must be a value from 1 to 9');
+  playAlertSound(id: string, volume?: number) {
+    assert(this.sounds.get(id), "unknown sound " + id + " passed to playAlertSound");
 
     // Path of Exile uses a range of 0 to 300 to determine volume, with 300
     // equating to 100% volume on the source.
@@ -49,10 +50,12 @@ export default class SoundPlayer {
   }
 
   /** Initializes all HTMLAudioElements used within the package. */
-  private setupAlertSounds() {
-    for(var i = 1; i <= 16; i++) {
-      const prefix = i < 10 ? "0": "";
-      this.sounds.set(i, new Audio(path.join(soundPath, "/AlertSound_" + prefix + i + ".mp3")));
+  private setupAlertSounds(data: DataFormat.JSONData) {
+    for(var i in data.sounds) {
+      const value = data.sounds[i];
+      if(!value) continue;
+
+      this.sounds.set(i, new Audio(path.join(soundPath, value.filename)));
     }
 
     return;

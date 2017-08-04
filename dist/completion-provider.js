@@ -88,12 +88,7 @@ class CompletionProvider {
                 }
                 else if (cursorScopes.includes("play-alert-sound.filter")) {
                     if (this.isFirstValue(editor, bufferPosition, true)) {
-                        const suggestion = { text: "Orb" };
-                        result.push(suggestion);
-                        const idSuggestions = [];
-                        for (var i = 1; i <= 16; ++i)
-                            idSuggestions.push({ text: "" + i });
-                        result = result.concat(result, idSuggestions);
+                        result = result.concat(result, suggestionData.sounds);
                     }
                 }
                 else {

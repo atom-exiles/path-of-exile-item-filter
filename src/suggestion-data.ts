@@ -168,6 +168,7 @@ export default class SuggestionData {
       sockets: jd.suggestions.sockets,
       bases: [],
       classes: [],
+      sounds: [],
       extraBases: jd.suggestions.extras.bases,
       extraBlocks: jd.suggestions.extras.blocks,
       extraClasses: jd.suggestions.extras.classes,
@@ -207,6 +208,15 @@ export default class SuggestionData {
           }
         });
       }
+    }
+
+    // Generate PlayAlertSound suggestions based on the 'sound.json' entries.
+    for(var id in jd.sounds) {
+      let sound = jd.sounds[id];
+      if(!sound) continue;
+
+      let displayText = sound.label ? sound.label : id;
+      result.sounds.push({ text: id, displayText })
     }
 
     this.appendExtraLabel(result.extraBases, enableRightLabel);

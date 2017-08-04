@@ -33,9 +33,17 @@ declare namespace DataFormat {
     sockets: Autocomplete.Suggestions
   }
 
+  interface SoundFile {
+    [id: string]: {
+      filename: string
+      label?: string
+    }
+  }
+
   interface JSONData {
     items: ItemFile
     suggestions: SuggestionFile
+    sounds: SoundFile
   }
 
   interface SuggestionData {
@@ -48,6 +56,7 @@ declare namespace DataFormat {
     sockets: Autocomplete.Suggestions
     bases: Autocomplete.TextSuggestions
     classes: Autocomplete.TextSuggestions
+    sounds: Autocomplete.TextSuggestions
     extraBases: Autocomplete.Suggestions
     extraBlocks: Autocomplete.Suggestions
     extraClasses: Autocomplete.Suggestions
@@ -59,6 +68,7 @@ declare namespace DataFormat {
   interface ValidationData {
     validClasses: string[]
     validBases: string[]
+    validSounds: string[]
     classWhitelist: string[]
     baseWhitelist: string[]
   }
@@ -299,8 +309,7 @@ declare namespace Filter {
 
     interface PlayAlertSoundRule extends ActionRule {
       actionName: "PlayAlertSound"
-      orb: boolean
-      id?: Components.Value<number>
+      id?: Components.Value<string>
       volume?: Components.Value<number>
       trailingComment?: Components.Comment
     }

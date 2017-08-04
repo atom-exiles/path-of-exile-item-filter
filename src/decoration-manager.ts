@@ -113,7 +113,7 @@ export default class DecorationManager {
         var element = this.createColorElement(line.red.value, line.green.value, line.blue.value, alpha);
         var container = result.colorDecorations;
       } else if(Helpers.Guards.isPlayAlertSoundRule(line)) {
-        if(line.id == null || line.orb) return;
+        if(line.id == null) return;
 
         let volume: number|undefined;
         if(line.volume) volume = line.volume.value;
@@ -134,7 +134,7 @@ export default class DecorationManager {
     return result;
   }
 
-  private createSoundElement(id: number, volume?: number) {
+  private createSoundElement(id: string, volume?: number) {
     const element = document.createElement("span");
     element.className = "poe-play-alert-sound";
 

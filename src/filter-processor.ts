@@ -598,28 +598,29 @@ function processSetBackgroundColorRule(lineInfo: LineInfo) {
 function processPlayAlertSoundRule(lineInfo: LineInfo) {
   expectEqualityOperator(lineInfo);
 
-  let isOrb = false;
-  let id: Filter.Components.Value<number>|undefined;
+  let id: Filter.Components.Value<string>|undefined;
 
   const orbResult = lineInfo.parser.nextWord();
   if(orbResult.found) {
-    if(orbResult.value.toLowerCase() == "orb") {
-      isOrb = true;
+    if(lineInfo.data.validSounds.includes(orbResult.value)) {
+      id = { range: orbResult.range, value: orbResult.value }
     } else {
       lineInfo.invalid = true;
       lineInfo.messages.errors.push({
-        excerpt: "Invalid value for a PlayAlertSound rule. Only 'orb' is supported.",
+        excerpt: "Invalid value for the PlayAlertSound rule.",
+        description: "Supported values:\n\n" + lineInfo.data.validSounds.toString(),
         file: lineInfo.file,
         range: orbResult.range,
         url: "https://pathofexile.gamepedia.com/Item_filter"
       });
     }
   } else {
-    id = parseNumberInRange(lineInfo, 1, 16, false);
-    if(lineInfo.invalid == false && id == undefined) {
+    let n = parseNumberInRange(lineInfo, 1, 16, false);
+    if(lineInfo.invalid == false && n == undefined) {
       lineInfo.invalid = true;
       lineInfo.messages.errors.push({
-        excerpt: "Invalid format. Expected either the word Orb or a number between 1 and 16.",
+        excerpt: "Invalid format. Expected either a number or word to follow.",
+        description: "Supported values:\n\n" + lineInfo.data.validSounds.toString(),
         file: lineInfo.file,
         range: {
           start: { row: lineInfo.row, column: lineInfo.keyword.range.end.column + 1 },
@@ -627,6 +628,8 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
         },
         url: "https://pathofexile.gamepedia.com/Item_filter"
       });
+    } else if (n != undefined) {
+      id = { range: n.range, value: "" + n.value }
     }
   }
 
@@ -646,7 +649,7 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
   if(!lineInfo.invalid) reportTrailingText(lineInfo);
 
   const result: Filter.Element.PlayAlertSoundRule = {
-    type: "rule", ruleType: "action", actionName: "PlayAlertSound", orb: isOrb,
+    type: "rule", ruleType: "action", actionName: "PlayAlertSound",
     keyword: lineInfo.keyword, invalid: lineInfo.invalid, messages: lineInfo.messages,
     range: lineInfo.range, id, volume, trailingComment
   }

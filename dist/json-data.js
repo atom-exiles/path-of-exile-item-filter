@@ -41,11 +41,13 @@ class JSONData {
         return __awaiter(this, void 0, void 0, function* () {
             const list = {
                 items: new atom_1.File(path.join(this.dataPath, "items.json")),
-                suggestions: new atom_1.File(path.join(this.dataPath, "suggestions.json"))
+                suggestions: new atom_1.File(path.join(this.dataPath, "suggestions.json")),
+                sounds: new atom_1.File(path.join(this.dataPath, "sounds.json"))
             };
             const result = {
                 items: yield this.processJSONFile(list.items),
-                suggestions: yield this.processJSONFile(list.suggestions)
+                suggestions: yield this.processJSONFile(list.suggestions),
+                sounds: yield this.processJSONFile(list.sounds)
             };
             return result;
         });

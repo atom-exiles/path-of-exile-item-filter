@@ -78,7 +78,7 @@ class DecorationManager {
                 var container = result.colorDecorations;
             }
             else if (Helpers.Guards.isPlayAlertSoundRule(line)) {
-                if (line.id == null || line.orb)
+                if (line.id == null)
                     return;
                 let volume;
                 if (line.volume)

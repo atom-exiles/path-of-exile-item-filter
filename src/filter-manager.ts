@@ -58,7 +58,7 @@ function transformChanges(c: TextBuffer.CallbackArgs.TextChange[]) {
 
 export default class FilterManager {
   private readonly subscriptions: CompositeDisposable;
-  private readonly config : ConfigManager;
+  private readonly config: ConfigManager;
   private readonly validationData: ValidationData;
   private readonly registry: EditorRegistry;
   private readonly observedFilters: Array<number>;

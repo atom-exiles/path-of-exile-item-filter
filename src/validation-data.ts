@@ -70,7 +70,13 @@ export default class ValidationData {
         validBases.push(b);
       }
     }
-    const result = { validBases, validClasses };
+
+    const validSounds = [];
+    for(var s in jsonData.sounds) {
+      validSounds.push(s);
+    }
+
+    const result = { validBases, validClasses, validSounds };
     return result;
   }
 
@@ -102,6 +108,7 @@ export default class ValidationData {
     let result: DataFormat.ValidationData = {
       validClasses: processedData.validClasses,
       validBases: processedData.validBases,
+      validSounds: processedData.validSounds,
       classWhitelist,
       baseWhitelist
     }

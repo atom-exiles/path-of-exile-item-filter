@@ -37,7 +37,7 @@ function activate(state) {
     subscriptions.add(editorRegistry);
     const filterManager = new filter_manager_1.default(configManager, validationData, editorRegistry);
     subscriptions.add(filterManager);
-    const soundPlayer = new sound_player_1.default();
+    const soundPlayer = new sound_player_1.default(jsonData);
     subscriptions.add(soundPlayer);
     const decorationManager = new decoration_manager_1.default(filterManager, soundPlayer, packageName);
     subscriptions.add(decorationManager);

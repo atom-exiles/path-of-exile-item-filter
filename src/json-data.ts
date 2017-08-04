@@ -5,7 +5,8 @@ import ConfigManager from "config-manager";
 
 interface FileList {
   items: File,
-  suggestions: File
+  suggestions: File,
+  sounds: File
 }
 
 /** File handling for our data files. */
@@ -49,12 +50,14 @@ export default class JSONData {
   private async updateData() {
     const list: FileList = {
       items: new File(path.join(this.dataPath, "items.json")),
-      suggestions: new File(path.join(this.dataPath, "suggestions.json"))
+      suggestions: new File(path.join(this.dataPath, "suggestions.json")),
+      sounds: new File(path.join(this.dataPath, "sounds.json"))
     }
 
     const result: DataFormat.JSONData = {
       items: await this.processJSONFile<DataFormat.ItemFile>(list.items),
-      suggestions: await this.processJSONFile<DataFormat.SuggestionFile>(list.suggestions)
+      suggestions: await this.processJSONFile<DataFormat.SuggestionFile>(list.suggestions),
+      sounds: await this.processJSONFile<DataFormat.SoundFile>(list.sounds)
     }
 
     return result;
