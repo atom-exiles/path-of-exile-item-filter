@@ -74,7 +74,7 @@ class FilterManager {
                 this.filters.forEach((filterData, editorID) => {
                     filterData.filter.dispose();
                     this.emitter.emit("did-destroy-filter", filterData.editor.id);
-                    filterData.filter = new item_filter_1.default(this.config, this.validationData, filterData.editor);
+                    filterData.filter = new item_filter_1.ItemFilter(this.config, this.validationData, filterData.editor);
                     this.emitter.emit("did-add-filter", filterData);
                 });
             }));
@@ -152,7 +152,7 @@ class FilterManager {
                     throw new Error("filter data missing within a change event");
                 }
             });
-            const filter = new item_filter_1.default(this.config, this.validationData, editor);
+            const filter = new item_filter_1.ItemFilter(this.config, this.validationData, editor);
             const filterData = { editor, filter, subscription };
             this.filters.set(editor.id, filterData);
             this.emitter.emit("did-add-filter", filterData);

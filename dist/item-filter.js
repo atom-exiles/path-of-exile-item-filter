@@ -137,4 +137,4 @@ class ItemFilter {
         });
     }
 }
-exports.default = ItemFilter;
+exports.ItemFilter = ItemFilter;

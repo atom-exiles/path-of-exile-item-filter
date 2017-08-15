@@ -3,8 +3,8 @@ import * as path from "path";
 import * as _ from "lodash";
 import * as assert from "assert";
 
-import ConfigManager from "./config-manager";
-import ValidationData from "./validation-data";
+import { ConfigManager } from "./config-manager";
+import { ValidationData } from "./validation-data";
 import { processLines } from "./filter-processor";
 
 function recursivelyShiftRanges(obj: any, shift: number) {
@@ -26,7 +26,7 @@ function shiftLineRanges(lines: Filter.Line[], shift: number) {
   }
 }
 
-export default class ItemFilter {
+export class ItemFilter {
   private readonly config: ConfigManager;
   private readonly validationData: ValidationData;
   private readonly editor: AtomCore.TextEditor;

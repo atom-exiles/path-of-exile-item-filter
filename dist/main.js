@@ -13,7 +13,7 @@ exports.config = require("../data/config.json");
 const packageName = require("../package.json").name;
 var subscriptions;
 var linterDelegate;
-var completionProvider = {
+const completionProvider = {
     selector: ".source.filter",
     disableForSelector: ".source.filter .comment",
     inclusionPriority: 1,

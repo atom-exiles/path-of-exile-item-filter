@@ -7,7 +7,7 @@ var linterDelegate: Linter.IndieDelegate;
 
 // We provide Autocomplete with stubbed out functions, which will be replaced
 // once we're actually ready to provide completion results.
-var completionProvider: Autocomplete.Provider = {
+const completionProvider: Autocomplete.Provider = {
   selector: ".source.filter",
   disableForSelector: ".source.filter .comment",
   inclusionPriority: 1,

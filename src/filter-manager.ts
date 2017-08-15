@@ -3,7 +3,7 @@ import * as _ from "lodash";
 
 import { ConfigManager } from "./config-manager";
 import { EditorRegistry } from "./editor-registry";
-import ItemFilter from "./item-filter";
+import { ItemFilter } from "./item-filter";
 import { ValidationData } from "./validation-data";
 
 interface FilterData {
