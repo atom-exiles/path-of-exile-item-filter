@@ -179,4 +179,4 @@ class FilterManager {
         return;
     }
 }
-exports.default = FilterManager;
+exports.FilterManager = FilterManager;

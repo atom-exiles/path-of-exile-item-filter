@@ -173,4 +173,4 @@ class DecorationManager {
         this.editorSub.set(editor.id, editorSub);
     }
 }
-exports.default = DecorationManager;
+exports.DecorationManager = DecorationManager;

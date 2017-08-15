@@ -71,4 +71,4 @@ class ConfigManager {
         return;
     }
 }
-exports.default = ConfigManager;
+exports.ConfigManager = ConfigManager;

@@ -1,10 +1,10 @@
 import { CompositeDisposable, Disposable, Emitter } from "atom";
 import * as _ from "lodash";
 
-import ConfigManager from "./config-manager";
-import EditorRegistry from "./editor-registry";
+import { ConfigManager } from "./config-manager";
+import { EditorRegistry } from "./editor-registry";
 import ItemFilter from "./item-filter";
-import ValidationData from "./validation-data";
+import { ValidationData } from "./validation-data";
 
 interface FilterData {
   editor: AtomCore.TextEditor
@@ -56,7 +56,7 @@ function transformChanges(c: TextBuffer.CallbackArgs.TextChange[]) {
   return result;
 }
 
-export default class FilterManager {
+export class FilterManager {
   private readonly subscriptions: CompositeDisposable;
   private readonly config: ConfigManager;
   private readonly validationData: ValidationData;

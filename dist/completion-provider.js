@@ -14,10 +14,6 @@ class CompletionProvider {
     constructor(config, suggestions) {
         this.config = config;
         this.suggestions = suggestions;
-        this.selector = ".source.filter";
-        this.disableForSelector = ".source.filter .comment";
-        this.inclusionPriority = 1;
-        this.excludeLowerPriority = true;
     }
     dispose() { }
     getSuggestions({ editor, bufferPosition, scopeDescriptor, prefix, activatedManually }) {
@@ -252,4 +248,4 @@ class CompletionProvider {
         return;
     }
 }
-exports.default = CompletionProvider;
+exports.CompletionProvider = CompletionProvider;

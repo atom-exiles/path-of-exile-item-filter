@@ -1,9 +1,9 @@
 import { CompositeDisposable, Emitter } from "atom";
 
-import ConfigManager from "./config-manager";
-import JSONData from "./json-data";
+import { ConfigManager } from "./config-manager";
+import { JSONData } from "./json-data";
 
-export default class ValidationData {
+export class ValidationData {
   private readonly config: ConfigManager;
   private readonly jsonData: JSONData;
   private readonly subscriptions: CompositeDisposable;

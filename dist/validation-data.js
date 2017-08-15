@@ -99,4 +99,4 @@ class ValidationData {
         });
     }
 }
-exports.default = ValidationData;
+exports.ValidationData = ValidationData;

@@ -1,7 +1,7 @@
 import { CompositeDisposable, Disposable, Range } from "atom";
 
-import FilterManager from "./filter-manager";
-import SoundPlayer from "./sound-player";
+import { FilterManager } from "./filter-manager";
+import { SoundPlayer } from "./sound-player";
 import * as Helpers from "./helpers";
 
 interface DecorationData {
@@ -14,7 +14,7 @@ interface Decorations {
   alertDecorations: DecorationData[]
 }
 
-export default class DecorationManager {
+export class DecorationManager {
   private readonly filterManager: FilterManager;
   private readonly soundPlayer: SoundPlayer;
   private readonly packageName: string;

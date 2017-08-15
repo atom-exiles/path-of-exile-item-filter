@@ -44,4 +44,4 @@ class SoundPlayer {
         return;
     }
 }
-exports.default = SoundPlayer;
+exports.SoundPlayer = SoundPlayer;

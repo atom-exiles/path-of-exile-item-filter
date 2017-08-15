@@ -61,7 +61,7 @@ class ConfigValue<T> {
 
 /** A wrapper for the Atom Config class. It simplifies usage, while also providing
  *  type declarations for our configuration variables. */
-export default class ConfigManager {
+export class ConfigManager {
   /** General settings for the package. */
   readonly general: {
     /** Whether or not the Completion provider should be active. */

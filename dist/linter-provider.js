@@ -196,4 +196,4 @@ class LinterProvider {
         }
     }
 }
-exports.default = LinterProvider;
+exports.LinterProvider = LinterProvider;

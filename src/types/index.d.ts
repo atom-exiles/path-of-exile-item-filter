@@ -1,5 +1,6 @@
 /// <reference types="atom-typings" />
 /// <reference path="./autocomplete.d.ts" />
+/// <reference path="./package-deps.d.ts" />
 
 // We have a custom property for Autocomplete::Suggestion, which we can just
 // merge in here.

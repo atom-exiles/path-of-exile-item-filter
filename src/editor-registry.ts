@@ -1,7 +1,7 @@
 import { CompositeDisposable, Emitter } from "atom";
 
 import { isItemFilter } from "./helpers";
-import ConfigManager from "./config-manager";
+import { ConfigManager } from "./config-manager";
 
 interface EditorData {
   editor: AtomCore.TextEditor
@@ -15,7 +15,7 @@ interface FilterData {
 
 /** Maintains two distinct registries: one with every TextEditor open within Atom
  *  and another with every item filter open within Atom. */
-export default class EditorRegistry {
+export class EditorRegistry {
   private readonly config: ConfigManager;
   private readonly packageName: string;
   private readonly subscriptions: CompositeDisposable

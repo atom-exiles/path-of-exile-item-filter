@@ -11,8 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const atom_1 = require("atom");
 const path = require("path");
 class JSONData {
-    constructor(config) {
-        this.config = config;
+    constructor() {
         this.dataPath = path.join(__dirname, "../data");
         this.data = this.updateData();
     }
@@ -53,4 +52,4 @@ class JSONData {
         });
     }
 }
-exports.default = JSONData;
+exports.JSONData = JSONData;

@@ -1,24 +1,16 @@
 import { Point, Range } from "atom";
 
-import ConfigManager from "config-manager";
-import SuggestionData from "suggestion-data";
+import { ConfigManager } from "config-manager";
+import { SuggestionData } from "suggestion-data";
 import * as Helpers from "./helpers";
 
-export default class CompletionProvider implements Autocomplete.Provider {
+export class CompletionProvider {
   private readonly config: ConfigManager;
   private readonly suggestions: SuggestionData;
-  readonly selector: string;
-  readonly disableForSelector: string;
-  readonly inclusionPriority: number;
-  readonly excludeLowerPriority: boolean;
 
   constructor(config: ConfigManager, suggestions: SuggestionData) {
     this.config = config;
     this.suggestions = suggestions;
-    this.selector = ".source.filter";
-    this.disableForSelector = ".source.filter .comment";
-    this.inclusionPriority = 1;
-    this.excludeLowerPriority = true;
   }
 
   dispose() {}

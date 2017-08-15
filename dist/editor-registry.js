@@ -133,4 +133,4 @@ class EditorRegistry {
         return;
     }
 }
-exports.default = EditorRegistry;
+exports.EditorRegistry = EditorRegistry;

@@ -1,7 +1,7 @@
 import { CompositeDisposable, Disposable, Range } from "atom";
 
-import ConfigManager from "./config-manager";
-import FilterManager from "./filter-manager";
+import { ConfigManager } from "./config-manager";
+import { FilterManager } from "./filter-manager";
 import * as Helpers from "./helpers";
 
 function gatherMessages(filter: Filter.Line[]) {
@@ -88,7 +88,7 @@ function adjustMessagePaths(messages: DataFormat.ValidationMessages, newPath: st
   return messages;
 }
 
-export default class LinterProvider {
+export class LinterProvider {
   private readonly config: ConfigManager;
   private readonly filterManager: FilterManager;
   private readonly delegate: Linter.IndieDelegate;

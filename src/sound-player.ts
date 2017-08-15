@@ -1,11 +1,11 @@
 import * as path from "path";
 import * as assert from "assert";
 
-import JSONData from "./json-data";
+import { JSONData } from "./json-data";
 
 const soundPath = path.join(__dirname + '/../media/sounds');
 
-export default class SoundPlayer {
+export class SoundPlayer {
   private readonly sounds: Map<string, HTMLAudioElement>;
 
   constructor(jsonData: JSONData) {

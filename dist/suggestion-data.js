@@ -201,4 +201,4 @@ class SuggestionData {
         });
     }
 }
-exports.default = SuggestionData;
+exports.SuggestionData = SuggestionData;

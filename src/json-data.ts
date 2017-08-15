@@ -1,8 +1,6 @@
 import { File } from "atom";
 import * as path from "path";
 
-import ConfigManager from "config-manager";
-
 interface FileList {
   items: File,
   suggestions: File,
@@ -10,14 +8,12 @@ interface FileList {
 }
 
 /** File handling for our data files. */
-export default class JSONData {
-  private readonly config: ConfigManager;
+export class JSONData {
   private readonly dataPath: string;
   /** A promise to the data loaded in from our JSON files. */
   data: Promise<DataFormat.JSONData>;
 
-  constructor(config: ConfigManager) {
-    this.config = config;
+  constructor() {
     this.dataPath = path.join(__dirname, "../data");
 
     this.data = this.updateData();
