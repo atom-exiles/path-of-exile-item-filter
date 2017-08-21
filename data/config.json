@@ -41,7 +41,7 @@
     "properties": {
       "classWhitelist": {
         "title": "Item Class Whitelist",
-        "description": "Allow the following additonal item classes to be used within filter files. Multiple entries should be separated by a comma.",
+        "description": "Additional item classes usable within item filters. Multiple entries should be separated by a comma.",
         "type": "array",
         "default": [],
         "order": 5,
@@ -49,7 +49,7 @@
       },
       "baseWhitelist": {
         "title": "Item Base Whitelist",
-        "description": "Allow the following additonal base types to be used within filter files. Multiple entries should be separated by a comma.",
+        "description": "Additional base types usable within item filters. Multiple entries should be separated by a comma.",
         "type": "array",
         "default": [],
         "order": 6,
@@ -71,7 +71,7 @@
       },
       "enableRightLabel": {
         "title": "Right Label",
-        "description": "Enable the right label, which provides additional information.",
+        "description": "Enable the right label, which provides additional information for each suggestion.",
         "type": "boolean",
         "default": true,
         "order": 2
