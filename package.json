@@ -13,8 +13,12 @@
   "activationCommands": {},
   "repository": "https://github.com/callum-ramage/path-of-exile-item-filter",
   "license": "MIT",
+  "scripts": {
+    "test": "atom --test test",
+    "lint": "eslint --max-warnings 0 test lib"
+  },
   "engines": {
-    "atom": ">=1.17.0 <2.0.0"
+    "atom": ">=1.18.0 <2.0.0"
   },
   "dependencies": {
     "atom-package-deps": "^4.6.0",
