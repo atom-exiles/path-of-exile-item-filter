@@ -2,7 +2,7 @@
 
 | Windows | Mac | Linux | Dependency Status |
 |---------|-----|-------|-------------------|
-| [![Build Status](https://ci.appveyor.com/api/projects/status/vs96bog9cde4acxi/branch/2.0?svg=true)](https://ci.appveyor.com/project/GlenCFL/path-of-exile-item-filter/branch/2.0)| TODO | TODO | TODO |
+| [![Build Status](https://ci.appveyor.com/api/projects/status/vs96bog9cde4acxi/branch/master?svg=true)](https://ci.appveyor.com/project/GlenCFL/path-of-exile-item-filter/branch/2.0)| TODO | TODO | [![Dependency Status](https://david-dm.org/callum-ramage/path-of-exile-item-filter.svg)](https://david-dm.org/callum-ramage/path-of-exile-item-filter) |
 
 This package provides additional support for the creation of Path of Exile filters within Atom, making it easier to create item filters for the game.
 
