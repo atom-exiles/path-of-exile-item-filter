@@ -1,5 +1,9 @@
 # Path of Exile: Item Filters
 
+| Windows | Mac | Linux | Dependency Status |
+|---------|-----|-------|-------------------|
+| [![Build Status](https://ci.appveyor.com/api/projects/status/vs96bog9cde4acxi/branch/2.0?svg=true)](https://ci.appveyor.com/project/GlenCFL/path-of-exile-item-filter/branch/2.0)| TODO | TODO | TODO |
+
 This package provides additional support for the creation of Path of Exile filters within Atom, making it easier to create item filters for the game.
 
 The thread for this package on the Path of Exile forums can be found [here](https://www.pathofexile.com/forum/view-thread/1840620).
