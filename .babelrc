@@ -1,0 +1,14 @@
+{
+  "sourceMaps": "inline",
+  "babelrc": false,
+  "plugins": [
+    "chai-assert-async",
+    "transform-object-rest-spread",
+    "transform-es2015-modules-commonjs",
+    "transform-async-to-generator",
+    "transform-class-properties",
+    "transform-es2015-destructuring",
+    "transform-es2015-parameters"
+  ],
+  "presets": []
+}

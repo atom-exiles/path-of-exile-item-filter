@@ -1,6 +1,4 @@
-/** @babel */
-
-import * as Helpers from '../dist/helpers'
+import * as Helpers from '../lib/helpers'
 
 describe("Guards", function() {
   describe("FilterElements", function() {
@@ -64,546 +62,546 @@ describe("Guards", function() {
 
     describe("isBlock()", function() {
       it("returns true when given a filter Block", function() {
-        expect(isBlock(block)).toBe(true)
+        assert(isBlock(block));
       })
 
       it("returns false when given any other Filter element", function() {
-        expect(isBlock(lineComment)).toBe(false)
-        expect(isBlock(unknown)).toBe(false)
+        assert(isBlock(lineComment) === false);
+        assert(isBlock(unknown) === false);
       })
     })
 
     describe("isShowBlock()", function() {
       it("returns true when given a Show block", function() {
-        expect(isShowBlock(showBlock)).toBe(true)
+        assert(isShowBlock(showBlock));
       })
 
       it("returns false when give a Hide block", function() {
-        expect(isShowBlock(hideBlock)).toBe(false)
+        assert(isShowBlock(hideBlock) === false);
       })
 
       it("returns false when given a Block", function() {
-        expect(isShowBlock(block)).toBe(false)
+        assert(isShowBlock(block) === false);
       })
 
       it("returns false when given any other filter element", function() {
-        expect(isShowBlock(empty)).toBe(false)
-        expect(isShowBlock(itemLevelRule)).toBe(false)
+        assert(isShowBlock(empty) === false);
+        assert(isShowBlock(itemLevelRule) === false);
       })
     })
 
     describe("isHideBlock()", function() {
       it("returns true when given a Hide block", function() {
-        expect(isHideBlock(hideBlock)).toBe(true)
+        assert(isHideBlock(hideBlock));
       })
 
       it("returns false when give a Show block", function() {
-        expect(isHideBlock(showBlock)).toBe(false)
+        assert(isHideBlock(showBlock) === false);
       })
 
       it("returns false when given a Block", function() {
-        expect(isHideBlock(block)).toBe(false)
+        assert(isHideBlock(block) === false);
       })
 
       it("returns false when given any other filter element", function() {
-        expect(isHideBlock(empty)).toBe(false)
-        expect(isHideBlock(itemLevelRule)).toBe(false)
+        assert(isHideBlock(empty) === false);
+        assert(isHideBlock(itemLevelRule) === false);
       })
     })
 
     describe("isRule()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(isRule(rule)).toBe(true)
+        assert(isRule(rule));
       })
 
       it("returns false when given any other filter element", function() {
-        expect(isRule(lineComment)).toBe(false)
-        expect(isRule(unknown)).toBe(false)
+        assert(isRule(lineComment) === false);
+        assert(isRule(unknown) === false);
       })
     })
 
     describe("isFilterRule()", function() {
       it("returns true when given a Filter rule", function() {
-        expect(isFilterRule(filterRule)).toBe(true)
+        assert(isFilterRule(filterRule));
       })
 
       it("returns false when give an Action rule", function() {
-        expect(isFilterRule(actionRule)).toBe(false)
+        assert(isFilterRule(actionRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isFilterRule(rule)).toBe(false)
+        assert(isFilterRule(rule) === false);
       })
 
       it("returns false when given any other filter element", function() {
-        expect(isFilterRule(empty)).toBe(false)
-        expect(isFilterRule(setBorderColorRule)).toBe(false)
+        assert(isFilterRule(empty) === false);
+        assert(isFilterRule(setBorderColorRule) === false);
       })
     })
 
     describe("isItemLevelRule()", function() {
       it("returns true when given an ItemLevel rule", function() {
-        expect(isItemLevelRule(itemLevelRule)).toBe(true)
+        assert(isItemLevelRule(itemLevelRule));
       })
 
       it("returns false when given a DropLevel rule", function() {
-        expect(isItemLevelRule(dropLevelRule)).toBe(false)
+        assert(isItemLevelRule(dropLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isItemLevelRule(rule)).toBe(false)
+        assert(isItemLevelRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isItemLevelRule(filterRule)).toBe(false)
+        assert(isItemLevelRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isItemLevelRule(empty)).toBe(false)
-        expect(isItemLevelRule(setBorderColorRule)).toBe(false)
+        assert(isItemLevelRule(empty) === false);
+        assert(isItemLevelRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isDropLevelRule()", function() {
       it("returns true when given a DropLevel rule", function() {
-        expect(isDropLevelRule(dropLevelRule)).toBe(true)
+        assert(isDropLevelRule(dropLevelRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isDropLevelRule(itemLevelRule)).toBe(false)
+        assert(isDropLevelRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isDropLevelRule(rule)).toBe(false)
+        assert(isDropLevelRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isDropLevelRule(filterRule)).toBe(false)
+        assert(isDropLevelRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isDropLevelRule(empty)).toBe(false)
-        expect(isDropLevelRule(setBorderColorRule)).toBe(false)
+        assert(isDropLevelRule(empty) === false);
+        assert(isDropLevelRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isQualityRule()", function() {
       it("returns true when given a Quality rule", function() {
-        expect(isQualityRule(qualityRule)).toBe(true)
+        assert(isQualityRule(qualityRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isQualityRule(itemLevelRule)).toBe(false)
+        assert(isQualityRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isQualityRule(rule)).toBe(false)
+        assert(isQualityRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isQualityRule(filterRule)).toBe(false)
+        assert(isQualityRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isQualityRule(empty)).toBe(false)
-        expect(isQualityRule(setBorderColorRule)).toBe(false)
+        assert(isQualityRule(empty) === false);
+        assert(isQualityRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isRarityRule()", function() {
       it("returns true when given a Rarity rule", function() {
-        expect(isRarityRule(rarityRule)).toBe(true)
+        assert(isRarityRule(rarityRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isRarityRule(itemLevelRule)).toBe(false)
+        assert(isRarityRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isRarityRule(rule)).toBe(false)
+        assert(isRarityRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isRarityRule(filterRule)).toBe(false)
+        assert(isRarityRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isRarityRule(empty)).toBe(false)
-        expect(isRarityRule(setBorderColorRule)).toBe(false)
+        assert(isRarityRule(empty) === false);
+        assert(isRarityRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isClassRule()", function() {
       it("returns true when given an Class rule", function() {
-        expect(isClassRule(classRule)).toBe(true)
+        assert(isClassRule(classRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isClassRule(itemLevelRule)).toBe(false)
+        assert(isClassRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isClassRule(rule)).toBe(false)
+        assert(isClassRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isClassRule(filterRule)).toBe(false)
+        assert(isClassRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isClassRule(empty)).toBe(false)
-        expect(isClassRule(setBorderColorRule)).toBe(false)
+        assert(isClassRule(empty) === false);
+        assert(isClassRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isBaseTypeRule()", function() {
       it("returns true when given an BaseType rule", function() {
-        expect(isBaseTypeRule(baseTypeRule)).toBe(true)
+        assert(isBaseTypeRule(baseTypeRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isBaseTypeRule(itemLevelRule)).toBe(false)
+        assert(isBaseTypeRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isBaseTypeRule(rule)).toBe(false)
+        assert(isBaseTypeRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isBaseTypeRule(filterRule)).toBe(false)
+        assert(isBaseTypeRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isBaseTypeRule(empty)).toBe(false)
-        expect(isBaseTypeRule(setBorderColorRule)).toBe(false)
+        assert(isBaseTypeRule(empty) === false);
+        assert(isBaseTypeRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isSocketsRule()", function() {
       it("returns true when given a Sockets rule", function() {
-        expect(isSocketsRule(socketsRule)).toBe(true)
+        assert(isSocketsRule(socketsRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isSocketsRule(itemLevelRule)).toBe(false)
+        assert(isSocketsRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isSocketsRule(rule)).toBe(false)
+        assert(isSocketsRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isSocketsRule(filterRule)).toBe(false)
+        assert(isSocketsRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isSocketsRule(empty)).toBe(false)
-        expect(isSocketsRule(setBorderColorRule)).toBe(false)
+        assert(isSocketsRule(empty) === false);
+        assert(isSocketsRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isLinkedSocketsRule()", function() {
       it("returns true when given a LinkedSockets rule", function() {
-        expect(isLinkedSocketsRule(linkedSocketsRule)).toBe(true)
+        assert(isLinkedSocketsRule(linkedSocketsRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isLinkedSocketsRule(itemLevelRule)).toBe(false)
+        assert(isLinkedSocketsRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isLinkedSocketsRule(rule)).toBe(false)
+        assert(isLinkedSocketsRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isLinkedSocketsRule(filterRule)).toBe(false)
+        assert(isLinkedSocketsRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isLinkedSocketsRule(empty)).toBe(false)
-        expect(isLinkedSocketsRule(setBorderColorRule)).toBe(false)
+        assert(isLinkedSocketsRule(empty) === false);
+        assert(isLinkedSocketsRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isSocketGroupRule()", function() {
       it("returns true when given a SocketGroup rule", function() {
-        expect(isSocketGroupRule(socketGroupRule)).toBe(true)
+        assert(isSocketGroupRule(socketGroupRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isSocketGroupRule(itemLevelRule)).toBe(false)
+        assert(isSocketGroupRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isSocketGroupRule(rule)).toBe(false)
+        assert(isSocketGroupRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isSocketGroupRule(filterRule)).toBe(false)
+        assert(isSocketGroupRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isSocketGroupRule(empty)).toBe(false)
-        expect(isSocketGroupRule(setBorderColorRule)).toBe(false)
+        assert(isSocketGroupRule(empty) === false);
+        assert(isSocketGroupRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isHeightRule()", function() {
       it("returns true when given a Height rule", function() {
-        expect(isHeightRule(heightRule)).toBe(true)
+        assert(isHeightRule(heightRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isHeightRule(itemLevelRule)).toBe(false)
+        assert(isHeightRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isHeightRule(rule)).toBe(false)
+        assert(isHeightRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isHeightRule(filterRule)).toBe(false)
+        assert(isHeightRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isHeightRule(empty)).toBe(false)
-        expect(isHeightRule(setBorderColorRule)).toBe(false)
+        assert(isHeightRule(empty) === false);
+        assert(isHeightRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isWidthRule()", function() {
       it("returns true when given a Width rule", function() {
-        expect(isWidthRule(widthRule)).toBe(true)
+        assert(isWidthRule(widthRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isWidthRule(itemLevelRule)).toBe(false)
+        assert(isWidthRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isWidthRule(rule)).toBe(false)
+        assert(isWidthRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isWidthRule(filterRule)).toBe(false)
+        assert(isWidthRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isWidthRule(empty)).toBe(false)
-        expect(isWidthRule(setBorderColorRule)).toBe(false)
+        assert(isWidthRule(empty) === false);
+        assert(isWidthRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isIdentifiedRule()", function() {
       it("returns true when given an Identified rule", function() {
-        expect(isIdentifiedRule(identifiedRule)).toBe(true)
+        assert(isIdentifiedRule(identifiedRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isIdentifiedRule(itemLevelRule)).toBe(false)
+        assert(isIdentifiedRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isIdentifiedRule(rule)).toBe(false)
+        assert(isIdentifiedRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isIdentifiedRule(filterRule)).toBe(false)
+        assert(isIdentifiedRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isIdentifiedRule(empty)).toBe(false)
-        expect(isIdentifiedRule(setBorderColorRule)).toBe(false)
+        assert(isIdentifiedRule(empty) === false);
+        assert(isIdentifiedRule(setBorderColorRule) === false);
       })
     })
 
 		describe("isCorruptedRule()", function() {
       it("returns true when given a Corrupted rule", function() {
-        expect(isCorruptedRule(corruptedRule)).toBe(true)
+        assert(isCorruptedRule(corruptedRule));
       })
 
       it("returns false when given an ItemLevel rule", function() {
-        expect(isCorruptedRule(itemLevelRule)).toBe(false)
+        assert(isCorruptedRule(itemLevelRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isCorruptedRule(rule)).toBe(false)
+        assert(isCorruptedRule(rule) === false);
       })
 
       it("returns false when given a Filter rule", function() {
-        expect(isCorruptedRule(filterRule)).toBe(false)
+        assert(isCorruptedRule(filterRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isCorruptedRule(empty)).toBe(false)
-        expect(isCorruptedRule(setBorderColorRule)).toBe(false)
+        assert(isCorruptedRule(empty) === false);
+        assert(isCorruptedRule(setBorderColorRule) === false);
       })
     })
 
     describe("isActionRule()", function() {
       it("returns true when given an Action rule", function() {
-        expect(Helpers.Guards.isActionRule(actionRule)).toBe(true)
+        assert(Helpers.Guards.isActionRule(actionRule));
       })
 
       it("returns false when give a Filter rule", function() {
-        expect(Helpers.Guards.isActionRule(filterRule)).toBe(false)
+        assert(Helpers.Guards.isActionRule(filterRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(Helpers.Guards.isActionRule(rule)).toBe(false)
+        assert(Helpers.Guards.isActionRule(rule) === false);
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.isActionRule(empty)).toBe(false)
-        expect(Helpers.Guards.isActionRule(itemLevelRule)).toBe(false)
+        assert(Helpers.Guards.isActionRule(empty) === false);
+        assert(Helpers.Guards.isActionRule(itemLevelRule) === false);
       })
     })
 
     describe("isSetBorderColorRule()", function() {
       it("returns true when given a SetBorderColor rule", function() {
-        expect(isSetBorderColorRule(setBorderColorRule)).toBe(true)
+        assert(isSetBorderColorRule(setBorderColorRule));
       })
 
       it("returns false when given a SetTextColor rule", function() {
-        expect(isSetBorderColorRule(setTextColorRule)).toBe(false)
+        assert(isSetBorderColorRule(setTextColorRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isSetBorderColorRule(rule)).toBe(false)
+        assert(isSetBorderColorRule(rule) === false);
       })
 
       it("returns false when given an Action rule", function() {
-        expect(isSetBorderColorRule(actionRule)).toBe(false)
+        assert(isSetBorderColorRule(actionRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isSetBorderColorRule(empty)).toBe(false)
-        expect(isSetBorderColorRule(itemLevelRule)).toBe(false)
+        assert(isSetBorderColorRule(empty) === false);
+        assert(isSetBorderColorRule(itemLevelRule) === false);
       })
     })
 
     describe("isSetTextColorRule()", function() {
       it("returns true when given a SetBorderColor rule", function() {
-        expect(isSetTextColorRule(setTextColorRule)).toBe(true)
+        assert(isSetTextColorRule(setTextColorRule));
       })
 
       it("returns false when given a SetBorderColor rule", function() {
-        expect(isSetTextColorRule(setBorderColorRule)).toBe(false)
+        assert(isSetTextColorRule(setBorderColorRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isSetTextColorRule(rule)).toBe(false)
+        assert(isSetTextColorRule(rule) === false);
       })
 
       it("returns false when given an Action rule", function() {
-        expect(isSetTextColorRule(actionRule)).toBe(false)
+        assert(isSetTextColorRule(actionRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isSetTextColorRule(empty)).toBe(false)
-        expect(isSetTextColorRule(itemLevelRule)).toBe(false)
+        assert(isSetTextColorRule(empty) === false);
+        assert(isSetTextColorRule(itemLevelRule) === false);
       })
     })
 
     describe("isSetBackgroundColorRule()", function() {
       it("returns true when given a SetBackgroundColor rule", function() {
-        expect(isSetBackgroundColorRule(setBackgroundColorRule)).toBe(true)
+        assert(isSetBackgroundColorRule(setBackgroundColorRule));
       })
 
       it("returns false when given a SetBorderColor rule", function() {
-        expect(isSetBackgroundColorRule(setBorderColorRule)).toBe(false)
+        assert(isSetBackgroundColorRule(setBorderColorRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isSetBackgroundColorRule(rule)).toBe(false)
+        assert(isSetBackgroundColorRule(rule) === false);
       })
 
       it("returns false when given an Action rule", function() {
-        expect(isSetBackgroundColorRule(actionRule)).toBe(false)
+        assert(isSetBackgroundColorRule(actionRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isSetBackgroundColorRule(empty)).toBe(false)
-        expect(isSetBackgroundColorRule(itemLevelRule)).toBe(false)
+        assert(isSetBackgroundColorRule(empty) === false);
+        assert(isSetBackgroundColorRule(itemLevelRule) === false);
       })
     })
 
     describe("isPlayAlertSoundRule()", function() {
       it("returns true when given a PlayAlertSound rule", function() {
-        expect(isPlayAlertSoundRule(playAlertSoundRule)).toBe(true)
+        assert(isPlayAlertSoundRule(playAlertSoundRule));
       })
 
       it("returns false when given a SetBorderColor rule", function() {
-        expect(isPlayAlertSoundRule(setBorderColorRule)).toBe(false)
+        assert(isPlayAlertSoundRule(setBorderColorRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isPlayAlertSoundRule(rule)).toBe(false)
+        assert(isPlayAlertSoundRule(rule) === false);
       })
 
       it("returns false when given an Action rule", function() {
-        expect(isPlayAlertSoundRule(actionRule)).toBe(false)
+        assert(isPlayAlertSoundRule(actionRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isPlayAlertSoundRule(empty)).toBe(false)
-        expect(isPlayAlertSoundRule(itemLevelRule)).toBe(false)
+        assert(isPlayAlertSoundRule(empty) === false);
+        assert(isPlayAlertSoundRule(itemLevelRule) === false);
       })
     })
 
     describe("isSetFontSizeRule()", function() {
       it("returns true when given a FontSizeRule rule", function() {
-        expect(isSetFontSizeRule(setFontSizeRule)).toBe(true)
+        assert(isSetFontSizeRule(setFontSizeRule));
       })
 
       it("returns false when given a SetBorderColor rule", function() {
-        expect(isSetFontSizeRule(setBorderColorRule)).toBe(false)
+        assert(isSetFontSizeRule(setBorderColorRule) === false);
       })
 
       it("returns false when given a Rule", function() {
-        expect(isSetFontSizeRule(rule)).toBe(false)
+        assert(isSetFontSizeRule(rule) === false);
       })
 
       it("returns false when given an Action rule", function() {
-        expect(isSetFontSizeRule(actionRule)).toBe(false)
+        assert(isSetFontSizeRule(actionRule) === false);
       })
 
       it("return false when given any other filter element", function() {
-        expect(isSetFontSizeRule(empty)).toBe(false)
-        expect(isSetFontSizeRule(itemLevelRule)).toBe(false)
+        assert(isSetFontSizeRule(empty) === false);
+        assert(isSetFontSizeRule(itemLevelRule) === false);
       })
     })
 
     describe("isEmpty()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(Helpers.Guards.isEmpty(empty)).toBe(true)
+        assert(Helpers.Guards.isEmpty(empty));
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.isEmpty(lineComment)).toBe(false)
-        expect(Helpers.Guards.isEmpty(unknown)).toBe(false)
+        assert(Helpers.Guards.isEmpty(lineComment) === false);
+        assert(Helpers.Guards.isEmpty(unknown) === false);
       })
     })
 
     describe("isLineComment()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(Helpers.Guards.isLineComment(lineComment)).toBe(true)
+        assert(Helpers.Guards.isLineComment(lineComment));
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.isLineComment(empty)).toBe(false)
-        expect(Helpers.Guards.isLineComment(unknown)).toBe(false)
+        assert(Helpers.Guards.isLineComment(empty) === false);
+        assert(Helpers.Guards.isLineComment(unknown) === false);
       })
     })
 
     describe("isUnknown()", function() {
       it("returns true when given a filter Rule", function() {
-        expect(Helpers.Guards.isUnknown(unknown)).toBe(true)
+        assert(Helpers.Guards.isUnknown(unknown));
       })
 
       it("returns false when given any other filter element", function() {
-        expect(Helpers.Guards.isUnknown(empty)).toBe(false)
-        expect(Helpers.Guards.isUnknown(rule)).toBe(false)
+        assert(Helpers.Guards.isUnknown(empty) === false);
+        assert(Helpers.Guards.isUnknown(rule) === false);
       })
     })
   })
@@ -611,24 +609,24 @@ describe("Guards", function() {
   describe("isTextSuggestion", function() {
     it("returns true when given a text suggestion", function() {
       let textSuggestion = { text: "" }
-      expect(Helpers.Guards.isTextSuggestion(textSuggestion)).toBe(true)
+      assert(Helpers.Guards.isTextSuggestion(textSuggestion));
     })
 
     it("returns false when given a snippet suggestion", function() {
       let snippetSuggestion = { snippet: "" }
-      expect(Helpers.Guards.isTextSuggestion(snippetSuggestion)).toBe(false)
+      assert(Helpers.Guards.isTextSuggestion(snippetSuggestion) === false);
     })
   })
 
   describe("isSnippetSuggestion", function() {
     it("returns true when given a snippet suggestion", function() {
       let snippetSuggestion = { snippet: "" }
-      expect(Helpers.Guards.isSnippetSuggestion(snippetSuggestion)).toBe(true)
+      assert(Helpers.Guards.isSnippetSuggestion(snippetSuggestion));
     })
 
     it("returns false when given a text suggestion", function() {
       let textSuggestion = { text: "" }
-      expect(Helpers.Guards.isSnippetSuggestion(textSuggestion)).toBe(false)
+      assert(Helpers.Guards.isSnippetSuggestion(textSuggestion) === false);
     })
   })
 })

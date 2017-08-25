@@ -1,5 +1,3 @@
-/** @babel */
-
 import LineParser from '../dist/line-parser';
 
 describe("LineParser.constructor()", function() {
