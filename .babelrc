@@ -1,6 +1,5 @@
 {
   "sourceMaps": "inline",
-  "babelrc": false,
   "plugins": [
     "chai-assert-async",
     "transform-object-rest-spread",

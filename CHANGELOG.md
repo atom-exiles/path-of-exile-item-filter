@@ -1,7 +1,8 @@
-## Version 1.1.5-1.1.6
+## Version 1.1.5-1.1.7
 * Full support for the additional sounds in Fall of Oriath.
 * Mark "PlayAlertSound Orb" as invalid syntax.
 * Improved package activation time.
+* Moved the Git repository over to an organization.
 
 The PlayAlertSound parser within Path of Exile now allows many different values to appear as the identifier, with some resulting in crashes whenever the sound is triggered. Our parser is strict and will mark these as errors.
 
