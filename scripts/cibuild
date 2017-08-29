@@ -51,6 +51,6 @@ function runTests {
   exit
 }
 
-if [ "$TRAVIS_BUILD_JOB" = "runtests" ]
+if [ "$TRAVIS_BUILD_JOB" = "runtests" ]; then
   runTests
 fi
