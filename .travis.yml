@@ -13,6 +13,9 @@ addons:
     packages:
     - clang-3.3
     - build-essential
+    - gnome-keyring
+    - libsecret-1-dev
+    - python-gnomekeyring
 
 env:
   global:
@@ -33,6 +36,12 @@ notifications:
 
 install:
 - npm install -g npm
+
+before_script:
+  - eval $(echo -n "" | /usr/bin/gnome-keyring-daemon --login); fi
+  - eval $(/usr/bin/gnome-keyring-daemon --components=secrets --start); fi
+  - dbus-launch /usr/bin/python -c \
+      "import gnomekeyring;gnomekeyring.create_sync('login', '');"
 
 script:
 - ./scripts/cibuild
