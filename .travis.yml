@@ -38,8 +38,8 @@ install:
 - npm install -g npm
 
 before_script:
-  - eval $(echo -n "" | /usr/bin/gnome-keyring-daemon --login); fi
-  - eval $(/usr/bin/gnome-keyring-daemon --components=secrets --start); fi
+  - eval $(echo -n "" | /usr/bin/gnome-keyring-daemon --login)
+  - eval $(/usr/bin/gnome-keyring-daemon --components=secrets --start)
   - dbus-launch /usr/bin/python -c \
       "import gnomekeyring;gnomekeyring.create_sync('login', '');"
 
