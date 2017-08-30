@@ -17,7 +17,7 @@ interface FilterData {
  *
  *  Changes affecting the same rows are effectively merged together during this
  *  transformation. */
-function transformChanges(c: TextBuffer.CallbackArgs.TextChange[]) {
+function transformChanges(c: AtomTextBuffer.CallbackArgs.TextChange[]) {
   let result: Filter.Params.BufferChange[] = [];
 
   // Atom will freeze each change object, yet sort requires each element of
@@ -97,7 +97,7 @@ export class FilterManager {
     this.subscriptions.add(this.validationData.onDidUpdateData((data) => {
       this.filters.forEach((filterData, editorID) => {
         filterData.filter.dispose();
-        this.emitter.emit("did-destroy-filter", filterData.editor.id);
+        this.emitter.emit("did-destroy-filter", (<Revelations.TextEditor>filterData.editor).id);
         filterData.filter = new ItemFilter(this.config, this.validationData, filterData.editor);
         this.emitter.emit("did-add-filter", filterData);
       });
@@ -164,8 +164,9 @@ export class FilterManager {
     });
 
     return this.emitter.on<Filter.Params.ProcessedFilterData>("did-process-filter", (filterData) => {
-      if(!this.observedFilters.includes(filterData.editor.id)) {
-        this.observedFilters.push(filterData.editor.id);
+      let editor = <Revelations.TextEditor>filterData.editor;
+      if(!this.observedFilters.includes(editor.id)) {
+        this.observedFilters.push(editor.id);
       }
       callback(filterData);
     });
@@ -175,7 +176,7 @@ export class FilterManager {
   private async handleNewFilter(editor: AtomCore.TextEditor) {
     const subscription = editor.onDidStopChanging((event) => {
       if(event.changes.length == 0) return;
-      const filterData = this.filters.get(editor.id);
+      const filterData = this.filters.get((<Revelations.TextEditor>editor).id);
       if(filterData) {
         const changes = transformChanges(event.changes);
         filterData.filter.update(changes).then((filter) => {
@@ -192,7 +193,7 @@ export class FilterManager {
 
     const filter = new ItemFilter(this.config, this.validationData, editor);
     const filterData: FilterData = { editor, filter, subscription };
-    this.filters.set(editor.id, filterData);
+    this.filters.set((<Revelations.TextEditor>editor).id, filterData);
     this.emitter.emit("did-add-filter", filterData);
 
     const lines = await filter.lines;

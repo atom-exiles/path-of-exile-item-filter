@@ -15,7 +15,7 @@ declare namespace Autocomplete {
       editor: AtomCore.TextEditor
 
       /** The position of the cursor. */
-      bufferPosition: TextBuffer.Point
+      bufferPosition: AtomTextBuffer.Point
 
       /** The scope descriptor for the current cursor position. */
       scopeDescriptor: AtomCore.ScopeDescriptor
@@ -30,7 +30,7 @@ declare namespace Autocomplete {
     /** The parameters passed into onDidInsertSuggestion by Autocomplete+. */
     interface SuggestionInserted {
       editor: AtomCore.TextEditor
-      triggerPosition: TextBuffer.Point
+      triggerPosition: AtomTextBuffer.Point
       suggestion: TextSuggestion|SnippetSuggestion
     }
   }

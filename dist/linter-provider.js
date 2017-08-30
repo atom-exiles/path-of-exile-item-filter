@@ -120,22 +120,24 @@ class LinterProvider {
     }
     handleNewFilter(data) {
         const messages = gatherMessages(data.lines);
+        const editor = data.editor;
         if (data.editor.getPath()) {
-            this.filterMessages.set(data.editor.id, messages);
+            this.filterMessages.set(editor.id, messages);
             this.appendMessages(messages);
         }
         else {
-            this.unsavedFilterMessages.set(data.editor.id, messages);
+            this.unsavedFilterMessages.set(editor.id, messages);
         }
     }
     handleFilterUpdate(data) {
         const messages = gatherMessages(data.lines);
+        const editor = data.editor;
         if (data.editor.getPath()) {
-            this.filterMessages.set(data.editor.id, messages);
+            this.filterMessages.set(editor.id, messages);
             this.resetMessageCache();
         }
         else {
-            this.unsavedFilterMessages.set(data.editor.id, messages);
+            this.unsavedFilterMessages.set(editor.id, messages);
         }
     }
     handleDestroyedFilter(editorID) {

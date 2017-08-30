@@ -7,9 +7,6 @@
     }
   },
   "extends": "fbjs",
-  "rules": {
-    "linebreak-style": 0
-  },
   "globals": {
     "atom": true,
     "assert": true,

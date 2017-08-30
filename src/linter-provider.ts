@@ -110,7 +110,7 @@ export class LinterProvider {
     this.messageCache = [];
 
     this.subscriptions.add(filterManager.observeProcessedFilters((data) => {
-      const editor = data.editor;
+      const editor = <Revelations.TextEditor>data.editor;
 
       this.editorSubs.set(editor.id, editor.onDidChangePath((newPath) => {
         this.handlePathChange(editor.id, newPath);
@@ -151,21 +151,25 @@ export class LinterProvider {
 
   private handleNewFilter(data: Filter.Params.ProcessedFilterData) {
     const messages = gatherMessages(data.lines);
+    const editor = <Revelations.TextEditor>data.editor;
+
     if(data.editor.getPath()) {
-      this.filterMessages.set(data.editor.id, messages);
+      this.filterMessages.set(editor.id, messages);
       this.appendMessages(messages);
     } else {
-      this.unsavedFilterMessages.set(data.editor.id, messages)
+      this.unsavedFilterMessages.set(editor.id, messages)
     }
   }
 
   private handleFilterUpdate(data: Filter.Params.ReprocessedFilterData) {
     const messages = gatherMessages(data.lines);
+    const editor = <Revelations.TextEditor>data.editor;
+
     if(data.editor.getPath()) {
-      this.filterMessages.set(data.editor.id, messages);
+      this.filterMessages.set(editor.id, messages);
       this.resetMessageCache();
     } else {
-      this.unsavedFilterMessages.set(data.editor.id, messages);
+      this.unsavedFilterMessages.set(editor.id, messages);
     }
   }
 

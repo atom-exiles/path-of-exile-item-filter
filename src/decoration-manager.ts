@@ -5,7 +5,7 @@ import { SoundPlayer } from "./sound-player";
 import * as Helpers from "./helpers";
 
 interface DecorationData {
-  marker: TextBuffer.DisplayMarker
+  marker: AtomTextBuffer.DisplayMarker
   decoration: AtomCore.Decoration
 }
 
@@ -70,13 +70,13 @@ export class DecorationManager {
 
   private handleNewFilter(data: Filter.Params.ProcessedFilterData) {
     const decorations = this.updateLines(data.editor, data.lines);
-    this.decorations.set(data.editor.id, decorations);
+    this.decorations.set((<Revelations.TextEditor>data.editor).id, decorations);
 
     return;
   }
 
   private handleFilterUpdate(params: Filter.Params.ReprocessedFilterData) {
-    this.handleFilterDestruction(params.editor.id);
+    this.handleFilterDestruction((<Revelations.TextEditor>params.editor).id);
     this.handleNewFilter(params);
 
     return;
@@ -168,15 +168,16 @@ export class DecorationManager {
   // here. The original code can be found here:
   //  https://goo.gl/whP9ZY
   private monitorCursors(editor: AtomCore.TextEditor) {
-    const previousSub = this.editorSub.get(editor.id);
+    const previousSub = this.editorSub.get((<Revelations.TextEditor>editor).id);
     if(previousSub) previousSub.dispose();
 
     const editorSub = editor.observeCursors((cursor) => {
-      let marker: TextBuffer.DisplayMarker;
-      let lastRange: TextBuffer.Range;
+      let marker: AtomTextBuffer.DisplayMarker;
+      let lastRange: AtomTextBuffer.Range;
       let lastEmpty: boolean;
 
-      const handlePositionChange = ((start: TextBuffer.IPoint, end: TextBuffer.IPoint) => {
+      const handlePositionChange = ((start: AtomTextBuffer.PointLike, end:
+          AtomTextBuffer.PointLike) => {
         const gutter = editor.gutterWithName(this.packageName);
         if(!gutter) return;
 
@@ -229,6 +230,6 @@ export class DecorationManager {
       handlePositionChange(screenRange.start, screenRange.end);
     });
 
-    this.editorSub.set(editor.id, editorSub);
+    this.editorSub.set((<Revelations.TextEditor>editor).id, editorSub);
   }
 }

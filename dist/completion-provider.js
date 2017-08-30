@@ -25,7 +25,7 @@ class CompletionProvider {
             const enableExtraSuggestions = this.config.completion.enableExtraSuggestions.value;
             let result = [];
             prefix = this.getPrefix(editor, bufferPosition);
-            const cursorScopes = scopeDescriptor.scopes;
+            const cursorScopes = scopeDescriptor.getScopesArray();
             const lastScope = cursorScopes[cursorScopes.length - 1];
             let shouldPruneSuggestions = true;
             if (lastScope == "source.filter") {
@@ -155,7 +155,7 @@ class CompletionProvider {
         let previousPositionScopes;
         if (position.column > 0) {
             const previousPosition = new atom_1.Point(position.row, position.column - 1);
-            previousPositionScopes = editor.scopeDescriptorForBufferPosition(previousPosition).scopes;
+            previousPositionScopes = editor.scopeDescriptorForBufferPosition(previousPosition).getScopesArray();
         }
         const previousText = editor.getTextInBufferRange([[position.row, 0], position]);
         let prefix;

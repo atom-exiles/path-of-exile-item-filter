@@ -57,7 +57,7 @@ class ItemFilter {
     dispose() { }
     update(changes) {
         return __awaiter(this, void 0, void 0, function* () {
-            const lines = this.editor.buffer.getLines();
+            const lines = this.editor.getBuffer().getLines();
             const filter = yield this.lines;
             return this.lines = this.validationData.data.then((data) => {
                 return new Promise((resolve, reject) => {
@@ -77,7 +77,7 @@ class ItemFilter {
                             lines: changedLines,
                             data: data,
                             row: change.start,
-                            file: this.editor.buffer.getPath()
+                            file: this.editor.getBuffer().getPath()
                         });
                         result = result.concat(processedLines);
                         currentIndex += processedLines.length;
@@ -101,7 +101,7 @@ class ItemFilter {
     }
     processFilter(data, chunkSize) {
         return __awaiter(this, void 0, void 0, function* () {
-            const lines = this.editor.buffer.getLines();
+            const lines = this.editor.getBuffer().getLines();
             return new Promise((resolve, reject) => {
                 var container = [];
                 try {
@@ -110,7 +110,7 @@ class ItemFilter {
                         lines,
                         data,
                         row: 0,
-                        file: this.editor.buffer.getPath(),
+                        file: this.editor.getBuffer().getPath(),
                         chunkSize
                     }, () => {
                         resolve(container);
@@ -129,7 +129,7 @@ class ItemFilter {
                         lines,
                         data,
                         row: 0,
-                        file: this.editor.buffer.getPath()
+                        file: this.editor.getBuffer().getPath()
                     });
                     resolve(filter);
                 }

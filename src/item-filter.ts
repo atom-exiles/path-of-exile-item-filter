@@ -60,7 +60,7 @@ export class ItemFilter {
   dispose() {}
 
   async update(changes: Filter.Params.BufferChange[]) {
-    const lines = this.editor.buffer.getLines();
+    const lines = this.editor.getBuffer().getLines();
     const filter = await this.lines;
 
     return this.lines = this.validationData.data.then((data) => {
@@ -82,7 +82,7 @@ export class ItemFilter {
             lines: changedLines,
             data: data,
             row: change.start,
-            file: this.editor.buffer.getPath()
+            file: this.editor.getBuffer().getPath()
           });
 
           result = result.concat(processedLines);
@@ -109,7 +109,7 @@ export class ItemFilter {
   }
 
   async processFilter(data: DataFormat.ValidationData, chunkSize: number) {
-    const lines = this.editor.buffer.getLines();
+    const lines = this.editor.getBuffer().getLines();
 
     return new Promise<Filter.Line[]>((resolve, reject) => {
       var container: Array<Filter.Line> = [];
@@ -120,7 +120,7 @@ export class ItemFilter {
           lines,
           data,
           row: 0,
-          file: this.editor.buffer.getPath(),
+          file: this.editor.getBuffer().getPath(),
           chunkSize
         }, () => {
           resolve(container);
@@ -140,7 +140,7 @@ export class ItemFilter {
           lines,
           data,
           row: 0,
-          file: this.editor.buffer.getPath()
+          file: this.editor.getBuffer().getPath()
         });
         resolve(filter);
       }

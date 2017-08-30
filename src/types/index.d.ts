@@ -2,6 +2,12 @@
 /// <reference path="./autocomplete.d.ts" />
 /// <reference path="./package-deps.d.ts" />
 
+declare namespace Revelations {
+  class TextEditor extends AtomCore.TextEditor {
+    id: number
+  }
+}
+
 // We have a custom property for Autocomplete::Suggestion, which we can just
 // merge in here.
 declare namespace Autocomplete {
@@ -140,7 +146,7 @@ declare namespace Filter {
   }
 
   export namespace Components {
-    interface Range extends TextBuffer.IRange {}
+    interface Range extends AtomTextBuffer.RangeLike {}
 
     interface Text {
       text: string, range: Range

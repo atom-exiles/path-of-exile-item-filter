@@ -8,7 +8,7 @@
 declare namespace Linter {
   interface Solution {
     title?: string
-    position: TextBuffer.Range
+    position: AtomTextBuffer.Range
     priority?: number
   }
 
@@ -28,7 +28,7 @@ declare namespace Linter {
       file: string
 
       /** The range of the message in the editor. */
-      position: TextBuffer.Range
+      position: AtomTextBuffer.Range
     }
 
     /** A reference to a different location in the editor. */
@@ -37,7 +37,7 @@ declare namespace Linter {
       file: string
 
       /** The point being referenced in that file. */
-      position?: TextBuffer.Point
+      position?: AtomTextBuffer.Point
     }
 
     /** An HTTP link to a resource explaining the issue. Default is a google search. */
@@ -70,8 +70,8 @@ declare namespace Linter {
     clearMessages(): void
     setMessages(filePath: string, messages: Array<Message>): void
     setAllMessages(messages: Array<Message>): void
-    onDidUpdate(callback: Function): AtomEventKit.Disposable
-    onDidDestroy(callback: Function): AtomEventKit.Disposable
+    onDidUpdate(callback: Function): EventKit.Disposable
+    onDidDestroy(callback: Function): EventKit.Disposable
     dispose(): void
   }
 }

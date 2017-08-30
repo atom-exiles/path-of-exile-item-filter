@@ -9,7 +9,6 @@ const quotationRegex = /^(")([^\"]*)(")$/;
 const textRegex = /\S+/;
 const eolRegex = /(\r|\n)/;
 const surroundingWSRegex = /^(\s*)(.*\S)\s*$/;
-// const colorHexRegex = /^(\s*)((#[A-F0-9]{8})|(#[A-F0-9]{6}))(\s|$)/i;
 
 /** Manages access attempts to the result of a parse. Enforces the notion that a
  *  value will always have a range. */
@@ -200,9 +199,4 @@ export default class LineParser {
   parseComment() {
     return this.parseSingleValue(commentRegex);
   }
-
-  // Parses a hexadecimal value if one is next on the line.
-  // nextHex() {
-  //   return this.parseSingleValue(colorHexRegex);
-  // }
 }

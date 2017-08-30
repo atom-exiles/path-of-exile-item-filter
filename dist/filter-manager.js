@@ -126,8 +126,9 @@ class FilterManager {
             }
         });
         return this.emitter.on("did-process-filter", (filterData) => {
-            if (!this.observedFilters.includes(filterData.editor.id)) {
-                this.observedFilters.push(filterData.editor.id);
+            let editor = filterData.editor;
+            if (!this.observedFilters.includes(editor.id)) {
+                this.observedFilters.push(editor.id);
             }
             callback(filterData);
         });

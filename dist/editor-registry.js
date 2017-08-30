@@ -62,13 +62,15 @@ class EditorRegistry {
     }
     handleNewEditor(editor) {
         const editorSubs = new atom_1.CompositeDisposable;
-        editorSubs.add(editor.buffer.onDidDestroy(() => {
+        editorSubs.add(editor.getBuffer().onDidDestroy(() => {
             this.handleDestroyedEditor(editor.id);
         }));
         editorSubs.add(editor.onDidChangeGrammar((grammar) => {
             this.handleGrammarChange(editor, grammar);
         }));
-        this.editors.set(editor.id, { editor, subscriptions: editorSubs });
+        this.editors.set(editor.id, {
+            editor, subscriptions: editorSubs
+        });
         this.emitter.emit("did-add-editor", editor);
         if (helpers_1.isItemFilter(editor)) {
             this.constructFilter(editor);

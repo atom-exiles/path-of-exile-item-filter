@@ -26,7 +26,7 @@ export class CompletionProvider {
 
     let result: Autocomplete.Suggestions = [];
     prefix = this.getPrefix(editor, bufferPosition);
-    const cursorScopes = scopeDescriptor.scopes;
+    const cursorScopes = scopeDescriptor.getScopesArray();
     const lastScope = cursorScopes[cursorScopes.length - 1];
 
     let shouldPruneSuggestions = true;
@@ -165,7 +165,7 @@ export class CompletionProvider {
     if(position.column > 0) {
       const previousPosition = new Point(position.row, position.column - 1);
       previousPositionScopes = editor.scopeDescriptorForBufferPosition(
-          previousPosition).scopes;
+          previousPosition).getScopesArray();
     }
 
     const previousText = editor.getTextInBufferRange([[position.row, 0], position]);

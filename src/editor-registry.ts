@@ -102,15 +102,17 @@ export class EditorRegistry {
   /** Registers a new editor with the registry. */
   private handleNewEditor(editor: AtomCore.TextEditor) {
     const editorSubs = new CompositeDisposable;
-    editorSubs.add(editor.buffer.onDidDestroy(() => {
-      this.handleDestroyedEditor(editor.id);
+    editorSubs.add(editor.getBuffer().onDidDestroy(() => {
+      this.handleDestroyedEditor((<Revelations.TextEditor>editor).id);
     }));
 
     editorSubs.add(editor.onDidChangeGrammar((grammar) => {
       this.handleGrammarChange(editor, grammar);
     }));
 
-    this.editors.set(editor.id, { editor, subscriptions: editorSubs });
+    this.editors.set((<Revelations.TextEditor>editor).id, {
+      editor, subscriptions: editorSubs
+    });
     this.emitter.emit("did-add-editor", editor);
 
     if(isItemFilter(editor)) {
@@ -142,7 +144,7 @@ export class EditorRegistry {
     if(isItemFilter(editor)) {
       this.constructFilter(editor);
     } else {
-      const filterData = this.filters.get(editor.id);
+      const filterData = this.filters.get((<Revelations.TextEditor>editor).id);
       if(filterData) {
         this.destroyFilter(filterData);
       }
@@ -178,15 +180,15 @@ export class EditorRegistry {
   /** Performs any work necessary to register an item filter using the given editor. */
   private constructFilter(editor: AtomCore.TextEditor) {
     const gutter = this.addDecorationGutter(editor);
-    this.filters.set(editor.id, { editor, gutter });
+    this.filters.set((<Revelations.TextEditor>editor).id, { editor, gutter });
     this.emitter.emit("did-add-filter", editor);
   }
 
   /** Performs any work necessary to unregister an item filter. */
   private destroyFilter(data: FilterData) {
     data.gutter.destroy();
-    this.filters.delete(data.editor.id);
-    this.emitter.emit("did-destroy-filter", data.editor.id);
+    this.filters.delete((<Revelations.TextEditor>data.editor).id);
+    this.emitter.emit("did-destroy-filter", (<Revelations.TextEditor>data.editor).id);
 
     return;
   }

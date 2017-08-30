@@ -7,7 +7,7 @@
   { 'include': '#commented_line' }
   {
     'name': 'block.filter'
-    'begin': "^\\s*((Show)|(Hide))((\\s+(#+.*))|\\s.*)$"
+    'begin': "(^|\uFEFF)\\s*((Show)|(Hide))((\\s+(#+.*))|\\s.*)$"
     'beginCaptures':
       '2':
         'name': 'keyword.block.show.filter'
