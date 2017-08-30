@@ -8,8 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const atom_1 = require("atom");
-const path = require("path");
 const _ = require("lodash");
 const assert = require("assert");
 const filter_processor_1 = require("./filter-processor");
@@ -35,104 +33,61 @@ class ItemFilter {
         this.config = config;
         this.validationData = validationData;
         this.editor = editor;
-        const p1 = this.validationData.data;
-        const p2 = this.config.general.chunkSize.promise;
-        this.lines = Promise.all([p1, p2]).then((params) => {
-            var chunkSize = params[1];
-            if (chunkSize <= 0) {
-                atom.notifications.addWarning("Configuration Variable 'chunkSize' reset.", {
-                    dismissable: true,
-                    description: "The value of chunkSize was set to a value equal to or less than zero." +
-                        " It has been reset to the default."
-                });
-                this.config.general.chunkSize.unset();
-                const defaultValue = this.config.general.chunkSize.value;
-                if (defaultValue == null)
-                    throw new Error("reset of chunkSize failed");
-                chunkSize = defaultValue;
-            }
-            return this.processFilter(params[0], chunkSize);
+        this.lines = this.validationData.data.then((vd) => {
+            return this.processFilter(vd);
         });
     }
     dispose() { }
     update(changes) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const lines = this.editor.getBuffer().getLines();
-            const filter = yield this.lines;
-            return this.lines = this.validationData.data.then((data) => {
-                return new Promise((resolve, reject) => {
-                    let result = [];
-                    let shift = 0;
-                    let currentIndex = 0;
-                    for (var change of changes) {
-                        if (change.start != currentIndex) {
-                            const upperPartition = filter.slice(currentIndex, change.start);
-                            if (shift != 0)
-                                shiftLineRanges(upperPartition, shift);
-                            result = result.concat(upperPartition);
-                            currentIndex += upperPartition.length;
-                        }
-                        const changedLines = lines.slice(currentIndex, currentIndex + change.newExtent + 1);
-                        let processedLines = filter_processor_1.processLines({
-                            lines: changedLines,
-                            data: data,
-                            row: change.start,
-                            file: this.editor.getBuffer().getPath()
-                        });
-                        result = result.concat(processedLines);
-                        currentIndex += processedLines.length;
-                        shift += change.newExtent - change.oldExtent;
-                    }
-                    const lastChange = _.last(changes);
-                    if (lastChange == null) {
-                        throw new Error("update called with no changes");
-                    }
-                    const sliceIndex = lastChange.start + lastChange.oldExtent + 1;
-                    const slice = filter.splice(sliceIndex);
+        const lines = this.editor.getBuffer().getLines();
+        const promises = [
+            this.validationData.data,
+            this.lines
+        ];
+        return this.lines = Promise.all(promises).then((args) => __awaiter(this, void 0, void 0, function* () {
+            let data = args[0];
+            let filter = args[1];
+            let result = [];
+            let shift = 0;
+            let currentIndex = 0;
+            for (var change of changes) {
+                if (change.start != currentIndex) {
+                    const upperPartition = filter.slice(currentIndex, change.start);
                     if (shift != 0)
-                        shiftLineRanges(slice, shift);
-                    result = result.concat(slice);
-                    assert(result.length == lines.length, 'output size mismatch (' +
-                        result.length + ' vs ' + lines.length + ')');
-                    resolve(result);
+                        shiftLineRanges(upperPartition, shift);
+                    result = result.concat(upperPartition);
+                    currentIndex += upperPartition.length;
+                }
+                const changedLines = lines.slice(currentIndex, currentIndex + change.newExtent + 1);
+                let processedLines = filter_processor_1.processLines({
+                    lines: changedLines,
+                    data: data,
+                    row: change.start,
+                    file: this.editor.getBuffer().getPath()
                 });
-            });
-        });
+                result = result.concat(processedLines);
+                currentIndex += processedLines.length;
+                shift += change.newExtent - change.oldExtent;
+            }
+            const lastChange = _.last(changes);
+            if (lastChange == null) {
+                throw new Error("update called with no changes");
+            }
+            const sliceIndex = lastChange.start + lastChange.oldExtent + 1;
+            const slice = filter.splice(sliceIndex);
+            if (shift != 0)
+                shiftLineRanges(slice, shift);
+            result = result.concat(slice);
+            assert(result.length == lines.length, 'output size mismatch (' +
+                result.length + ' vs ' + lines.length + ')');
+            return result;
+        }));
     }
-    processFilter(data, chunkSize) {
+    processFilter(data) {
         return __awaiter(this, void 0, void 0, function* () {
             const lines = this.editor.getBuffer().getLines();
-            return new Promise((resolve, reject) => {
-                var container = [];
-                try {
-                    const taskPath = path.join(__dirname, "tasks", "processFilterFile.js");
-                    const task = atom_1.Task.once(taskPath, {
-                        lines,
-                        data,
-                        row: 0,
-                        file: this.editor.getBuffer().getPath(),
-                        chunkSize
-                    }, () => {
-                        resolve(container);
-                    });
-                    task.on("did-process-chunk", (chunk) => {
-                        container.push.apply(container, chunk);
-                    });
-                }
-                catch (e) {
-                    atom.notifications.addInfo('Task Creation Failed', {
-                        description: 'Failed to offload processing of this filter to another process.',
-                        detail: 'The filter will still be processed, but a separate process will not be used.' +
-                            '\nAtom may hang for several seconds when opening large item filters.'
-                    });
-                    const filter = filter_processor_1.processLines({
-                        lines,
-                        data,
-                        row: 0,
-                        file: this.editor.getBuffer().getPath()
-                    });
-                    resolve(filter);
-                }
+            return filter_processor_1.processLines({
+                lines, data, row: 0, file: this.editor.getBuffer().getPath()
             });
         });
     }

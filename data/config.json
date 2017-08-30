@@ -24,13 +24,6 @@
         "type": "boolean",
         "default": true,
         "order": 3
-      },
-      "chunkSize": {
-        "title": "Validation Chunk Size",
-        "description": "The number of item filter lines to process at once. If you encounter mousewheel lag when opening large files, then lower this number.",
-        "type": "number",
-        "default": 500,
-        "order": 4
       }
     }
   },

@@ -1,8 +1,12 @@
-## Version 1.1.5-1.1.7
+## Version 1.1.5-1.1.8
 * Full support for the additional sounds in Fall of Oriath.
 * Mark "PlayAlertSound Orb" as invalid syntax.
 * Improved package activation time.
 * Moved the Git repository over to an organization.
+* Removed the chunkSize configuration variable, as it is no longer used.
+* Allow the UTF8 BOM to appear on the same line as Show and Hide blocks in the grammar.
+* Stopped offloading work onto a separate Node process.
+  * The 'text-buffer' optimizations in Atom 1.19 have made filter processing drastically faster on the main process, so this is no longer necessary.
 
 The PlayAlertSound parser within Path of Exile now allows many different values to appear as the identifier, with some resulting in crashes whenever the sound is triggered. Our parser is strict and will mark these as errors.
 

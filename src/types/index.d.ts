@@ -130,11 +130,6 @@ declare namespace Filter {
       file?: string,
     }
 
-    interface ProcessLinesTask extends ProcessLines {
-      /** The maximum number of lines to process at any given time. */
-      chunkSize: number
-    }
-
     interface ProcessedFilterData {
       editor: AtomCore.TextEditor
       lines: Filter.Line[]
