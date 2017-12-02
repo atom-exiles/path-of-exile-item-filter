@@ -1,88 +1,71 @@
 {
   "name": "path-of-exile-item-filter",
-  "main": "./dist/main",
   "version": "1.1.7",
   "description": "An Atom package designed to make editing Path of Exile item filters easier.",
   "keywords": [
-    "poe",
     "exile",
     "filter",
+    "linter",
     "loot",
-    "linter"
+    "poe"
   ],
-  "activationCommands": {},
-  "repository": "https://github.com/atom-exiles/path-of-exile-item-filter",
   "license": "MIT",
+  "main": "./src/index",
+  "repository": "https://github.com/atom-exiles/path-of-exile-item-filter",
   "scripts": {
-    "test": "atom --test test",
-    "lint": "eslint --max-warnings 0 test"
+    "lint": "tslint --project src",
+    "test": "atom --test test"
+  },
+  "dependencies": {
+    "@types/atom": "^1.22.2",
+    "@types/lodash": "^4.14.74",
+    "atom-package-deps": "^4.6.0",
+    "atom-ts-transpiler": "^1.4.0",
+    "lodash": "^4.17.4",
+    "typescript": "^2.6.2"
+  },
+  "devDependencies": {
+    "@glencfl/tslint-config": "^1.0.0",
+    "@types/atom-mocha-test-runner": "^1.0.2",
+    "@types/chai": "^4.0.6",
+    "@types/chai-as-promised": "^7.1.0",
+    "atom-mocha-test-runner": "^1.0.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "mocha-appveyor-reporter": "^0.4.0",
+    "mocha-junit-and-console-reporter": "^1.6.0",
+    "tslint": "^5.8.0"
   },
   "engines": {
     "atom": ">=1.18.0 <2.0.0"
   },
+  "activationCommands": {},
   "atomTestRunner": "./test/runner",
   "atomTranspilers": [
     {
-      "glob": "test/**/*.js",
-      "transpiler": "atom-babel6-transpiler",
+      "transpiler": "atom-ts-transpiler",
+      "glob": "{!(node_modules)/**/,}*.ts?(x)",
       "options": {
-        "cacheKeyFiles": [
-          "package.json",
-          ".babelrc"
-        ]
+        "compilerOptions": {},
+        "cacheKeyFiles": [],
+        "verbose": false
       }
     }
   ],
-  "dependencies": {
-    "atom-package-deps": "^4.6.0",
-    "lodash": "^4.17.4"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.74",
-    "atom-babel6-transpiler": "^1.1.2",
-    "atom-mocha-test-runner": "^1.0.1",
-    "atom-typings": "^1.19.2",
-    "babel-eslint": "^7.2.3",
-    "babel-generator": "^6.26.0",
-    "babel-plugin-chai-assert-async": "^0.1.0",
-    "babel-plugin-dynamic-import-node": "^1.0.2",
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "babel-plugin-transform-es2015-parameters": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
-    "eslint": "^4.5.0",
-    "eslint-config-fbjs": "^2.0.0",
-    "eslint-plugin-babel": "^4.1.2",
-    "eslint-plugin-flowtype": "^2.35.0",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-node": "^5.1.1",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-react": "^7.3.0",
-    "eslint-plugin-relay": "0.0.17",
-    "mocha": "^3.5.0",
-    "mocha-appveyor-reporter": "^0.4.0",
-    "mocha-junit-and-console-reporter": "^1.6.0",
-    "test-until": "^1.1.1"
+  "consumedServices": {
+    "linter-indie": {
+      "versions": {
+        "2.0.0": "consumeLinter"
+      }
+    }
   },
   "package-deps": [
-    "linter:2.2.0"
+    "atom-ide-ui"
   ],
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
         "2.0.0": "provideCompletion"
-      }
-    }
-  },
-  "consumedServices": {
-    "linter-indie": {
-      "versions": {
-        "2.0.0": "consumeLinter"
       }
     }
   }
