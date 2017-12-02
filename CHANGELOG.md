@@ -1,3 +1,7 @@
+## Unreleased Version
+* Began transpiling the package source code on first run, rather than packaging the compiled source.
+* Use an activation trigger for package activation, instead of always activating.
+
 ## Version 1.1.5-1.1.8
 * Full support for the additional sounds in Fall of Oriath.
 * Mark "PlayAlertSound Orb" as invalid syntax.
