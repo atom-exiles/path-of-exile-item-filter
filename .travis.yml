@@ -8,41 +8,18 @@ branches:
   only:
   - master
 
-addons:
-  apt:
-    packages:
-    - clang-3.3
-    - build-essential
-    - gnome-keyring
-    - libsecret-1-dev
-    - python-gnomekeyring
-
 env:
   global:
-    - npm_config_clang=1
-    - CC=clang
-    - CXX=clang++
-    - MOCHA_TIMEOUT=60000
-    - UNTIL_TIMEOUT=30000
-    - TRAVIS_BUILD_JOB=runtests
-  matrix:
     - ATOM_CHANNEL=stable
-    - ATOM_CHANNEL=beta
+    - MOCHA_TIMEOUT=5000
 
 notifications:
   email:
     on_success: never
-    on_failure: never
+    on_failure: always
 
 install:
 - npm install -g npm
-
-before_script:
-  - eval $(echo -n "" | /usr/bin/gnome-keyring-daemon --login)
-  - eval $(/usr/bin/gnome-keyring-daemon --components=secrets --start)
-  - |
-    dbus-launch /usr/bin/python -c \
-      "import gnomekeyring;gnomekeyring.create_sync('login', '');"
 
 script:
 - ./scripts/cibuild

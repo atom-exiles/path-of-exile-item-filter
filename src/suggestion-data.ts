@@ -1,26 +1,49 @@
 import { CompositeDisposable, Emitter } from "atom";
+import { Suggestions, TextSuggestion } from "atom/autocomplete-plus";
 
-import { ConfigManager } from "./config-manager";
-import { JSONData } from "./json-data";
+import itemsFileData = require("../data/items.json");
+import soundsFileData = require("../data/sounds.json");
+import suggestionFileData = require("../data/suggestions.json");
+import * as Config from "./config";
+import { log } from "./helpers";
+
+type TextSuggestions = TextSuggestion[];
+
+export interface SuggestionDataFormat {
+  actions: Suggestions;
+  blocks: Suggestions;
+  booleans: Suggestions;
+  filters: Suggestions;
+  operators: Suggestions;
+  rarities: Suggestions;
+  sockets: Suggestions;
+  bases: TextSuggestions;
+  classes: TextSuggestions;
+  sounds: TextSuggestions;
+  extraBases: Suggestions;
+  extraBlocks: Suggestions;
+  extraClasses: Suggestions;
+  classWhitelist: TextSuggestions;
+  baseWhitelist: TextSuggestions;
+  [key: string]: Suggestions;
+}
 
 export class SuggestionData {
-  private readonly config: ConfigManager;
-  private readonly jsonData: JSONData;
   private readonly subscriptions: CompositeDisposable;
   readonly emitter: Emitter;
-  data: Promise<DataFormat.SuggestionData>;
+  data: SuggestionDataFormat;
 
-  constructor(config: ConfigManager, jsonData: JSONData) {
-    this.config = config;
-    this.jsonData = jsonData;
-    this.emitter = new Emitter;
-    this.subscriptions = new CompositeDisposable;
+  constructor() {
+    log("info", "building suggestion data");
+    this.emitter = new Emitter();
+    this.subscriptions = new CompositeDisposable();
 
-    this.data = jsonData.data
-      .then((jd) => { return this.setupSubscriptions(jd); })
-      .then((jd) => { return this.processData(jd); })
-      .then((data) => { return this.updateBothWhitelists(data); })
-      .then((data) => { return this.emitDataUpdate(data); });
+    this.setupSubscriptions();
+    this.updateBaseData();
+    this.updateBaseWhitelist();
+    this.updateClassWhitelist();
+    this.emitDataUpdate();
+    log("info", "suggestion data built");
   }
 
   dispose() {
@@ -28,201 +51,118 @@ export class SuggestionData {
     this.emitter.dispose();
   }
 
-  /** Invoke the given callback whenever the suggestion data has been updated.
-   *  Returns a Disposable on which .dispose() can be called to unsubscribe. */
-  onDidUpdateData(callback: (data: DataFormat.SuggestionData) => void) {
+  /**
+   *  Invoke the given callback whenever the suggestion data has been updated.
+   *  Returns a Disposable on which .dispose() can be called to unsubscribe.
+   */
+  onDidUpdateData(callback: (data: SuggestionDataFormat) => void) {
     return this.emitter.on("did-update-data", callback);
   }
 
   /** Simply emits the 'did-update-data' event. */
-  private emitDataUpdate(data: DataFormat.SuggestionData) {
-    this.emitter.emit("did-update-data", data);
-    return Promise.resolve(data);
+  private emitDataUpdate() {
+    this.emitter.emit("did-update-data", this.data);
   }
 
-  /** Waits for any of our dependencies, then sets up the subscriptions.*/
-  private async setupSubscriptions(jd: DataFormat.JSONData) {
-    await this.config.data.classWhitelist.promise;
-    await this.config.data.baseWhitelist.promise;
-    await this.config.completion.enableRightLabel.promise;
-
-    this.subscriptions.add(this.config.completion.enableRightLabel.onDidChange((event) => {
-      this.handleRightLabelToggle(event.newValue);
-    }));
-
-    this.subscriptions.add(this.config.data.classWhitelist.onDidChange(async () => {
-      const data = await this.data;
-      this.data = this.updateClassWhitelist(data)
-        .then((data) => { return this.emitDataUpdate(data); });
-    }));
-
-    this.subscriptions.add(this.config.data.baseWhitelist.onDidChange(async () => {
-      const data = await this.data;
-      this.data = this.updateBaseWhitelist(data)
-        .then((data) => { return this.emitDataUpdate(data); });
-    }));
-
-    return jd;
-  }
-
-  /** Appends the Extras label onto each suggestion in the given array. */
-  private appendExtraLabel(suggestions: Autocomplete.Suggestion[],
-      enableRightLabel: boolean) {
-    const labelText = "Extras";
-    for(var suggestion of suggestions) {
-      suggestion.custom = {
-        backupRightLabel: labelText
-      }
-      if(enableRightLabel) suggestion.rightLabel = labelText;
-    }
-
-    return;
-  }
-
-  /** Processes each suggestion, performing any necessary work in order to toggle the right label. */
-  private async handleRightLabelToggle(value: boolean) {
-    const suggestions = await this.data;
-
-    for(var subcategory in suggestions) {
-      const array = suggestions[subcategory];
-      for(var suggestion of array) {
-        if(value) {
-          if(suggestion.custom && suggestion.custom.backupRightLabel) {
-            suggestion.rightLabel = suggestion.custom.backupRightLabel;
-          }
-        } else {
-          if(suggestion.rightLabel) {
-            suggestion.custom = {
-              backupRightLabel: suggestion.rightLabel
-            }
-            suggestion.rightLabel = undefined;
-          }
-        }
-      }
-    }
-
-    return suggestions;
+  /** Waits for any of our dependencies, then sets up the subscriptions. */
+  private setupSubscriptions() {
+    this.subscriptions.add(
+      Config.baseWhitelist.onDidChange(_ => {
+        this.updateBaseWhitelist();
+        this.emitDataUpdate();
+      }),
+      Config.classWhitelist.onDidChange(_ => {
+        this.updateClassWhitelist();
+        this.emitDataUpdate();
+      })
+    );
   }
 
   /** Transforms each whitelist value in the given array into a TextSuggestion. */
-  private async processWhitelist(values: string[]) {
-    const result: Autocomplete.TextSuggestions = [];
-    const enableRightLabel = await this.config.completion.enableRightLabel.promise;
-    const labelText = "Whitelisted";
+  private processWhitelist(values: string[]): TextSuggestions {
+    const result: TextSuggestions = [];
+    const rightLabel = "Whitelisted";
 
-    for(var value of values) {
-      if(value.indexOf(" ") != -1) {
-        var valueText = '"' + value + '"'
-      } else {
-        var valueText = value;
-      }
-
-      let rightLabel: string|undefined;
-      if(enableRightLabel) {
-        rightLabel = labelText;
-      }
+    for (const value of values) {
+      const valueText = value.indexOf(" ") !== -1 ? `"${value}"` : value;
 
       result.push({
         text: valueText,
         displayText: value,
-        rightLabel: rightLabel,
-        custom: {
-          backupRightLabel: labelText
-        }
+        rightLabel,
       });
     }
 
     return result;
   }
 
-  /** Updates the class whitelist for the given suggestion set. */
-  private async updateClassWhitelist(suggestions: DataFormat.SuggestionData) {
-    const values = await this.config.data.classWhitelist.promise;
-    suggestions.classWhitelist = await this.processWhitelist(values);
-    return suggestions;
-  }
-
   /** Updates the base whitelist for the given suggestion set. */
-  private async updateBaseWhitelist(suggestions: DataFormat.SuggestionData) {
-    const values = await this.config.data.baseWhitelist.promise;
-    suggestions.baseWhitelist = await this.processWhitelist(values);
-    return suggestions;
+  private updateBaseWhitelist() {
+    this.data.baseWhitelist = this.processWhitelist(Config.baseWhitelist.value);
   }
 
-  /** Updates both whitelists for the given suggestion set. */
-  private async updateBothWhitelists(suggestions: DataFormat.SuggestionData):
-      Promise<DataFormat.SuggestionData> {
-    return this.updateClassWhitelist(suggestions)
-      .then((s) => { return this.updateBaseWhitelist(s); });
+  /** Updates the class whitelist for the given suggestion set. */
+  private updateClassWhitelist() {
+    this.data.classWhitelist = this.processWhitelist(Config.classWhitelist.value);
   }
 
   /** Performs a full refresh on the base suggestion data. */
-  private async processData(jd: DataFormat.JSONData) {
-    const result: DataFormat.SuggestionData = {
-      actions: jd.suggestions.actions,
-      blocks: jd.suggestions.blocks,
-      booleans: jd.suggestions.booleans,
-      filters: jd.suggestions.filters,
-      operators: jd.suggestions.operators,
-      rarities: jd.suggestions.rarities,
-      sockets: jd.suggestions.sockets,
+  private updateBaseData() {
+    const result: SuggestionDataFormat = {
+      actions: suggestionFileData.actions,
+      blocks: suggestionFileData.blocks,
+      booleans: suggestionFileData.booleans,
+      filters: suggestionFileData.filters,
+      operators: suggestionFileData.operators,
+      rarities: suggestionFileData.rarities,
+      sockets: suggestionFileData.sockets,
       bases: [],
       classes: [],
       sounds: [],
-      extraBases: jd.suggestions.extras.bases,
-      extraBlocks: jd.suggestions.extras.blocks,
-      extraClasses: jd.suggestions.extras.classes,
+      extraBases: suggestionFileData.extras.bases,
+      extraBlocks: suggestionFileData.extras.blocks,
+      extraClasses: suggestionFileData.extras.classes,
       classWhitelist: [],
-      baseWhitelist: []
+      baseWhitelist: [],
     };
 
-    const enableRightLabel = await this.config.completion.enableRightLabel.promise;
-
-    for(var itemClass in jd.items) {
-      if(itemClass.indexOf(" ") != -1) {
-        var classText = '"' + itemClass + '"';
-      } else {
-        var classText = itemClass;
-      }
+    for (const itemClass in itemsFileData) {
+      const classText = itemClass.indexOf(" ") !== -1 ? `"${itemClass}"` : itemClass;
       result.classes.push({
         text: classText,
-        displayText: itemClass
+        displayText: itemClass,
       });
 
-      for(var itemBase of jd.items[itemClass]) {
-        if(itemBase.indexOf(" ") != -1) {
-          var baseText = '"' + itemBase + '"';
-        } else {
-          var baseText = itemBase;
-        }
-
-        let rightLabel: string|undefined;
-        if(enableRightLabel) rightLabel = itemClass;
-
+      for (const itemBase of itemsFileData[itemClass]) {
+        const baseText = itemBase.indexOf(" ") !== -1 ? `"${itemBase}"` : itemBase;
         result.bases.push({
           text: baseText,
           displayText: itemBase,
-          rightLabel: rightLabel,
-          custom: {
-            backupRightLabel: itemClass
-          }
+          rightLabel: itemClass,
         });
       }
     }
 
     // Generate PlayAlertSound suggestions based on the 'sound.json' entries.
-    for(var id in jd.sounds) {
-      let sound = jd.sounds[id];
-      if(!sound) continue;
+    for (const id in soundsFileData) {
+      const sound = soundsFileData[id];
+      if (!sound) continue;
 
-      let displayText = sound.label ? sound.label : id;
-      result.sounds.push({ text: id, displayText })
+      const displayText = sound.label ? sound.label : id;
+      result.sounds.push({ text: id, displayText });
     }
 
-    this.appendExtraLabel(result.extraBases, enableRightLabel);
-    this.appendExtraLabel(result.extraBlocks, enableRightLabel);
-    this.appendExtraLabel(result.extraClasses, enableRightLabel);
+    const appendExtrasLabel = (suggestions: Suggestions) => {
+      const labelText = "Extras";
+      for (const suggestion of suggestions) {
+        suggestion.rightLabel = labelText;
+      }
+    };
 
-    return result;
+    appendExtrasLabel(result.extraBases);
+    appendExtrasLabel(result.extraBlocks);
+    appendExtrasLabel(result.extraClasses);
+
+    this.data = result;
   }
 }
