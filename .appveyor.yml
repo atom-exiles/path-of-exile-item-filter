@@ -11,13 +11,9 @@ clone_depth: 10
 skip_tags: true
 
 environment:
+  ATOM_CHANNEL: stable
   APM_TEST_PACKAGES:
-  MOCHA_TIMEOUT: '60000'
-  UNTIL_TIMEOUT: '30000'
-
-  matrix:
-  - ATOM_CHANNEL: stable
-  - ATOM_CHANNEL: beta
+  MOCHA_TIMEOUT: '5000'
 
 install:
   - ps: Install-Product node 6
