@@ -4,8 +4,9 @@ import { LinterConsumer, LinterDelegate } from "atom-linter";
 
 import { CompletionProvider } from "./completion-provider";
 // import {} from "./decoration-manager";
-// import {} from "./editor-registry";
+import { EditorRegistry } from "./editor-registry";
 // import {} from "./filter-manager";
+import { log } from "./helpers";
 // import {} from "./sound-player";
 import { SuggestionData } from "./suggestion-data";
 import { ValidationData } from "./validation-data";
@@ -48,18 +49,14 @@ export class AtomPackage {
   }
 
   async activate(_: PackageState) {
+    log("info", "beginning package activation");
     adjustGrammarDefaults();
-
-    const packages = atom.packages.getAvailablePackageNames();
-    if (!(packages.includes("atom-ide-ui") || packages.includes("linter"))) {
-      const deps = await import("atom-package-deps");
-      await deps.install("path-of-exile-item-filter", true);
-    }
 
     this.subscriptions = new CompositeDisposable();
     const validationData = new ValidationData();
     const suggestionData = new SuggestionData();
     const completionProvider = new CompletionProvider(suggestionData.data);
+    const editorRegistry = new EditorRegistry();
 
     // tslint:disable:no-unsafe-any
     this.autocompleteProvider.getSuggestions = completionProvider.getSuggestions
@@ -72,17 +69,31 @@ export class AtomPackage {
     this.subscriptions.add(
       validationData,
       suggestionData,
-      completionProvider
+      completionProvider,
+      editorRegistry,
+      editorRegistry.observeFilters(editor => {
+        log("info", `added an item filter within an editor with ID #${editor.id}`);
+      })
     );
+
+    const packages = atom.packages.getAvailablePackageNames();
+    if (!(packages.includes("atom-ide-ui") || packages.includes("linter"))) {
+      log("info", "using package deps to install AtomIDE");
+      const deps = await import("atom-package-deps");
+      await deps.install("path-of-exile-item-filter", true);
+    }
+    log("info", "successfully activated the package");
   }
 
   deactivate() {
+    log("info", "beginning package deactivation");
     this.subscriptions.dispose();
     if (this.linterDelegate) this.linterDelegate.dispose();
 
     this.autocompleteProvider.getSuggestions = this.autocompleteStubs.getSuggestions;
     this.autocompleteProvider.onDidInsertSuggestion = this.autocompleteStubs.onDidInsertSuggestion;
     this.autocompleteProvider.dispose = this.autocompleteStubs.dispose;
+    log("info", "successfully deactivated the package");
   }
 
   serialize(): PackageState {
@@ -90,10 +101,12 @@ export class AtomPackage {
   }
 
   provideCompletion() {
+    log("info", "providing the Autocomplete service");
     return [this.autocompleteProvider];
   }
 
   consumeLinter: LinterConsumer = register => {
+    log("info", "registering with the linter service");
     this.linterDelegate = register({ name: "path-of-exile-item-filter" });
   }
 }
