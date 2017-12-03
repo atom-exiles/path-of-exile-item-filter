@@ -5,9 +5,9 @@
   "requires": true,
   "dependencies": {
     "@glencfl/tslint-config": {
-      "version": "1.1.0",
-      "resolved": "https://registry.npmjs.org/@glencfl/tslint-config/-/tslint-config-1.1.0.tgz",
-      "integrity": "sha512-8YtlZXWe5PTVzvsCekkZOZ4SV3uVznwHnE0bPRgKEKvnmGiujsnodaudmIIXBAny294dDFNNkf3oI93Yzbu53w==",
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/@glencfl/tslint-config/-/tslint-config-1.2.0.tgz",
+      "integrity": "sha512-k47sRue4vmIzqOWffD8G7vBSZ3xN2/l/akI5XLjlkqp67YrETJPuDqQMOi7rmThT2IaiHQfvtjD9IEJJg4xfiw==",
       "dev": true
     },
     "@types/atom": {

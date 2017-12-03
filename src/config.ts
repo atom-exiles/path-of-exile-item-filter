@@ -12,7 +12,7 @@ class ConfigValue<T> {
 
   /** The current value of the configuration variable. */
   get value(): T {
-    const value = atom.config.get(this.accessKey);
+    const value = <T> atom.config.get(this.accessKey);
     assert(value !== undefined, "expected all configuration values to be defined");
     return value;
   }
