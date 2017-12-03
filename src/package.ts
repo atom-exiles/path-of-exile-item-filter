@@ -43,10 +43,12 @@ export class AtomPackage {
     const suggestionData = new SuggestionData();
     const completionProvider = new CompletionProvider(suggestionData.data);
 
+    // tslint:disable:no-unsafe-any
     this.autocompleteProvider.getSuggestions = completionProvider.getSuggestions
         .bind(completionProvider);
     this.autocompleteProvider.onDidInsertSuggestion = completionProvider
         .onDidInsertSuggestion.bind(completionProvider);
+    // tslint:enable:no-unsafe-any
 
     this.subscriptions.add(
       validationData,

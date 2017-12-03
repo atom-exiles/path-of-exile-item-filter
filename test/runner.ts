@@ -24,6 +24,7 @@ module.exports = createRunner({
       mochaFile: process.env.TEST_JUNIT_XML_PATH,
     });
   } else if (process.env.APPVEYOR_API_URL) {
+    // tslint:disable-next-line:no-unsafe-any
     mocha.reporter(require("mocha-appveyor-reporter"));
   } else if (process.env.CIRCLECI === "true") {
     const circleReports = process.env.CIRCLE_TEST_REPORTS;
