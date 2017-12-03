@@ -39,7 +39,9 @@
   "engines": {
     "atom": ">=1.18.0 <2.0.0"
   },
-  "activationCommands": {},
+  "activationHooks": [
+    "path-of-exile-item-filter:grammar-used"
+  ],
   "atomTestRunner": "./test/runner.ts",
   "atomTranspilers": [
     {
