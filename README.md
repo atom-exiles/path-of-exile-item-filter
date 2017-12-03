@@ -1,8 +1,7 @@
 # Path of Exile: Item Filters
 
 [![Linux Build Status](https://travis-ci.org/atom-exiles/path-of-exile-item-filter.svg?branch=master)](https://travis-ci.org/atom-exiles/path-of-exile-item-filter)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/hs40ku9dkikusnc8/branch/master?svg=true
-)](https://ci.appveyor.com/project/atomexiles/path-of-exile-item-filter/branch/master)
+[![Windows Build Status](https://ci.appveyor.com/api/projects/status/11r9bkx9j4661otu/branch/master?svg=true)](https://ci.appveyor.com/project/atomexiles/path-of-exile-item-filter/branch/master)
 [![Dependency Status](https://david-dm.org/atom-exiles/path-of-exile-item-filter.svg)](https://david-dm.org/atom-exiles/path-of-exile-item-filter)
 
 This package provides additional support for the creation of Path of Exile filters within Atom, making it easier to create item filters for the game.
