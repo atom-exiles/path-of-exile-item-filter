@@ -18,20 +18,20 @@
   },
   "dependencies": {
     "@types/atom": "^1.22.2",
-    "@types/lodash": "^4.14.74",
+    "@types/lodash": "^4.14.86",
     "atom-package-deps": "^4.6.0",
     "atom-ts-transpiler": "^1.4.0",
     "lodash": "^4.17.4",
     "typescript": "^2.6.2"
   },
   "devDependencies": {
-    "@glencfl/tslint-config": "^1.0.0",
+    "@glencfl/tslint-config": "^1.1.0",
     "@types/atom-mocha-test-runner": "^1.0.2",
     "@types/chai": "^4.0.6",
     "@types/chai-as-promised": "^7.1.0",
-    "atom-mocha-test-runner": "^1.0.1",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "atom-mocha-test-runner": "^1.2.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "mocha-appveyor-reporter": "^0.4.0",
     "mocha-junit-and-console-reporter": "^1.6.0",
     "tslint": "^5.8.0"
@@ -40,7 +40,7 @@
     "atom": ">=1.18.0 <2.0.0"
   },
   "activationCommands": {},
-  "atomTestRunner": "./test/runner",
+  "atomTestRunner": "./test/runner.ts",
   "atomTranspilers": [
     {
       "transpiler": "atom-ts-transpiler",
@@ -66,6 +66,35 @@
     "autocomplete.provider": {
       "versions": {
         "2.0.0": "provideCompletion"
+      }
+    }
+  },
+  "configSchema": {
+    "enableGutter": {
+      "title": "Enable Editor Gutter",
+      "description": "Enable the decoration gutter within the editor whenever an item filter is open.",
+      "type": "boolean",
+      "default": true,
+      "order": 1
+    },
+    "classWhitelist": {
+      "title": "Item Class Whitelist",
+      "description": "Additional item classes usable within item filters. Multiple entries should be separated by a comma.",
+      "type": "array",
+      "default": [],
+      "order": 5,
+      "items": {
+        "type": "string"
+      }
+    },
+    "baseWhitelist": {
+      "title": "Item Base Whitelist",
+      "description": "Additional base types usable within item filters. Multiple entries should be separated by a comma.",
+      "type": "array",
+      "default": [],
+      "order": 6,
+      "items": {
+        "type": "string"
       }
     }
   }

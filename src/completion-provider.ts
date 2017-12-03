@@ -1,86 +1,74 @@
-import { Point, Range } from "atom";
+import { Point, Range, TextEditor } from "atom";
+import {
+  SuggestionInsertedEvent, Suggestions, SuggestionsRequestedEvent
+} from "atom-autocomplete";
 
-import { ConfigManager } from "config-manager";
-import { SuggestionData } from "suggestion-data";
 import * as Helpers from "./helpers";
+import { SuggestionDataFormat } from "./suggestion-data";
 
 export class CompletionProvider {
-  private readonly config: ConfigManager;
-  private readonly suggestions: SuggestionData;
+  private readonly suggestions: SuggestionDataFormat;
 
-  constructor(config: ConfigManager, suggestions: SuggestionData) {
-    this.config = config;
+  constructor(suggestions: SuggestionDataFormat) {
     this.suggestions = suggestions;
   }
 
   dispose() {}
 
   /** The callback which Autocomplete+ calls into whenever it needs suggestions for the user. */
-  async getSuggestions({ editor, bufferPosition, scopeDescriptor, prefix, activatedManually }:
-      Autocomplete.Params.SuggestionRequest) {
-    const enableCompletion = await this.config.general.enableCompletion.promise;
-    if(!enableCompletion) return [];
-
-    const suggestionData = await this.suggestions.data;
-    const enableExtraSuggestions = this.config.completion.enableExtraSuggestions.value;
-
-    let result: Autocomplete.Suggestions = [];
-    prefix = this.getPrefix(editor, bufferPosition);
+  getSuggestions(event: SuggestionsRequestedEvent) {
+    let result: Suggestions = [];
+    const { editor, bufferPosition, scopeDescriptor } = event;
+    let prefix = this.getPrefix(editor, bufferPosition);
     const cursorScopes = scopeDescriptor.getScopesArray();
     const lastScope = cursorScopes[cursorScopes.length - 1];
 
     let shouldPruneSuggestions = true;
-    if(lastScope == "source.filter") {
-      result = result.concat(suggestionData.blocks);
-      if(enableExtraSuggestions) {
-        result = result.concat(suggestionData.extraBlocks);
-      }
-    } else if(lastScope == "line.empty.filter" || lastScope == "line.unknown.filter") {
-      if(cursorScopes.indexOf("block.filter") != -1) {
-        result = result.concat(suggestionData.blocks,
-            suggestionData.actions, suggestionData.filters);
-        if(enableExtraSuggestions) {
-          result = result.concat(suggestionData.extraBlocks);
-        }
+    if (lastScope === "source.filter") {
+      result = result.concat(this.suggestions.blocks, this.suggestions.extraBlocks);
+    } else if (lastScope === "line.empty.filter" || lastScope === "line.unknown.filter") {
+      if (cursorScopes.indexOf("block.filter") !== -1) {
+        result = result.concat(this.suggestions.blocks, this.suggestions.actions,
+            this.suggestions.filters, this.suggestions.extraBlocks);
       }
     } else {
-      if(cursorScopes.includes("rarity.filter")) {
-        if(this.isFirstValue(editor, bufferPosition, true)) {
-          result = result.concat(suggestionData.rarities);
+      if (cursorScopes.includes("rarity.filter")) {
+        if (this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.rarities);
         }
-        if(this.isPotentialOperator(editor, bufferPosition)) {
-          result = result.concat(suggestionData.operators);
+        if (this.isPotentialOperator(editor, bufferPosition)) {
+          result = result.concat(this.suggestions.operators);
         }
-      } else if(cursorScopes.includes("identified.filter")) {
-        if(this.isFirstValue(editor, bufferPosition, true)) {
-          result = result.concat(suggestionData.booleans);
+      } else if (cursorScopes.includes("identified.filter")) {
+        if (prefix !== "Identified" && this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.booleans);
         }
-      } else if(cursorScopes.includes("corrupted.filter")) {
-        if(this.isFirstValue(editor, bufferPosition, true)) {
-          result = result.concat(suggestionData.booleans);
+      } else if (cursorScopes.includes("corrupted.filter")) {
+        if (prefix !== "Corrupted" && this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.booleans);
         }
-      } else if(cursorScopes.includes("class.filter")) {
-        result = result.concat(suggestionData.classes, suggestionData.classWhitelist);
-        if(enableExtraSuggestions)  {
-          result = result.concat(suggestionData.extraClasses);
+      } else if (cursorScopes.includes("class.filter")) {
+        if (prefix !== "Class") {
+          result = result.concat(this.suggestions.classes, this.suggestions.classWhitelist,
+            this.suggestions.extraClasses);
         }
-      } else if(cursorScopes.includes("base-type.filter")) {
-        result = result.concat(suggestionData.bases, suggestionData.baseWhitelist);
-        if(enableExtraSuggestions) {
-          result = result.concat(suggestionData.extraBases);
+      } else if (cursorScopes.includes("base-type.filter")) {
+        if (prefix !== "BaseType") {
+          result = result.concat(this.suggestions.bases, this.suggestions.baseWhitelist,
+              this.suggestions.extraBases);
         }
-      } else if(cursorScopes.includes("socket-group.filter")) {
+      } else if (cursorScopes.includes("socket-group.filter")) {
         // Not pruning the suggestions, so this is necessary.
-        if(!(prefix == "SocketGroup")) {
+        if (prefix !== "SocketGroup") {
           shouldPruneSuggestions = false;
-          if(this.isFirstValue(editor, bufferPosition, true) && prefix.length < 6) {
+          if (this.isFirstValue(editor, bufferPosition, true) && prefix.length < 6) {
             prefix = "";
-            result = result.concat(suggestionData.sockets);
+            result = result.concat(this.suggestions.sockets);
           }
         }
-      } else if(cursorScopes.includes("play-alert-sound.filter")) {
-        if(this.isFirstValue(editor, bufferPosition, true)) {
-          result = result.concat(result, suggestionData.sounds);
+      } else if (cursorScopes.includes("play-alert-sound.filter")) {
+        if (this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(result, this.suggestions.sounds);
         }
       } else {
         const numberValueRule = cursorScopes.includes("item-level.filter") ||
@@ -90,62 +78,64 @@ export class CompletionProvider {
             cursorScopes.includes("linked-sockets.filter") ||
             cursorScopes.includes("height.filter") ||
             cursorScopes.includes("width.filter");
-        if(numberValueRule) {
-          if(this.isPotentialOperator(editor, bufferPosition)) {
-            result = result.concat(suggestionData.operators);
+        if (numberValueRule) {
+          if (this.isPotentialOperator(editor, bufferPosition)) {
+            result = result.concat(this.suggestions.operators);
           }
         }
       }
     }
 
-    if(shouldPruneSuggestions) result = this.pruneSuggestions(prefix, result);
-    this.setReplacementPrefix(editor, suggestionData, bufferPosition, prefix, result);
+    if (shouldPruneSuggestions) result = this.pruneSuggestions(prefix, result);
+    this.setReplacementPrefix(editor, bufferPosition, prefix, result);
     return result;
   }
 
   /** Performs the buffer manipulations necessary following a suggestion insertion. */
-  onDidInsertSuggestion({ editor, suggestion }: Autocomplete.Params.SuggestionInserted) {
+  onDidInsertSuggestion(event: SuggestionInsertedEvent) {
+    const editor = event.editor;
+
     // Whenever the user opens with quotation marks and accepts a suggestion,
     // two closing quotation marks will be left at the end:
     //    BaseType "Cha" -> accepts "Chaos Orb"
     //    BaseType "Chaos Orb""
-    if(editor.hasMultipleCursors()) {
-      let cursorPositions = editor.getCursorBufferPositions();
-      for(var cursorPosition of cursorPositions) {
+    if (editor.hasMultipleCursors()) {
+      const cursorPositions = editor.getCursorBufferPositions();
+      for (const cursorPosition of cursorPositions) {
         this.removeConsecutiveQuotes(editor, cursorPosition);
       }
     } else {
-      let cursorPosition = editor.getCursorBufferPosition();
+      const cursorPosition = editor.getCursorBufferPosition();
       this.removeConsecutiveQuotes(editor, cursorPosition);
     }
 
     return;
   }
 
-  /** Determines whether or not an operator could be inserted into the given position
-   * in the buffer. */
-  private isPotentialOperator(editor: AtomCore.TextEditor, position: Point) {
+  /**
+   * Determines whether or not an operator could be inserted into the given position
+   * in the buffer.
+   */
+  private isPotentialOperator(editor: TextEditor, position: Point) {
     const line = editor.lineTextForBufferRow(position.row);
     const regex = /^\s*\S+\s*(>|<)?$/;
     const result = regex.exec(line);
-    if(result) return true;
+    if (result) return true;
     return false;
   }
 
-  /** Determines whether or not text inserted at the given position in the editor
-   * would be the first value for the filter rule. */
-  private isFirstValue(editor: AtomCore.TextEditor, position: Point, hasOperator: boolean) {
+  /**
+   * Determines whether or not text inserted at the given position in the editor
+   * would be the first value for the filter rule.
+   */
+  private isFirstValue(editor: TextEditor, position: Point, hasOperator: boolean) {
     const line = editor.lineTextForBufferRow(position.row);
-    if(hasOperator) {
-      var regex = /^\s*\S+\s*(>=|<=|>|<|=)?\s*\S*(.*)/;
-    } else {
-      var regex = /^\s*\S+\s*\S*(.*)/;
-    }
+    const regex = hasOperator ? /^\s*\S+\s*(>=|<=|>|<|=)?\s*\S*(.*)/ : /^\s*\S+\s*\S*(.*)/;
 
     const result = regex.exec(line);
-    if(result) {
-      const trailingText = result[2];
-      if(trailingText.length > 0) {
+    if (result) {
+      const trailingText = hasOperator ? result[2] : result[1];
+      if (trailingText && trailingText.length > 0) {
         return false;
       } else {
         return true;
@@ -155,14 +145,16 @@ export class CompletionProvider {
     }
   }
 
-  /** Returns a prefix tailored towards item filters, with support for things
-   * like value strings. */
-  private getPrefix(editor: AtomCore.TextEditor, position: Point) {
+  /**
+   * Returns a prefix tailored towards item filters, with support for things
+   * like value strings.
+   */
+  private getPrefix(editor: TextEditor, position: Point) {
     // The previous position in the editor is often a lot more useful than the
     // current ones, as it will contain the scopes for the value which the user
     // may still be editing.
     let previousPositionScopes: string[]|undefined;
-    if(position.column > 0) {
+    if (position.column > 0) {
       const previousPosition = new Point(position.row, position.column - 1);
       previousPositionScopes = editor.scopeDescriptorForBufferPosition(
           previousPosition).getScopesArray();
@@ -170,76 +162,79 @@ export class CompletionProvider {
 
     const previousText = editor.getTextInBufferRange([[position.row, 0], position]);
     let prefix: string|undefined;
-    if(previousPositionScopes && previousPositionScopes.indexOf(
-        "string.partial-quotation.filter") != -1) {
+    if (previousPositionScopes && previousPositionScopes.indexOf(
+        "string.partial-quotation.filter") !== -1) {
       const prefixRegex = /(\"[^"]*)$/;
       const result = prefixRegex.exec(previousText);
-      if(result) prefix = result[1];
-    } else if(previousPositionScopes && previousPositionScopes.indexOf(
-        "string.quotation.filter") != -1) {
+      if (result) prefix = result[1];
+    } else if (previousPositionScopes && previousPositionScopes.indexOf(
+        "string.quotation.filter") !== -1) {
       // The closing quotation mark might be further in on the line, which
       // requires a different regex.
       const stringRange = editor.bufferRangeForScopeAtCursor("string.quotation.filter");
-      if(stringRange.end.column > position.column) {
+      if (stringRange.end.column > position.column) {
         const prefixRegex = /(\"[^"]*)$/;
         const result = prefixRegex.exec(previousText);
-        if(result) prefix = result[1];
+        if (result) prefix = result[1];
       } else {
         const prefixRegex = /(\"[^"]*\")$/;
         const result = prefixRegex.exec(previousText);
-        if(result) prefix = result[1];
+        if (result) prefix = result[1];
       }
     // Default back to using the previous word value. If the previous character
     // was a whitespace character, then use an empty prefix.
     } else {
       const prefixRegex = /([\s]*([^\s]*))*$/;
       const result = prefixRegex.exec(previousText);
-      if(result) prefix = result[2];
+      if (result) prefix = result[2];
     }
 
-    if(prefix == undefined) prefix = "";
+    if (prefix === undefined) prefix = "";
     return prefix;
   }
 
   /** Removes suggestions that do not contain the prefix. */
-  private pruneSuggestions(prefix: string, suggestions: Autocomplete.Suggestions) {
-    if(prefix.length == 0) return suggestions;
+  private pruneSuggestions(prefix: string, suggestions: Suggestions) {
+    if (prefix.length === 0) return suggestions;
 
-    const result: Autocomplete.Suggestions = [];
+    const result: Suggestions = [];
     const upperPrefix = prefix.toUpperCase();
     const firstChar = prefix.charAt(0);
 
-    for(var s of suggestions) {
-      if(s.displayText && firstChar != '"') {
-        var text = s.displayText.toUpperCase();
-      } else if(Helpers.Guards.isSnippetSuggestion(s)) {
-        var text = s.snippet.toUpperCase();
-      } else if(Helpers.Guards.isTextSuggestion(s)) {
-        var text = s.text.toUpperCase();
+    for (const s of suggestions) {
+      let text: string;
+      if (s.displayText && firstChar !== '"') {
+        text = s.displayText.toUpperCase();
+      } else if (Helpers.isSnippetSuggestion(s)) {
+        text = s.snippet.toUpperCase();
+      } else if (Helpers.isTextSuggestion(s)) {
+        text = s.text.toUpperCase();
       } else continue;
 
-      if(text.indexOf(upperPrefix) != -1) result.push(s);
+      if (text.indexOf(upperPrefix) !== -1) result.push(s);
     }
 
     return result;
   }
 
-  /** Handles any special casing in regards to the prefix for autocompletion suggestions.
-   *  For example, block elements will have the whitespace prepended onto the prefix,
-   *  so that they are left aligned on column #0 on text insertion. */
-  private setReplacementPrefix(editor: AtomCore.TextEditor, data: DataFormat.SuggestionData,
-      position: Point, prefix: string, suggestions: Autocomplete.Suggestions) {
-    for(var suggestion of suggestions) {
+  /**
+   * Handles any special casing in regards to the prefix for autocompletion suggestions.
+   * For example, block elements will have the whitespace prepended onto the prefix,
+   * so that they are left aligned on column #0 on text insertion.
+   */
+  private setReplacementPrefix(editor: TextEditor, position: Point, prefix: string,
+      suggestions: Suggestions) {
+    for (const suggestion of suggestions) {
       let blockElement = false;
-      for(var block of data.blocks) {
-        if(Helpers.Guards.isSnippetSuggestion(suggestion) && Helpers.Guards.isSnippetSuggestion(block)) {
-          if(suggestion.snippet == block.snippet) blockElement = true;
-        } else if(Helpers.Guards.isTextSuggestion(suggestion) && Helpers.Guards.isTextSuggestion(block)) {
-          if(suggestion.text == block.text) blockElement = true;
+      for (const block of this.suggestions.blocks) {
+        if (Helpers.isSnippetSuggestion(suggestion) && Helpers.isSnippetSuggestion(block)) {
+          if (suggestion.snippet === block.snippet) blockElement = true;
+        } else if (Helpers.isTextSuggestion(suggestion) && Helpers.isTextSuggestion(block)) {
+          if (suggestion.text === block.text) blockElement = true;
         }
       }
 
-      if(blockElement) {
+      if (blockElement) {
         const range = new Range([position.row, 0], position);
         suggestion.replacementPrefix = editor.getTextInBufferRange(range);
       } else {
@@ -250,17 +245,18 @@ export class CompletionProvider {
     return;
   }
 
-  /** Determines whether the given position in the editor is surrounded on both
-   * sides by double quotation marks, removing one if so. */
-  private removeConsecutiveQuotes(editor: AtomCore.TextEditor, position: Point) {
+  /**
+   * Determines whether the given position in the editor is surrounded on both
+   * sides by double quotation marks, removing one if so.
+   */
+  private removeConsecutiveQuotes(editor: TextEditor, position: Point) {
     const leftCharLocation = new Range([position.row, position.column - 1],
         position);
-    const rightCharLocation = new Range(position, [position.row,
-        position.column + 1]);
+    const rightCharLocation = new Range(position, [position.row, position.column + 1]);
     const leftChar = editor.getTextInBufferRange(leftCharLocation);
     const rightChar = editor.getTextInBufferRange(rightCharLocation);
 
-    if(leftChar == '"' && rightChar == '"') {
+    if (leftChar === '"' && rightChar === '"') {
       editor.setTextInBufferRange(rightCharLocation, "", { undo: "skip" });
     }
 

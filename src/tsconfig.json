@@ -1,24 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "es2016",
     "module": "commonjs",
-    "lib": [ "dom", "es6", "es2016.array.include" ],
-    "noLib": false,
-    "declaration": false,
-    "preserveConstEnums": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
+    "lib": [ "dom", "es2016" ],
+    "noEmit": true,
+    "strict": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
-    "baseUrl": ".",
-    "outDir": "../dist",
-    "rootDir": ".",
+    "noUnusedParameters": true,
     "sourceMap": false,
-    "removeComments": true,
-    "paths": {
-    }
+    "removeComments": true
   },
-  "compileOnSave": true
+  "include": [
+    "**/*.ts"
+  ]
 }
