@@ -4,7 +4,6 @@ import itemsFileData = require("../data/items.json");
 import soundsFileData = require("../data/sounds.json");
 
 import * as Config from "./config";
-import { log } from "./helpers";
 
 export interface ValidationDataFormat {
   validClasses: string[];
@@ -20,7 +19,6 @@ export class ValidationData {
   data: ValidationDataFormat;
 
   constructor() {
-    log("info", "building validation data");
     this.emitter = new Emitter();
     this.subscriptions = new CompositeDisposable();
 
@@ -29,7 +27,6 @@ export class ValidationData {
     this.updateBaseWhitelist();
     this.updateClassWhitelist();
     this.emitDataUpdate();
-    log("info", "validation data built");
   }
 
   dispose() {

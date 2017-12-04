@@ -4,7 +4,9 @@ import {
 } from "atom";
 
 import { FilterManager, ProcessedFilterData, ReprocessedFilterData } from "./filter-manager";
-import * as Helpers from "./helpers";
+import {
+  isPlayAlertSoundRule, isSetBackgroundColorRule, isSetBorderColorRule, isSetTextColorRule
+} from "./helpers";
 import * as Filter from "./item-filter";
 import { SoundPlayer } from "./sound-player";
 
@@ -52,40 +54,38 @@ export class DecorationManager {
   }
 
   private setupSubscriptions() {
-    this.subscriptions.add(this.filterManager.observeProcessedFilters(data => {
-      this.monitorCursors(data.editor);
-      this.handleNewFilter(data);
-    }));
+    this.subscriptions.add(
+      this.filterManager.observeProcessedFilters(data => {
+        this.monitorCursors(data.editor);
+        this.handleNewFilter(data);
+      }),
 
-    this.subscriptions.add(this.filterManager.onDidReprocessFilter(data => {
-      this.handleFilterUpdate(data);
-    }));
+      this.filterManager.onDidReprocessFilter(data => {
+        this.handleFilterUpdate(data);
+      }),
 
-    this.subscriptions.add(this.filterManager.onDidDestroyFilter(editorID => {
-      // We call into handleFilterDestruction on filter updates as well, which
-      // would result the editor subscription(s) being disposed of while the
-      // editor is still open.
-      const sub = this.editorSub.get(editorID);
-      if (sub) {
-        sub.dispose();
-      }
+      this.filterManager.onDidDestroyFilter(editorID => {
+        // We call into handleFilterDestruction on filter updates as well, which
+        // would result the editor subscription(s) being disposed of while the
+        // editor is still open.
+        const sub = this.editorSub.get(editorID);
+        if (sub) {
+          sub.dispose();
+        }
 
-      this.handleFilterDestruction(editorID);
-    }));
+        this.handleFilterDestruction(editorID);
+      })
+    );
   }
 
   private handleNewFilter(data: ProcessedFilterData) {
     const decorations = this.updateLines(data.editor, data.lines);
     this.decorations.set(data.editor.id, decorations);
-
-    return;
   }
 
   private handleFilterUpdate(params: ReprocessedFilterData) {
     this.handleFilterDestruction(params.editor.id);
     this.handleNewFilter(params);
-
-    return;
   }
 
   private handleFilterDestruction(editorID: number) {
@@ -112,8 +112,8 @@ export class DecorationManager {
 
       let element: HTMLElement;
       let container: DecorationData[];
-      if (Helpers.isSetTextColorRule(line) || Helpers.isSetBorderColorRule(line) ||
-          Helpers.isSetBackgroundColorRule(line)) {
+      if (isSetTextColorRule(line) || isSetBorderColorRule(line) ||
+          isSetBackgroundColorRule(line)) {
         if (line.red === undefined || line.blue === undefined || line.green === undefined) {
           return;
         }
@@ -125,7 +125,7 @@ export class DecorationManager {
         element = this.createColorElement(line.red.value, line.green.value,
             line.blue.value, alpha);
         container = result.colorDecorations;
-      } else if (Helpers.isPlayAlertSoundRule(line)) {
+      } else if (isPlayAlertSoundRule(line)) {
         if (line.id === undefined) {
           return;
         }

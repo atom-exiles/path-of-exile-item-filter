@@ -2,7 +2,6 @@ import { CompositeDisposable, Disposable, Emitter, TextChange, TextEditor } from
 import * as _ from "lodash";
 
 import { EditorRegistry } from "./editor-registry";
-import { log } from "./helpers";
 import { ItemFilter, Line } from "./item-filter";
 import { ValidationData } from "./validation-data";
 
@@ -77,7 +76,6 @@ export class FilterManager {
   private readonly subscriptions: CompositeDisposable;
   private readonly validationData: ValidationData;
   private readonly registry: EditorRegistry;
-  private readonly observedFilters: number[];
   readonly emitter: Emitter;
   readonly filters: Map<number, FilterData>;
 
@@ -87,7 +85,6 @@ export class FilterManager {
     this.emitter = new Emitter();
     this.subscriptions = new CompositeDisposable();
     this.filters = new Map();
-    this.observedFilters = new Array();
 
     this.setupSubscriptions();
   }
@@ -129,7 +126,7 @@ export class FilterManager {
       if (filterData) {
         callback(filterData);
       } else {
-        log("warning", "bad value passed to FilterManager::onDidAddFilter");
+        throw new Error("FilterManager.onDidAddFilter fed undefined data");
       }
     });
   }
@@ -140,7 +137,7 @@ export class FilterManager {
       if (editorID) {
         callback(editorID);
       } else {
-        log("warning", "bad value passed to FilterManager::onDidDestroyFilter");
+        throw new Error("FilterManager.onDidDestroyFilter fed undefined data");
       }
     });
   }
@@ -159,7 +156,7 @@ export class FilterManager {
       if (processedData) {
         callback(processedData);
       } else {
-        log("warning", "bad value passed to FilterManager::onDidProcessFilter");
+        throw new Error("FilterManager.onDidProcessFilter fed undefined data");
       }
     });
   }
@@ -170,7 +167,7 @@ export class FilterManager {
       if (processedData) {
         callback(processedData);
       } else {
-        log("warning", "bad value passed to FilterManager::onDidReprocessFilter");
+        throw new Error("FilterManager.onDidReprocessFilter fed undefined data");
       }
     });
   }
@@ -180,27 +177,10 @@ export class FilterManager {
    * have been processed.
    */
   observeProcessedFilters(callback: (data: ProcessedFilterData) => void) {
-    this.observedFilters.forEach(editorID => {
-      const filterData = this.filters.get(editorID);
-      if (filterData) {
-        callback({
-          editor: filterData.editor,
-          lines: filterData.filter.lines,
-        });
-      } else {
-        throw new Error("observed filter with no associated filter data");
-      }
+    this.filters.forEach(filterData => {
+      callback({ editor: filterData.editor, lines: filterData.filter.lines });
     });
-
-    return this.emitter.on("manager-did-process-filter", filterData => {
-      if (filterData) {
-        // let editor = <Revelations.TextEditor>filterData.editor;
-        if (!this.observedFilters.includes(filterData.editor.id)) {
-          this.observedFilters.push(filterData.editor.id);
-        }
-        callback(filterData);
-      }
-    });
+    return this.onDidProcessFilter(callback);
   }
 
   /** Registers a new item filter with the manager. */
@@ -225,13 +205,10 @@ export class FilterManager {
     const filterData: FilterData = { editor, filter, subscription };
     this.filters.set(editor.id, filterData);
     this.emitter.emit("manager-did-add-filter", filterData);
-
     this.emitter.emit("manager-did-process-filter", {
       editor,
       lines: filter.lines,
     });
-
-    return;
   }
 
   /** Destroys an item filter previously registered with the manager. */
@@ -241,12 +218,9 @@ export class FilterManager {
       filterData.subscription.dispose();
       filterData.filter.dispose();
       this.filters.delete(editorID);
-      _.pull(this.observedFilters, editorID);
       this.emitter.emit("manager-did-destroy-filter", editorID);
     } else {
       throw new Error("attempted to destroy an unknown item filter");
     }
-
-    return;
   }
 }
