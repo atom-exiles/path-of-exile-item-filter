@@ -1,6 +1,11 @@
-## Unreleased Version
+## Version 1.2.0
 * Began transpiling the package source code on first run, rather than packaging the compiled source.
 * Use an activation trigger for package activation, instead of always activating.
+* Support both AtomIDE and Linter.
+* Only prompt users to install AtomIDE if neither AtomIDE or Linter are installed.
+* Started using TSLint on the project.
+* Changes to the whitelist configuration variables will trigger a reparse on item filters once again.
+* Fixed several rare cases where exceptions would be thrown, with one being caused by repeated deactivation.
 
 ## Version 1.1.5-1.1.8
 * Full support for the additional sounds in Fall of Oriath.
