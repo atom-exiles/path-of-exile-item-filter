@@ -5,7 +5,7 @@ import { LinterConsumer, LinterDelegate } from "atom-linter";
 import { CompletionProvider } from "./completion-provider";
 // import {} from "./decoration-manager";
 import { EditorRegistry } from "./editor-registry";
-// import {} from "./filter-manager";
+import { FilterManager } from "./filter-manager";
 import { log } from "./helpers";
 // import {} from "./sound-player";
 import { SuggestionData } from "./suggestion-data";
@@ -57,6 +57,7 @@ export class AtomPackage {
     const suggestionData = new SuggestionData();
     const completionProvider = new CompletionProvider(suggestionData.data);
     const editorRegistry = new EditorRegistry();
+    const filterManager = new FilterManager(validationData, editorRegistry);
 
     // tslint:disable:no-unsafe-any
     this.autocompleteProvider.getSuggestions = completionProvider.getSuggestions
@@ -71,9 +72,7 @@ export class AtomPackage {
       suggestionData,
       completionProvider,
       editorRegistry,
-      editorRegistry.observeFilters(editor => {
-        log("info", `added an item filter within an editor with ID #${editor.id}`);
-      })
+      filterManager
     );
 
     const packages = atom.packages.getAvailablePackageNames();
@@ -83,6 +82,30 @@ export class AtomPackage {
       await deps.install("path-of-exile-item-filter", true);
     }
     log("info", "successfully activated the package");
+
+    this.subscriptions.add(
+      filterManager.onDidProcessFilter(data => {
+        log("info", `processed filter within editor #${data.editor.id}`);
+        // tslint:disable-next-line:no-console
+        console.log(data);
+      }),
+
+      filterManager.onDidReprocessFilter(data => {
+        log("info", `reprocessed filter within editor #${data.editor.id}`);
+        // tslint:disable-next-line:no-console
+        console.log(data);
+      }),
+
+      filterManager.onDidAddFilter(data => {
+        log("info", `added filter within editor #${data.editor.id}`);
+        // tslint:disable-next-line:no-console
+        console.log(data);
+      }),
+
+      filterManager.onDidDestroyFilter(id => {
+        log("info", `destroyed filter within editor #${id}`);
+      })
+    );
   }
 
   deactivate() {

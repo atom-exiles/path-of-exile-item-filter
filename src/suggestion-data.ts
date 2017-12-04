@@ -4,6 +4,7 @@ import { Suggestions, TextSuggestion } from "atom/autocomplete-plus";
 import itemsFileData = require("../data/items.json");
 import soundsFileData = require("../data/sounds.json");
 import suggestionFileData = require("../data/suggestions.json");
+
 import * as Config from "./config";
 import { log } from "./helpers";
 
@@ -52,8 +53,8 @@ export class SuggestionData {
   }
 
   /**
-   *  Invoke the given callback whenever the suggestion data has been updated.
-   *  Returns a Disposable on which .dispose() can be called to unsubscribe.
+   * Invoke the given callback whenever the suggestion data has been updated.
+   * Returns a Disposable on which .dispose() can be called to unsubscribe.
    */
   onDidUpdateData(callback: (data: SuggestionDataFormat) => void) {
     return this.emitter.on("did-update-data", callback);

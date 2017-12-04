@@ -13,21 +13,22 @@
   "main": "./src/index",
   "repository": "https://github.com/atom-exiles/path-of-exile-item-filter",
   "scripts": {
+    "compile": "tsc --project src && tsc --project test",
     "lint": "tslint --project src && tslint --project test",
     "test": "atom --test test"
   },
   "dependencies": {
     "@types/atom": "^1.22.2",
-    "@types/lodash": "^4.14.86",
+    "@types/lodash": "^4.14.87",
     "atom-package-deps": "^4.6.0",
     "atom-ts-transpiler": "^1.4.0",
     "lodash": "^4.17.4",
     "typescript": "^2.6.2"
   },
   "devDependencies": {
-    "@glencfl/tslint-config": "^1.2.0",
+    "@glencfl/tslint-config": "^1.2.2",
     "@types/atom-mocha-test-runner": "^1.0.2",
-    "@types/chai": "^4.0.6",
+    "@types/chai": "4.0.5",
     "@types/chai-as-promised": "^7.1.0",
     "atom-mocha-test-runner": "^1.2.0",
     "chai": "^4.1.2",

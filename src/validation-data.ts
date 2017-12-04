@@ -2,6 +2,7 @@ import { CompositeDisposable, Emitter } from "atom";
 
 import itemsFileData = require("../data/items.json");
 import soundsFileData = require("../data/sounds.json");
+
 import * as Config from "./config";
 import { log } from "./helpers";
 
@@ -37,8 +38,8 @@ export class ValidationData {
   }
 
   /**
-   *  Invoke the given callback whenever the validation data has been updated.
-   *  Returns a Disposable on which .dispose() can be called to unsubscribe.
+   * Invoke the given callback whenever the validation data has been updated.
+   * Returns a Disposable on which .dispose() can be called to unsubscribe.
    */
   onDidUpdateData(callback: (data: ValidationDataFormat) => void) {
     return this.emitter.on("did-update-data", callback);

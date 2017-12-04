@@ -58,7 +58,7 @@ export class EditorRegistry {
 
   /** Invoke the given callback whenever an editor is added. */
   onDidAddEditor(callback: (editor: TextEditor) => void) {
-    return this.emitter.on("did-add-editor", editor => {
+    return this.emitter.on("registry-did-add-editor", editor => {
       if (editor) {
         callback(editor);
       } else {
@@ -69,7 +69,7 @@ export class EditorRegistry {
 
   /** Invoke the given callback whenever an editor is destroyed. */
   onDidDestroyEditor(callback: (editorID: number) => void) {
-    return this.emitter.on("did-destroy-editor", editorID => {
+    return this.emitter.on("registry-did-destroy-editor", editorID => {
       if (editorID) {
         callback(editorID);
       } else {
@@ -88,7 +88,7 @@ export class EditorRegistry {
 
   /** Invoke the given callback whenever an item filter is added. */
   onDidAddFilter(callback: (editor: TextEditor) => void) {
-    return this.emitter.on("did-add-filter", editor => {
+    return this.emitter.on("registry-did-add-filter", editor => {
       if (editor) {
         callback(editor);
       } else {
@@ -99,7 +99,7 @@ export class EditorRegistry {
 
   /** Invoke the given callback whenever an item filter is destroyed. */
   onDidDestroyFilter(callback: (editorID: number) => void) {
-    return this.emitter.on("did-destroy-filter", editorID => {
+    return this.emitter.on("registry-did-destroy-filter", editorID => {
       if (editorID) {
         callback(editorID);
       } else {
@@ -131,7 +131,7 @@ export class EditorRegistry {
     this.editors.set(editor.id, {
       editor, subscriptions: editorSubs,
     });
-    this.emitter.emit("did-add-editor", editor);
+    this.emitter.emit("registry-did-add-editor", editor);
 
     if (isItemFilter(editor)) {
       this.constructFilter(editor);
@@ -152,7 +152,7 @@ export class EditorRegistry {
     if (editorData) {
       editorData.subscriptions.dispose();
       this.editors.delete(editorID);
-      this.emitter.emit("did-destroy-editor", editorID);
+      this.emitter.emit("registry-did-destroy-editor", editorID);
     }
 
     return;
@@ -207,14 +207,14 @@ export class EditorRegistry {
   private constructFilter(editor: TextEditor) {
     const gutter = this.addDecorationGutter(editor);
     this.filters.set(editor.id, { editor, gutter });
-    this.emitter.emit("did-add-filter", editor);
+    this.emitter.emit("registry-did-add-filter", editor);
   }
 
   /** Performs any work necessary to unregister an item filter. */
   private destroyFilter(data: FilterData) {
     data.gutter.destroy();
     this.filters.delete(data.editor.id);
-    this.emitter.emit("did-destroy-filter", data.editor.id);
+    this.emitter.emit("registry-did-destroy-filter", data.editor.id);
 
     return;
   }

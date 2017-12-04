@@ -1,6 +1,6 @@
 import { Point, Range, TextEditor } from "atom";
 import {
-  SuggestionInsertedEvent, Suggestions, SuggestionsRequestedEvent
+  Suggestions, SuggestionsRequestedEvent, SuggestionInsertedEvent
 } from "atom-autocomplete";
 
 import { isSnippetSuggestion, isTextSuggestion, log } from "./helpers";
@@ -32,7 +32,7 @@ export class CompletionProvider {
         result = result.concat(this.suggestions.blocks, this.suggestions.extraBlocks);
       } else {
         result = result.concat(this.suggestions.blocks, this.suggestions.actions,
-          this.suggestions.filters, this.suggestions.extraBlocks);
+            this.suggestions.filters, this.suggestions.extraBlocks);
       }
     } else {
       if (cursorScopes.includes("rarity.filter")) {
@@ -53,7 +53,7 @@ export class CompletionProvider {
       } else if (cursorScopes.includes("class.filter")) {
         if (prefix !== "Class") {
           result = result.concat(this.suggestions.classes, this.suggestions.classWhitelist,
-            this.suggestions.extraClasses);
+              this.suggestions.extraClasses);
         }
       } else if (cursorScopes.includes("base-type.filter")) {
         if (prefix !== "BaseType") {
