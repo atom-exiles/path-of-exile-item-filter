@@ -106,10 +106,18 @@ export class FilterManager {
 
     this.subscriptions.add(this.validationData.onDidUpdateData(_ => {
       this.filters.forEach((filterData, _) => {
-        filterData.filter.dispose();
-        this.emitter.emit("manager-did-destroy-filter", filterData.editor.id);
-        filterData.filter = new ItemFilter(this.validationData, filterData.editor);
-        this.emitter.emit("manager-did-add-filter", filterData);
+        const filterLength = filterData.filter.lines.length;
+        const changes = [{
+          start: 0,
+          oldExtent: filterLength,
+          newExtent: filterLength,
+        }];
+        filterData.filter.update(changes);
+        this.emitter.emit("manager-did-reprocess-filter", {
+          editor: filterData.editor,
+          lines: filterData.filter.lines,
+          changes,
+        });
       });
     }));
 
