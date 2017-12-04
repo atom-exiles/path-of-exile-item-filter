@@ -26,8 +26,8 @@ class ConfigValue<T> {
   }
 
   /**
-   *  Invoke the given callback with the current value and any future values for the
-   *  configuration variable.
+   * Invoke the given callback with the current value and any future values for the
+   * configuration variable.
    */
   observe(callback: (value: T) => void) {
     return atom.config.observe(this.accessKey, callback);
