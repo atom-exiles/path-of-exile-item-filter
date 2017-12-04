@@ -3,11 +3,10 @@ import { AutocompleteProvider } from "atom-autocomplete";
 import { LinterConsumer } from "atom-linter";
 
 import { CompletionProvider } from "./completion-provider";
-// import {} from "./decoration-manager";
+import { DecorationManager } from "./decoration-manager";
 import { EditorRegistry } from "./editor-registry";
 import { FilterManager } from "./filter-manager";
 import { log } from "./helpers";
-// import {} from "./sound-player";
 import { LinterProvider } from "./linter-provider";
 import { SuggestionData } from "./suggestion-data";
 import { ValidationData } from "./validation-data";
@@ -61,6 +60,7 @@ export class AtomPackage {
     const editorRegistry = new EditorRegistry();
     const filterManager = new FilterManager(validationData, editorRegistry);
     this.linterProvider = new LinterProvider(filterManager);
+    const decorationManager = new DecorationManager(filterManager);
 
     // tslint:disable:no-unsafe-any
     this.autocompleteProvider.getSuggestions = completionProvider.getSuggestions
@@ -75,7 +75,8 @@ export class AtomPackage {
       suggestionData,
       completionProvider,
       editorRegistry,
-      filterManager
+      filterManager,
+      decorationManager
     );
 
     const packages = atom.packages.getAvailablePackageNames();
