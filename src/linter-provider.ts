@@ -111,7 +111,7 @@ export class LinterProvider {
 
   setLinter(delegate: LinterDelegate) {
     this.delegate = delegate;
-    this.resetMessageCache();
+    delegate.setAllMessages(this.messageCache);
   }
 
   private handleNewFilter(data: ProcessedFilterData) {
