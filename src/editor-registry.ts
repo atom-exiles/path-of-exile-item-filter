@@ -18,7 +18,6 @@ interface FilterData {
  * and another with every item filter open within Atom.
  */
 export class EditorRegistry {
-  private readonly packageName: string;
   private readonly subscriptions: CompositeDisposable;
   readonly editors: Map<number, EditorData>;
   readonly filters: Map<number, FilterData>;
@@ -196,8 +195,9 @@ export class EditorRegistry {
   /** Adds a gutter under our package name to the given editor. */
   private addDecorationGutter(editor: TextEditor) {
     log("info", `adding a gutter to the editor with ID #${editor.id}`);
-    return editor.addGutter({
-      name: this.packageName,
+    const gutter = editor.gutterWithName("path-of-exile-item-filter");
+    return gutter ? gutter : editor.addGutter({
+      name: "path-of-exile-item-filter",
       priority: 75,
       visible: enableGutter.value,
     });
