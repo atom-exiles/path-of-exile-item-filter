@@ -1,6 +1,6 @@
 import { CompositeDisposable } from "atom";
 import { AutocompleteProvider } from "atom-autocomplete";
-import { LinterConsumer, LinterDelegate } from "atom-linter";
+import { LinterConsumer } from "atom-linter";
 
 import { CompletionProvider } from "./completion-provider";
 // import {} from "./decoration-manager";
@@ -8,6 +8,7 @@ import { EditorRegistry } from "./editor-registry";
 import { FilterManager } from "./filter-manager";
 import { log } from "./helpers";
 // import {} from "./sound-player";
+import { LinterProvider } from "./linter-provider";
 import { SuggestionData } from "./suggestion-data";
 import { ValidationData } from "./validation-data";
 
@@ -28,7 +29,7 @@ function adjustGrammarDefaults() {
 
 export class AtomPackage {
   private autocompleteProvider: AutocompleteProvider;
-  private linterDelegate: LinterDelegate;
+  private linterProvider: LinterProvider;
   private subscriptions: CompositeDisposable;
   private readonly autocompleteStubs = {
     onDidInsertSuggestion: () => undefined,
@@ -46,6 +47,7 @@ export class AtomPackage {
       onDidInsertSuggestion: this.autocompleteStubs.onDidInsertSuggestion,
       dispose: this.autocompleteStubs.dispose,
     };
+    log("info", "package constructed");
   }
 
   async activate(_: PackageState) {
@@ -58,6 +60,7 @@ export class AtomPackage {
     const completionProvider = new CompletionProvider(suggestionData.data);
     const editorRegistry = new EditorRegistry();
     const filterManager = new FilterManager(validationData, editorRegistry);
+    this.linterProvider = new LinterProvider(filterManager);
 
     // tslint:disable:no-unsafe-any
     this.autocompleteProvider.getSuggestions = completionProvider.getSuggestions
@@ -82,36 +85,12 @@ export class AtomPackage {
       await deps.install("path-of-exile-item-filter", true);
     }
     log("info", "successfully activated the package");
-
-    this.subscriptions.add(
-      filterManager.onDidProcessFilter(data => {
-        log("info", `processed filter within editor #${data.editor.id}`);
-        // tslint:disable-next-line:no-console
-        console.log(data);
-      }),
-
-      filterManager.onDidReprocessFilter(data => {
-        log("info", `reprocessed filter within editor #${data.editor.id}`);
-        // tslint:disable-next-line:no-console
-        console.log(data);
-      }),
-
-      filterManager.onDidAddFilter(data => {
-        log("info", `added filter within editor #${data.editor.id}`);
-        // tslint:disable-next-line:no-console
-        console.log(data);
-      }),
-
-      filterManager.onDidDestroyFilter(id => {
-        log("info", `destroyed filter within editor #${id}`);
-      })
-    );
   }
 
   deactivate() {
     log("info", "beginning package deactivation");
     this.subscriptions.dispose();
-    if (this.linterDelegate) this.linterDelegate.dispose();
+    this.linterProvider.dispose();
 
     this.autocompleteProvider.getSuggestions = this.autocompleteStubs.getSuggestions;
     this.autocompleteProvider.onDidInsertSuggestion = this.autocompleteStubs.onDidInsertSuggestion;
@@ -130,6 +109,7 @@ export class AtomPackage {
 
   consumeLinter: LinterConsumer = register => {
     log("info", "registering with the linter service");
-    this.linterDelegate = register({ name: "path-of-exile-item-filter" });
+    const linterDelegate = register({ name: "path-of-exile-item-filter" });
+    this.linterProvider.setLinter(linterDelegate);
   }
 }
