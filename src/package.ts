@@ -6,7 +6,6 @@ import { CompletionProvider } from "./completion-provider";
 import { DecorationManager } from "./decoration-manager";
 import { EditorRegistry } from "./editor-registry";
 import { FilterManager } from "./filter-manager";
-import { log } from "./helpers";
 import { LinterProvider } from "./linter-provider";
 import { SuggestionData } from "./suggestion-data";
 import { ValidationData } from "./validation-data";
@@ -46,11 +45,9 @@ export class AtomPackage {
       onDidInsertSuggestion: this.autocompleteStubs.onDidInsertSuggestion,
       dispose: this.autocompleteStubs.dispose,
     };
-    log("info", "package constructed");
   }
 
   async activate(_: PackageState) {
-    log("info", "beginning package activation");
     adjustGrammarDefaults();
 
     this.subscriptions = new CompositeDisposable();
@@ -81,22 +78,18 @@ export class AtomPackage {
 
     const packages = atom.packages.getAvailablePackageNames();
     if (!(packages.includes("atom-ide-ui") || packages.includes("linter"))) {
-      log("info", "using package deps to install AtomIDE");
       const deps = await import("atom-package-deps");
       await deps.install("path-of-exile-item-filter", true);
     }
-    log("info", "successfully activated the package");
   }
 
   deactivate() {
-    log("info", "beginning package deactivation");
     this.subscriptions.dispose();
     this.linterProvider.dispose();
 
     this.autocompleteProvider.getSuggestions = this.autocompleteStubs.getSuggestions;
     this.autocompleteProvider.onDidInsertSuggestion = this.autocompleteStubs.onDidInsertSuggestion;
     this.autocompleteProvider.dispose = this.autocompleteStubs.dispose;
-    log("info", "successfully deactivated the package");
   }
 
   serialize(): PackageState {
@@ -104,12 +97,10 @@ export class AtomPackage {
   }
 
   provideCompletion() {
-    log("info", "providing the Autocomplete service");
     return [this.autocompleteProvider];
   }
 
   consumeLinter: LinterConsumer = register => {
-    log("info", "registering with the linter service");
     const linterDelegate = register({ name: "path-of-exile-item-filter" });
     this.linterProvider.setLinter(linterDelegate);
   }

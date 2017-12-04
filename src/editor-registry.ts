@@ -1,7 +1,7 @@
 import { CompositeDisposable, Emitter, Gutter, TextEditor } from "atom";
 
 import { enableGutter } from "./config";
-import { isItemFilter, log } from "./helpers";
+import { isItemFilter } from "./helpers";
 
 interface EditorData {
   editor: TextEditor;
@@ -61,7 +61,7 @@ export class EditorRegistry {
       if (editor) {
         callback(editor);
       } else {
-        log("warning", "bad value passed to EditorRegistry::onDidAddEditor");
+        throw new Error("EditorRegistry.onDidAddEditor fed undefined value");
       }
     });
   }
@@ -72,7 +72,7 @@ export class EditorRegistry {
       if (editorID) {
         callback(editorID);
       } else {
-        log("warning", "bad value passed on EditorRegistry::onDidDestroyEditor");
+        throw new Error("EditorRegistry.onDidDestroyEditor fed undefined value");
       }
     });
   }
@@ -91,7 +91,7 @@ export class EditorRegistry {
       if (editor) {
         callback(editor);
       } else {
-        log("warning", "bad value passed to EditorRegistry::onDidAddFilter");
+        throw new Error("EditorRegistry.onDidAddFilter fed undefined value");
       }
     });
   }
@@ -102,7 +102,7 @@ export class EditorRegistry {
       if (editorID) {
         callback(editorID);
       } else {
-        log("warning", "bad value passed to EditorRegistry::onDidDestroyFilter");
+        throw new Error("EditorRegistry.onDidDestroyFilter fed undefined value");
       }
     });
   }
@@ -117,7 +117,6 @@ export class EditorRegistry {
 
   /** Registers a new editor with the registry. */
   private handleNewEditor(editor: TextEditor) {
-    log("info", `added editor with ID #${editor.id}`);
     const editorSubs = new CompositeDisposable();
     editorSubs.add(editor.getBuffer().onDidDestroy(() => {
       this.handleDestroyedEditor(editor.id);
@@ -141,7 +140,6 @@ export class EditorRegistry {
 
   /** Destroys an editor previously registered with the registry. */
   private handleDestroyedEditor(editorID: number) {
-    log("info", `editor with ID #${editorID} was destroyed`);
     const filterData = this.filters.get(editorID);
     if (filterData) {
       this.destroyFilter(filterData);
@@ -159,7 +157,6 @@ export class EditorRegistry {
 
   /** Handles a grammar change in one of the registered editors. */
   private handleGrammarChange(editor: TextEditor) {
-    log("info", `grammar within the editor with ID #${editor.id} was changed`);
     if (isItemFilter(editor)) {
       this.constructFilter(editor);
     } else {
@@ -177,9 +174,6 @@ export class EditorRegistry {
    * value of the enableGutter configuration variable.
    */
   private handleEnableGutterChange(enableGutter: boolean) {
-    if (enableGutter) log("info", "showing the gutter across all editors");
-    else log("info", "hiding the gutter across all editors");
-
     this.filters.forEach(filterData => {
       const gutter = filterData.gutter;
       if (enableGutter) {
@@ -194,7 +188,6 @@ export class EditorRegistry {
 
   /** Adds a gutter under our package name to the given editor. */
   private addDecorationGutter(editor: TextEditor) {
-    log("info", `adding a gutter to the editor with ID #${editor.id}`);
     const gutter = editor.gutterWithName("path-of-exile-item-filter");
     return gutter ? gutter : editor.addGutter({
       name: "path-of-exile-item-filter",

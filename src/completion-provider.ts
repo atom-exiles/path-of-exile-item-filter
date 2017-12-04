@@ -3,7 +3,7 @@ import {
   Suggestions, SuggestionsRequestedEvent, SuggestionInsertedEvent
 } from "atom-autocomplete";
 
-import { isSnippetSuggestion, isTextSuggestion, log } from "./helpers";
+import { isSnippetSuggestion, isTextSuggestion } from "./helpers";
 import { SuggestionDataFormat } from "./suggestion-data";
 
 export class CompletionProvider {
@@ -17,7 +17,6 @@ export class CompletionProvider {
 
   /** The callback which Autocomplete+ calls into whenever it needs suggestions for the user. */
   getSuggestions(event: SuggestionsRequestedEvent) {
-    log("info", "providing completion suggestions");
     let result: Suggestions = [];
     const { editor, bufferPosition, scopeDescriptor } = event;
     let prefix = this.getPrefix(editor, bufferPosition);
@@ -91,15 +90,11 @@ export class CompletionProvider {
 
     if (shouldPruneSuggestions) result = this.pruneSuggestions(prefix, result);
     this.setReplacementPrefix(editor, bufferPosition, prefix, result);
-    const s = result.length === 1 ? "suggestion" : "suggestions";
-    log("info", `provided ${result.length} ${s} to the user`);
     return result;
   }
 
   /** Performs the buffer manipulations necessary following a suggestion insertion. */
   onDidInsertSuggestion(event: SuggestionInsertedEvent) {
-    const pos = event.triggerPosition;
-    log("info", `suggestion inserted at [${pos.row}, ${pos.column}]`);
     const editor = event.editor;
 
     // Whenever the user opens with quotation marks and accepts a suggestion,

@@ -6,7 +6,6 @@ import soundsFileData = require("../data/sounds.json");
 import suggestionFileData = require("../data/suggestions.json");
 
 import * as Config from "./config";
-import { log } from "./helpers";
 
 type TextSuggestions = TextSuggestion[];
 
@@ -35,7 +34,6 @@ export class SuggestionData {
   data: SuggestionDataFormat;
 
   constructor() {
-    log("info", "building suggestion data");
     this.emitter = new Emitter();
     this.subscriptions = new CompositeDisposable();
 
@@ -44,7 +42,6 @@ export class SuggestionData {
     this.updateBaseWhitelist();
     this.updateClassWhitelist();
     this.emitDataUpdate();
-    log("info", "suggestion data built");
   }
 
   dispose() {
