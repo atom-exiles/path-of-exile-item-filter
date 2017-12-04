@@ -5,7 +5,6 @@ import {
 
 import { FilterManager, ProcessedFilterData, ReprocessedFilterData } from "./filter-manager";
 import { ValidationMessage, ValidationMessages } from "./filter-processor";
-import * as Helpers from "./helpers";
 import * as Filter from "./item-filter";
 
 function gatherMessages(filter: Filter.Line[]) {
@@ -56,31 +55,6 @@ function transformMessage(message: ValidationMessage, severity: "error" | "warni
   return output;
 }
 
-function postProcessFilter(filter: Filter.Line[], file?: string) {
-  // This will eventually be much more elaborate, but for now we're just going
-  // to warn if any rules precede the first block.
-  for (const line of filter) {
-    if (Helpers.isBlock(line)) {
-      return;
-    } else if (Helpers.isEmpty(line) || Helpers.isUnknown(line) || Helpers.isLineComment(line)) {
-      continue;
-    } else {
-      // This error should take precedence over all others.
-      line.messages.errors.length = 0;
-      line.messages.warnings.length = 0;
-      line.messages.info.length = 0;
-
-      line.invalid = true;
-      line.messages.errors.push({
-        excerpt: "A filter rule must be contained within a block.",
-        file,
-        range: line.range,
-        url: "http://pathofexile.gamepedia.com/Item_filter",
-      });
-    }
-  }
-}
-
 function adjustMessagePaths(messages: ValidationMessages, newPath: string) {
   for (const message of messages.errors) message.file = newPath;
   for (const message of messages.warnings) message.file = newPath;
@@ -111,12 +85,10 @@ export class LinterProvider {
         this.handlePathChange(editor.id, newPath);
       }));
 
-      postProcessFilter(data.lines, editor.getPath());
       this.handleNewFilter(data);
     }));
 
     this.subscriptions.add(filterManager.onDidReprocessFilter(data => {
-      postProcessFilter(data.lines, data.editor.getPath());
       this.handleFilterUpdate(data);
     }));
 
