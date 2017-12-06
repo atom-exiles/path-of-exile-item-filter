@@ -3,7 +3,7 @@ import {
   TextEditor
 } from "atom";
 
-import { FilterManager, ProcessedFilterData, ReprocessedFilterData } from "./filter-manager";
+import { FilterManager, ProcessedFilterData } from "./filter-manager";
 import {
   isPlayAlertSoundRule, isSetBackgroundColorRule, isSetBorderColorRule, isSetTextColorRule
 } from "./helpers";
@@ -83,7 +83,7 @@ export class DecorationManager {
     this.decorations.set(data.editor.id, decorations);
   }
 
-  private handleFilterUpdate(params: ReprocessedFilterData) {
+  private handleFilterUpdate(params: ProcessedFilterData) {
     this.handleFilterDestruction(params.editor.id);
     this.handleNewFilter(params);
   }

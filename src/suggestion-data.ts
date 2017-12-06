@@ -28,9 +28,13 @@ export interface SuggestionDataFormat {
   [key: string]: Suggestions;
 }
 
+interface Emissions {
+  "did-update-data": SuggestionDataFormat;
+}
+
 export class SuggestionData {
   private readonly subscriptions: CompositeDisposable;
-  readonly emitter: Emitter;
+  readonly emitter: Emitter<{}, Emissions>;
   data: SuggestionDataFormat;
 
   constructor() {

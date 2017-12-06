@@ -13,6 +13,13 @@ interface FilterData {
   gutter: Gutter;
 }
 
+interface Emissions {
+  "did-add-editor": TextEditor;
+  "did-destroy-editor": number;
+  "did-add-filter": TextEditor;
+  "did-destroy-filter": number;
+}
+
 /**
  * Maintains two distinct registries: one with every TextEditor open within Atom
  * and another with every item filter open within Atom.
@@ -21,7 +28,7 @@ export class EditorRegistry {
   private readonly subscriptions: CompositeDisposable;
   readonly editors: Map<number, EditorData>;
   readonly filters: Map<number, FilterData>;
-  readonly emitter: Emitter;
+  readonly emitter: Emitter<{}, Emissions>;
 
   constructor() {
     this.emitter = new Emitter();
@@ -57,23 +64,15 @@ export class EditorRegistry {
 
   /** Invoke the given callback whenever an editor is added. */
   onDidAddEditor(callback: (editor: TextEditor) => void) {
-    return this.emitter.on("registry-did-add-editor", editor => {
-      if (editor) {
-        callback(editor);
-      } else {
-        throw new Error("EditorRegistry.onDidAddEditor fed undefined value");
-      }
+    return this.emitter.on("did-add-editor", editor => {
+      callback(editor);
     });
   }
 
   /** Invoke the given callback whenever an editor is destroyed. */
   onDidDestroyEditor(callback: (editorID: number) => void) {
-    return this.emitter.on("registry-did-destroy-editor", editorID => {
-      if (editorID) {
-        callback(editorID);
-      } else {
-        throw new Error("EditorRegistry.onDidDestroyEditor fed undefined value");
-      }
+    return this.emitter.on("did-destroy-editor", editorID => {
+      callback(editorID);
     });
   }
 
@@ -87,23 +86,15 @@ export class EditorRegistry {
 
   /** Invoke the given callback whenever an item filter is added. */
   onDidAddFilter(callback: (editor: TextEditor) => void) {
-    return this.emitter.on("registry-did-add-filter", editor => {
-      if (editor) {
-        callback(editor);
-      } else {
-        throw new Error("EditorRegistry.onDidAddFilter fed undefined value");
-      }
+    return this.emitter.on("did-add-filter", editor => {
+      callback(editor);
     });
   }
 
   /** Invoke the given callback whenever an item filter is destroyed. */
   onDidDestroyFilter(callback: (editorID: number) => void) {
-    return this.emitter.on("registry-did-destroy-filter", editorID => {
-      if (editorID) {
-        callback(editorID);
-      } else {
-        throw new Error("EditorRegistry.onDidDestroyFilter fed undefined value");
-      }
+    return this.emitter.on("did-destroy-filter", editorID => {
+      callback(editorID);
     });
   }
 
@@ -129,7 +120,7 @@ export class EditorRegistry {
     this.editors.set(editor.id, {
       editor, subscriptions: editorSubs,
     });
-    this.emitter.emit("registry-did-add-editor", editor);
+    this.emitter.emit("did-add-editor", editor);
 
     if (isItemFilter(editor)) {
       this.constructFilter(editor);
@@ -149,7 +140,7 @@ export class EditorRegistry {
     if (editorData) {
       editorData.subscriptions.dispose();
       this.editors.delete(editorID);
-      this.emitter.emit("registry-did-destroy-editor", editorID);
+      this.emitter.emit("did-destroy-editor", editorID);
     }
 
     return;
@@ -200,14 +191,14 @@ export class EditorRegistry {
   private constructFilter(editor: TextEditor) {
     const gutter = this.addDecorationGutter(editor);
     this.filters.set(editor.id, { editor, gutter });
-    this.emitter.emit("registry-did-add-filter", editor);
+    this.emitter.emit("did-add-filter", editor);
   }
 
   /** Performs any work necessary to unregister an item filter. */
   private destroyFilter(data: FilterData) {
     data.gutter.destroy();
     this.filters.delete(data.editor.id);
-    this.emitter.emit("registry-did-destroy-filter", data.editor.id);
+    this.emitter.emit("did-destroy-filter", data.editor.id);
 
     return;
   }

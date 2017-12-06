@@ -1,12 +1,19 @@
-import * as assert from "assert";
-import { RangeLike, TextEditor } from "atom";
+import { RangeLike, TextChange, TextEditor } from "atom";
 import * as _ from "lodash";
 
-import { BufferChange } from "./filter-manager";
 import { processLines, ValidationMessages } from "./filter-processor";
 import { ValidationData } from "./validation-data";
 
 export type Range = RangeLike;
+
+/**
+ * A slimmed down version of Atom's TextChange, with only the properties that
+ * we use within our code. This simplifies the creation of these objects.
+ */
+interface FilterChange {
+  newRange: Range;
+  oldRange: Range;
+}
 
 export interface Text {
   text: string;
@@ -221,47 +228,80 @@ export class ItemFilter {
 
   dispose() {}
 
-  update(changes: BufferChange[]) {
-    assert(changes.length > 0, "update called with no changes");
-    const lines = this.editor.getBuffer().getLines();
-    const filterData = this.lines;
+  update(changes: TextChange[]) {
+    if (changes.length === 0) return;
 
-    let result: Line[] = [];
-    let shift = 0;
-    let currentIndex = 0;
+    const editorLines = this.editor.getBuffer().getLines();
+    const filterLines = this.lines;
 
-    for (const change of changes) {
-      if (change.start !== currentIndex) {
-        const upperPartition = filterData.slice(currentIndex, change.start);
-        if (shift !== 0) shiftLineRanges(upperPartition, shift);
-        result = result.concat(upperPartition);
-        currentIndex += upperPartition.length;
-      }
+    let startIndex: number;
+    let upperPartition: Line[]|undefined;
+    let lowerPartition: Line[]|undefined;
 
-      const changedLines = lines.slice(currentIndex, currentIndex + change.newExtent + 1);
-      const processedLines = processLines({
-        lines: changedLines,
-        data: this.validationData.data,
-        row: change.start,
-        file: this.editor.getBuffer().getPath(),
-      });
+    let change: FilterChange;
+    if (changes.length === 1) {
+      const atomChange = changes[0];
+      change = {
+        oldRange: atomChange.oldRange.copy(),
+        newRange: atomChange.newRange.copy(),
+      };
+      startIndex = atomChange.start.row;
+    } else {
+      const first = _.first(changes) as TextChange;
+      const last = _.last(changes) as TextChange;
 
-      result = result.concat(processedLines);
-      currentIndex += processedLines.length;
-
-      shift += change.newExtent - change.oldExtent;
+      change = {
+        oldRange: first.oldRange.union(last.oldRange),
+        newRange: first.newRange.union(last.newRange),
+      };
+      startIndex = first.start.row;
     }
 
-    const lastChange = <BufferChange> _.last(changes);
-    const sliceIndex = lastChange.start + lastChange.oldExtent + 1;
-    const slice = filterData.splice(sliceIndex);
-    if (shift !== 0) shiftLineRanges(slice, shift);
-    result = result.concat(slice);
+    const reprocessCount = change.newRange.end.row - change.newRange.start.row + 1;
 
-    // We should have line data for every line within the editor.
-    assert(result.length === lines.length,
-        `output size mismatch (${result.length} vs ${lines.length})`);
+    if (change.oldRange.start.row !== 0) {
+      upperPartition = filterLines.slice(0, change.oldRange.start.row);
+    }
+
+    if (change.oldRange.end.row < filterLines.length) {
+      const partition = filterLines.slice(change.oldRange.end.row + 1, filterLines.length);
+      shiftLineRanges(partition, change.newRange.end.row - change.oldRange.end.row);
+      lowerPartition = partition;
+    }
+
+    const processedLines = processLines({
+      lines: editorLines.slice(startIndex, startIndex + reprocessCount),
+      data: this.validationData.data,
+      row: startIndex,
+      file: this.editor.getBuffer().getPath(),
+    });
+
+    let result: Line[] = [];
+    if (upperPartition) result = result.concat(upperPartition, processedLines);
+    if (lowerPartition) result = result.concat(lowerPartition);
+    if (result.length !== editorLines.length) {
+      throw new Error(`Update output has ${result.length} lines, yet the editor contains` +
+        ` ${editorLines.length} lines.`);
+    }
+
     this.lines = result;
+  }
+
+  fullUpdate() {
+    const editorLines = this.editor.getBuffer().getLines();
+    const newLines = processLines({
+      lines: editorLines,
+      data: this.validationData.data,
+      row: 0,
+      file: this.editor.getBuffer().getPath(),
+    });
+
+    if (newLines.length !== editorLines.length) {
+      throw new Error(`Full update output has ${newLines.length} lines, yet the editor` +
+        ` contains ${editorLines.length} lines`);
+    }
+
+    this.lines = newLines;
   }
 
   processFilter() {

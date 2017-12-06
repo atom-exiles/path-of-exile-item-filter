@@ -28,7 +28,7 @@
   "devDependencies": {
     "@glencfl/tslint-config": "^1.2.2",
     "@types/atom-mocha-test-runner": "^1.0.2",
-    "@types/chai": "4.0.5",
+    "@types/chai": "4.0.8",
     "@types/chai-as-promised": "^7.1.0",
     "atom-mocha-test-runner": "^1.2.0",
     "chai": "^4.1.2",

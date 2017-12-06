@@ -13,9 +13,13 @@ export interface ValidationDataFormat {
   baseWhitelist: string[];
 }
 
+interface Emissions {
+  "did-update-data": ValidationDataFormat;
+}
+
 export class ValidationData {
   private readonly subscriptions: CompositeDisposable;
-  readonly emitter: Emitter;
+  readonly emitter: Emitter<{}, Emissions>;
   data: ValidationDataFormat;
 
   constructor() {

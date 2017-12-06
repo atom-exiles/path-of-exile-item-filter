@@ -1,5 +1,4 @@
-import { CompositeDisposable, Disposable, Emitter, TextChange, TextEditor } from "atom";
-import * as _ from "lodash";
+import { CompositeDisposable, Disposable, Emitter, TextEditor } from "atom";
 
 import { EditorRegistry } from "./editor-registry";
 import { ItemFilter, Line } from "./item-filter";
@@ -16,67 +15,18 @@ export interface ProcessedFilterData {
   lines: Line[];
 }
 
-export interface ReprocessedFilterData extends ProcessedFilterData {
-  changes: BufferChange[];
-}
-
-export interface BufferChange {
-  newExtent: number;
-  oldExtent: number;
-  start: number;
-}
-
-/**
- * Sorts changes by their start position, while also performing a data transformation
- * to simplify the change structure.
- *
- * Changes affecting the same rows are effectively merged together during this
- * transformation.
- */
-function transformChanges(c: TextChange[]) {
-  const result: BufferChange[] = [];
-
-  // Atom will freeze each change object, yet sort requires each element of
-  // the array to be mutable.
-  const changes = [];
-  for (const change of c) {
-    changes.push({
-      newExtent: change.newExtent.copy(),
-      oldExtent: change.oldExtent.copy(),
-      start: change.start.copy(),
-    });
-  }
-
-  changes.sort((a, b) => {
-    if (a.start.row === b.start.row) {
-      return 0;
-    } else if (a.start.row < b.start.row) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
-
-  for (let i = 0; i < changes.length; i++) {
-    const currentChange = changes[i];
-    const lastResult = _.last(result);
-    if (i === 0 || (lastResult && lastResult.start !== currentChange.start.row)) {
-      result.push({
-        newExtent: currentChange.newExtent.row,
-        oldExtent: currentChange.oldExtent.row,
-        start: currentChange.start.row,
-      });
-    }
-  }
-
-  return result;
+interface Emissions {
+  "did-add-filter": FilterData;
+  "did-destroy-filter": number;
+  "did-process-filter": ProcessedFilterData;
+  "did-reprocess-filter": ProcessedFilterData;
 }
 
 export class FilterManager {
   private readonly subscriptions: CompositeDisposable;
   private readonly validationData: ValidationData;
   private readonly registry: EditorRegistry;
-  readonly emitter: Emitter;
+  readonly emitter: Emitter<{}, Emissions>;
   readonly filters: Map<number, FilterData>;
 
   constructor(validationData: ValidationData, registry: EditorRegistry) {
@@ -106,17 +56,10 @@ export class FilterManager {
 
     this.subscriptions.add(this.validationData.onDidUpdateData(_ => {
       this.filters.forEach((filterData, _) => {
-        const filterLength = filterData.filter.lines.length;
-        const changes = [{
-          start: 0,
-          oldExtent: filterLength,
-          newExtent: filterLength,
-        }];
-        filterData.filter.update(changes);
-        this.emitter.emit("manager-did-reprocess-filter", {
+        filterData.filter.fullUpdate();
+        this.emitter.emit("did-reprocess-filter", {
           editor: filterData.editor,
           lines: filterData.filter.lines,
-          changes,
         });
       });
     }));
@@ -130,23 +73,15 @@ export class FilterManager {
 
   /** Invoke the given callback whenever an item filter is added. */
   onDidAddFilter(callback: (filterData: FilterData) => void) {
-    return this.emitter.on("manager-did-add-filter", filterData => {
-      if (filterData) {
-        callback(filterData);
-      } else {
-        throw new Error("FilterManager.onDidAddFilter fed undefined data");
-      }
+    return this.emitter.on("did-add-filter", filterData => {
+      callback(filterData);
     });
   }
 
   /** Invoke the given callback whenever an item filter is destroyed. */
   onDidDestroyFilter(callback: (editorID: number) => void) {
-    return this.emitter.on("manager-did-destroy-filter", editorID => {
-      if (editorID) {
-        callback(editorID);
-      } else {
-        throw new Error("FilterManager.onDidDestroyFilter fed undefined data");
-      }
+    return this.emitter.on("did-destroy-filter", editorID => {
+      callback(editorID);
     });
   }
 
@@ -160,23 +95,15 @@ export class FilterManager {
 
   /** Invoke the given callback whenever an item filter is processed. */
   onDidProcessFilter(callback: (processedData: ProcessedFilterData) => void) {
-    return this.emitter.on("manager-did-process-filter", processedData => {
-      if (processedData) {
-        callback(processedData);
-      } else {
-        throw new Error("FilterManager.onDidProcessFilter fed undefined data");
-      }
+    return this.emitter.on("did-process-filter", processedData => {
+      callback(processedData);
     });
   }
 
   /** Invoke the given callback whenever an item filter is reprocessed. */
-  onDidReprocessFilter(callback: (processedData: ReprocessedFilterData) => void) {
-    return this.emitter.on("manager-did-reprocess-filter", processedData => {
-      if (processedData) {
-        callback(processedData);
-      } else {
-        throw new Error("FilterManager.onDidReprocessFilter fed undefined data");
-      }
+  onDidReprocessFilter(callback: (processedData: ProcessedFilterData) => void) {
+    return this.emitter.on("did-reprocess-filter", processedData => {
+      callback(processedData);
     });
   }
 
@@ -193,16 +120,14 @@ export class FilterManager {
 
   /** Registers a new item filter with the manager. */
   private handleNewFilter(editor: TextEditor) {
-    const subscription = editor.onDidStopChanging(event => {
+    const subscription = editor.buffer.onDidStopChanging(event => {
       if (event.changes.length === 0) return;
       const filterData = this.filters.get(editor.id);
       if (filterData) {
-        const changes = transformChanges(event.changes);
-        filterData.filter.update(changes);
-        this.emitter.emit("manager-did-reprocess-filter", {
+        filterData.filter.update(event.changes);
+        this.emitter.emit("did-reprocess-filter", {
           editor: filterData.editor,
           lines: filterData.filter.lines,
-          changes,
         });
       } else {
         throw new Error("filter data missing within a change event");
@@ -212,8 +137,8 @@ export class FilterManager {
     const filter = new ItemFilter(this.validationData, editor);
     const filterData: FilterData = { editor, filter, subscription };
     this.filters.set(editor.id, filterData);
-    this.emitter.emit("manager-did-add-filter", filterData);
-    this.emitter.emit("manager-did-process-filter", {
+    this.emitter.emit("did-add-filter", filterData);
+    this.emitter.emit("did-process-filter", {
       editor,
       lines: filter.lines,
     });
@@ -226,7 +151,7 @@ export class FilterManager {
       filterData.subscription.dispose();
       filterData.filter.dispose();
       this.filters.delete(editorID);
-      this.emitter.emit("manager-did-destroy-filter", editorID);
+      this.emitter.emit("did-destroy-filter", editorID);
     } else {
       throw new Error("attempted to destroy an unknown item filter");
     }

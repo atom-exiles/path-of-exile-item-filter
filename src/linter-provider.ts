@@ -3,7 +3,7 @@ import {
   LinterDelegate, Message as LinterMessage, ReplacementSolution
 } from "atom-linter";
 
-import { FilterManager, ProcessedFilterData, ReprocessedFilterData } from "./filter-manager";
+import { FilterManager, ProcessedFilterData } from "./filter-manager";
 import { ValidationMessage, ValidationMessages } from "./filter-processor";
 import * as Filter from "./item-filter";
 
@@ -126,7 +126,7 @@ export class LinterProvider {
     }
   }
 
-  private handleFilterUpdate(data: ReprocessedFilterData) {
+  private handleFilterUpdate(data: ProcessedFilterData) {
     const messages = gatherMessages(data.lines);
     const editor = data.editor;
 
