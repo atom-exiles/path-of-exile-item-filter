@@ -11,12 +11,12 @@
       "dev": true
     },
     "@types/atom": {
-      "version": "1.22.2",
-      "resolved": "https://registry.npmjs.org/@types/atom/-/atom-1.22.2.tgz",
-      "integrity": "sha512-JIkXWDDR75JIo756vH2do+1/bnIj4eEVZbmqZcnXN5nRhIxrTkqAVjGIKd92Giu820diFB6cPvKz1PS+u6dQgQ==",
+      "version": "1.22.3",
+      "resolved": "https://registry.npmjs.org/@types/atom/-/atom-1.22.3.tgz",
+      "integrity": "sha512-xfOzNn813VMRk724/J7HSVPoyCX4UDQSpZyPDbYTCB+tVPZKeSn81SqkFySsFQqW8FEd9w40waHMbtdrJdD/LA==",
       "requires": {
         "@types/jquery": "3.2.16",
-        "@types/node": "8.0.26"
+        "@types/node": "8.0.56"
       }
     },
     "@types/atom-mocha-test-runner": {
@@ -25,7 +25,7 @@
       "integrity": "sha512-49cwl/SSvOEjPCToOv6KLpparFgmOy6iPFqIzLf+60dP1sIG7AR/Wi8uoICniu9WqCIH9cDnxBMRPOEuFyIxRA==",
       "dev": true,
       "requires": {
-        "@types/atom": "1.22.2",
+        "@types/atom": "1.22.3",
         "@types/mocha": "2.2.44"
       }
     },
@@ -50,9 +50,9 @@
       "integrity": "sha512-q2WC02YxQoX2nY1HRKlYGHpGP1saPmD7GN0pwCDlTz35a4eOtJG+aHRlXyjCuXokUukSrR2aXyBhSW3j+jPc0A=="
     },
     "@types/lodash": {
-      "version": "4.14.87",
-      "resolved": "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.87.tgz",
-      "integrity": "sha512-AqRC+aEF4N0LuNHtcjKtvF9OTfqZI0iaBoe3dA6m/W+/YZJBZjBmW/QIZ8fBeXC6cnytSY9tBoFBqZ9uSCeVsw=="
+      "version": "4.14.88",
+      "resolved": "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.88.tgz",
+      "integrity": "sha512-S+7dONqCP8kXqOPCPxra7Vw8FndWS8pNfVkClMSzRCPMjXkA3BaI3ybMBCiSd4y+r1vC49UEjNthnm+fO8J/dw=="
     },
     "@types/mocha": {
       "version": "2.2.44",
@@ -61,9 +61,9 @@
       "dev": true
     },
     "@types/node": {
-      "version": "8.0.26",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-8.0.26.tgz",
-      "integrity": "sha512-wbKN0MB4XsjdnSE04HiCzLoBDirGCM6zXrqavSj44nZnPFYpnrTF64E9O6Xmf0ca/IuKK/BHUcXwMiwk92gW6Q=="
+      "version": "8.0.56",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-8.0.56.tgz",
+      "integrity": "sha512-JAlQv3hUWbrnruuTiLDf1scd4F/TBT0LgGEe+BBeF3p/Rc3yL6RV57WJN2nK5i+BshEz1sDllwH0Fzbuo7G4QA=="
     },
     "ajv": {
       "version": "4.11.8",

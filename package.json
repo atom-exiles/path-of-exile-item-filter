@@ -18,8 +18,8 @@
     "test": "atom --test test"
   },
   "dependencies": {
-    "@types/atom": "^1.22.2",
-    "@types/lodash": "^4.14.87",
+    "@types/atom": "^1.22.3",
+    "@types/lodash": "^4.14.88",
     "atom-package-deps": "^4.6.0",
     "atom-ts-transpiler": "^1.4.0",
     "lodash": "^4.17.4",
