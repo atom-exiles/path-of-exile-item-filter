@@ -69,6 +69,39 @@
         ]
       }
       {
+        'name': 'elder-item.filter'
+        'begin': '^\\s*(ElderItem)\\s'
+        'beginCaptures':
+          '1':
+            'name': 'keyword.cond.elder-item.filter'
+        'end': '\\s*$'
+        'patterns': [
+          { 'include': '#boolean' }
+        ]
+      }
+      {
+        'name': 'shaper-item.filter'
+        'begin': '^\\s*(ShaperItem)\\s'
+        'beginCaptures':
+          '1':
+            'name': 'keyword.cond.shaper-item.filter'
+        'end': '\\s*$'
+        'patterns': [
+          { 'include': '#boolean' }
+        ]
+      }
+      {
+        'name': 'shaped-map.filter'
+        'begin': '^\\s*(ShapedMap)\\s'
+        'beginCaptures':
+          '1':
+            'name': 'keyword.cond.shaped-map.filter'
+        'end': '\\s*$'
+        'patterns': [
+          { 'include': '#boolean' }
+        ]
+      }
+      {
         'name': 'item-level.filter'
         'begin': '^\\s*(ItemLevel)\\s'
         'beginCaptures':

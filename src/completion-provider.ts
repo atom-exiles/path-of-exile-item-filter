@@ -49,6 +49,18 @@ export class CompletionProvider {
         if (prefix !== "Corrupted" && this.isFirstValue(editor, bufferPosition, true)) {
           result = result.concat(this.suggestions.booleans);
         }
+      } else if (cursorScopes.includes("elder-item.filter")) {
+        if (prefix !== "ElderItem" && this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.booleans);
+        }
+      } else if (cursorScopes.includes("shaper-item.filter")) {
+        if (prefix !== "ShaperItem" && this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.booleans);
+        }
+      } else if (cursorScopes.includes("shaped-map.filter")) {
+        if (prefix !== "ShapedMap" && this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.booleans);
+        }
       } else if (cursorScopes.includes("class.filter")) {
         if (prefix !== "Class") {
           result = result.concat(this.suggestions.classes, this.suggestions.classWhitelist,

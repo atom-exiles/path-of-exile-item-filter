@@ -99,6 +99,18 @@ describe("Helpers", () => {
     type: "rule", ruleType: "filter", filterName: "Corrupted",
   };
   // @ts-ignore
+  const elderItemRule: Filter.ElderItemRule = {
+    type: "rule", ruleType: "filter", filterName: "ElderItem",
+  };
+  // @ts-ignore
+  const shaperItemRule: Filter.ShaperItemRule = {
+    type: "rule", ruleType: "filter", filterName: "ShaperItem",
+  };
+  // @ts-ignore
+  const shapedMapRule: Filter.ShapedMapRule = {
+    type: "rule", ruleType: "filter", filterName: "ShapedMap",
+  };
+  // @ts-ignore
   const actionRule: Filter.ActionRule = {
     type: "rule", ruleType: "action",
   };
@@ -498,6 +510,75 @@ describe("Helpers", () => {
     it("return false when given any other filter element", () => {
       assert(!Helpers.isCorruptedRule(empty));
       assert(!Helpers.isCorruptedRule(setBorderColorRule));
+    });
+  });
+
+  describe("isElderItemRule()", () => {
+    it("returns true when given a ElderItem rule", () => {
+      assert(Helpers.isElderItemRule(elderItemRule));
+    });
+
+    it("returns false when given an ItemLevel rule", () => {
+      assert(!Helpers.isElderItemRule(itemLevelRule));
+    });
+
+    it("returns false when given a Rule", () => {
+      assert(!Helpers.isElderItemRule(rule));
+    });
+
+    it("returns false when given a Filter rule", () => {
+      assert(!Helpers.isElderItemRule(filterRule));
+    });
+
+    it("return false when given any other filter element", () => {
+      assert(!Helpers.isElderItemRule(empty));
+      assert(!Helpers.isElderItemRule(setBorderColorRule));
+    });
+  });
+
+  describe("isShaperItemRule()", () => {
+    it("returns true when given a ShaperItem rule", () => {
+      assert(Helpers.isShaperItemRule(shaperItemRule));
+    });
+
+    it("returns false when given an ItemLevel rule", () => {
+      assert(!Helpers.isShaperItemRule(itemLevelRule));
+    });
+
+    it("returns false when given a Rule", () => {
+      assert(!Helpers.isShaperItemRule(rule));
+    });
+
+    it("returns false when given a Filter rule", () => {
+      assert(!Helpers.isShaperItemRule(filterRule));
+    });
+
+    it("return false when given any other filter element", () => {
+      assert(!Helpers.isShaperItemRule(empty));
+      assert(!Helpers.isShaperItemRule(setBorderColorRule));
+    });
+  });
+
+  describe("isShapedMapRule()", () => {
+    it("returns true when given a ShapedMap rule", () => {
+      assert(Helpers.isShapedMapRule(shapedMapRule));
+    });
+
+    it("returns false when given an ItemLevel rule", () => {
+      assert(!Helpers.isShapedMapRule(itemLevelRule));
+    });
+
+    it("returns false when given a Rule", () => {
+      assert(!Helpers.isShapedMapRule(rule));
+    });
+
+    it("returns false when given a Filter rule", () => {
+      assert(!Helpers.isShapedMapRule(filterRule));
+    });
+
+    it("return false when given any other filter element", () => {
+      assert(!Helpers.isShapedMapRule(empty));
+      assert(!Helpers.isShapedMapRule(setBorderColorRule));
     });
   });
 

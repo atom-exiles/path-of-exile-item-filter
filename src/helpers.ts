@@ -194,6 +194,33 @@ export function isCorruptedRule(line: Filter.Line): line is Filter.CorruptedRule
   }
 }
 
+/** Returns whether or not the given line is a Corrupted rule. */
+export function isElderItemRule(line: Filter.Line): line is Filter.ElderItemRule {
+  if (isFilterRule(line)) {
+    return (<Filter.ElderItemRule> line).filterName === "ElderItem";
+  } else {
+    return false;
+  }
+}
+
+/** Returns whether or not the given line is a Corrupted rule. */
+export function isShaperItemRule(line: Filter.Line): line is Filter.ShaperItemRule {
+  if (isFilterRule(line)) {
+    return (<Filter.ShaperItemRule> line).filterName === "ShaperItem";
+  } else {
+    return false;
+  }
+}
+
+/** Returns whether or not the given line is a Corrupted rule. */
+export function isShapedMapRule(line: Filter.Line): line is Filter.ShapedMapRule {
+  if (isFilterRule(line)) {
+    return (<Filter.ShapedMapRule> line).filterName === "ShapedMap";
+  } else {
+    return false;
+  }
+}
+
 /** Returns whether or not the given line is an action rule. */
 export function isActionRule(line: Filter.Line): line is Filter.ActionRule {
   if (isRule(line)) {

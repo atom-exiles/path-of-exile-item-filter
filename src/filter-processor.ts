@@ -605,8 +605,7 @@ function processWidthRule(lineInfo: LineInfo) {
 }
 
 function processIdentifiedRule(lineInfo: LineInfo) {
-  const { keyword, value, invalid, messages } =
-      parseBooleanRule(lineInfo);
+  const { keyword, value, invalid, messages } = parseBooleanRule(lineInfo);
 
   const result: Filter.IdentifiedRule = {
     type: "rule", ruleType: "filter", filterName: "Identified",
@@ -616,11 +615,40 @@ function processIdentifiedRule(lineInfo: LineInfo) {
 }
 
 function processCorruptedRule(lineInfo: LineInfo) {
-  const { keyword, value, invalid, messages } =
-      parseBooleanRule(lineInfo);
+  const { keyword, value, invalid, messages } = parseBooleanRule(lineInfo);
 
   const result: Filter.CorruptedRule = {
     type: "rule", ruleType: "filter", filterName: "Corrupted",
+    keyword, range: lineInfo.range, value, invalid, messages,
+  };
+  return result;
+}
+
+function processElderItemRule(lineInfo: LineInfo) {
+  const { keyword, value, invalid, messages } = parseBooleanRule(lineInfo);
+
+  const result: Filter.ElderItemRule = {
+    type: "rule", ruleType: "filter", filterName: "ElderItem",
+    keyword, range: lineInfo.range, value, invalid, messages,
+  };
+  return result;
+}
+
+function processShaperItemRule(lineInfo: LineInfo) {
+  const { keyword, value, invalid, messages } = parseBooleanRule(lineInfo);
+
+  const result: Filter.ShaperItemRule = {
+    type: "rule", ruleType: "filter", filterName: "ShaperItem",
+    keyword, range: lineInfo.range, value, invalid, messages,
+  };
+  return result;
+}
+
+function processShapedMapRule(lineInfo: LineInfo) {
+  const { keyword, value, invalid, messages } = parseBooleanRule(lineInfo);
+
+  const result: Filter.ShapedMapRule = {
+    type: "rule", ruleType: "filter", filterName: "ShapedMap",
     keyword, range: lineInfo.range, value, invalid, messages,
   };
   return result;
@@ -880,6 +908,12 @@ function processLine({ line, row, file, data }: ProcessLine): Filter.Line {
       return processIdentifiedRule(lineInfo);
     case "Corrupted":
       return processCorruptedRule(lineInfo);
+    case "ElderItem":
+      return processElderItemRule(lineInfo);
+    case "ShaperItem":
+      return processShaperItemRule(lineInfo);
+    case "ShapedMap":
+      return processShapedMapRule(lineInfo);
     case "SetBorderColor":
       return processSetBorderColorRule(lineInfo);
     case "SetTextColor":

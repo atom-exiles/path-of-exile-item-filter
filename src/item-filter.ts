@@ -166,6 +166,21 @@ export interface CorruptedRule extends FilterRule {
   value?: Value<boolean>;
 }
 
+export interface ElderItemRule extends FilterRule {
+  filterName: "ElderItem";
+  value?: Value<boolean>;
+}
+
+export interface ShaperItemRule extends FilterRule {
+  filterName: "ShaperItem";
+  value?: Value<boolean>;
+}
+
+export interface ShapedMapRule extends FilterRule {
+  filterName: "ShapedMap";
+  value?: Value<boolean>;
+}
+
 export interface SetBorderColorRule extends ActionRule, Color {
   actionName: "SetBorderColor";
   trailingComment?: Comment;
