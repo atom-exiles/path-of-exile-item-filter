@@ -21,7 +21,7 @@ Show
     LinkedSockets = 6
     SetTextColor 0 0 0
     SetBackgroundColor 245 39 39 250
-    SetBorderColor 180 96 0
+    SetBorderColor 0 0 0
     SetFontSize 45
     PlayAlertSound 5 300
 
@@ -53,8 +53,8 @@ Show
     SetBackgroundColor 255 215 0
     SetBorderColor 180 96 0
     SetFontSize 45
-    PlayAlertSound 5 300
-	
+    PlayAlertSound 10 300
+
 # Currency - Mirror Shaper
 Show
     BaseType "Mirror of Kalandra"
@@ -62,7 +62,7 @@ Show
     SetBackgroundColor 255 215 0
     SetBorderColor 180 96 0
     SetFontSize 45
-    PlayAlertSound ShMirror 300
+    PlayAlertSound 10 300
 
 # Currency - Eternal (Legacy)
 Show
@@ -71,8 +71,8 @@ Show
     SetBackgroundColor 180 96 0
     SetBorderColor 0 0 0
     SetFontSize 42
-    PlayAlertSound 5 300
-	
+    PlayAlertSound 10 300
+
 # Currency - Divine Shaper
 Show
     BaseType "Divine Orb"
@@ -80,8 +80,8 @@ Show
     SetBackgroundColor 180 96 0
     SetBorderColor 0 0 0
     SetFontSize 42
-    PlayAlertSound ShDivine 300	
-	
+    PlayAlertSound 10 300
+
 # Currency - Exalted Shaper
 Show
     BaseType "Exalted Orb"
@@ -89,7 +89,38 @@ Show
     SetBackgroundColor 180 96 0
     SetBorderColor 0 0 0
     SetFontSize 42
-    PlayAlertSound ShExalted 300	
+    PlayAlertSound 10 300
+
+# Tencent Event Coins and Shards
+Show
+    BaseType "Event Coin" "Event Shard"
+    SetTextColor 0 0 0
+    SetBackgroundColor 180 96 0
+    SetBorderColor 0 0 0
+    SetFontSize 42
+    PlayAlertSound 9 225
+
+# Elder Items
+Show
+	ElderItem True
+    SetBorderColor 128 0 128
+    SetFontSize 42
+	PlayAlertSound 15 300
+
+# Shaper Items
+Show
+	ShaperItem True
+    SetBorderColor 128 0 128
+    SetFontSize 42
+	PlayAlertSound 15 300
+
+# Abyss Jewels
+Show
+    Class "Abyss Jewel"
+    SetTextColor 16 168 16
+    SetBackgroundColor 0 0 0
+    SetBorderColor 255 40 0 220
+    SetFontSize 42
 
 # Currency - Valuable
 Show
@@ -166,7 +197,7 @@ Show
 Show
     Class "Currency"
     BaseType "Silver Coin" "Prophecy"
-    SetTextColor 170 158 130
+    SetTextColor 0 0 0
     SetBackgroundColor 181 75 255 250
     SetBorderColor 5 0 8 150
     SetFontSize 36
@@ -186,8 +217,8 @@ Show
 Show
     Class "Currency"
     BaseType "Blessing of Xoph" "Blessing of Tul" "Blessing of Esh" "Blessing of Uul-Netol" "Blessing of Chayula"
-    SetTextColor 0 0 0
-    SetBackgroundColor 166 90 255
+    SetTextColor 255 255 255
+    SetBackgroundColor 74 0 160 200
     SetFontSize 40
     PlayAlertSound 7 225
 
@@ -247,8 +278,8 @@ Show
     Class "Currency"
     BaseType "Orb of Annulment" "Orb of Binding" "Orb of Horizons" "Harbinger's Orb" "Engineer's Orb" "Ancient Orb"
     SetTextColor 255 200 0
-    SetBackgroundColor 0 53 255 250
-    SetBorderColor 0 0 0
+    SetBackgroundColor 5 5 5 250
+    SetBorderColor 18 103 186
     SetFontSize 42
     PlayAlertSound 6 225
 
@@ -258,7 +289,7 @@ Show
     BaseType "Talisman"
     Rarity = Rare
     SetTextColor 255 255 119
-    SetBackgroundColor 17 255 21 250
+    SetBackgroundColor 11 178 57
     SetBorderColor 170 158 130
     PlayAlertSound 3 80
 
@@ -268,7 +299,7 @@ Show
     BaseType "Talisman"
     Rarity = Magic
     SetTextColor 0 0 255
-    SetBackgroundColor 17 255 21 250
+    SetBackgroundColor 11 178 57
     SetBorderColor 170 158 130
     PlayAlertSound 3 80
 
@@ -278,7 +309,7 @@ Show
     BaseType "Talisman"
     Rarity = Normal
     SetTextColor 255 255 255
-    SetBackgroundColor 17 255 21 250
+    SetBackgroundColor 11 178 57
     SetBorderColor 170 158 130
     PlayAlertSound 3 80
 
@@ -336,6 +367,16 @@ Show
     SetFontSize 40
     PlayAlertSound 5 225
 
+# Shaped Maps
+Show
+    Class "Maps"
+	ShapedMap True
+    Rarity < Rare
+    SetTextColor 0 0 0
+    SetBackgroundColor 54 100 146
+    SetBorderColor 0 0 0
+    SetFontSize 40
+	
 # Maps - DropLevel 78+
 Show
     DropLevel >= 78
@@ -374,6 +415,15 @@ Show # Maps - Map Frag - Divine Vessel
     SetFontSize 40
     PlayAlertSound 4 250
 
+# Maps - Divine Vessel - Filled
+Show
+    BaseType "Captured Soul of"
+    SetTextColor 56 34 158 250
+    SetBackgroundColor 255 165 0
+    SetBorderColor 56 34 158 250
+    SetFontSize 40
+    PlayAlertSound 4 250
+
 # Maps - Map Frag - Mortal Hope
 Show # Maps - Map Frag - Mortal Hope
     Class "Map Fragments"
@@ -385,7 +435,7 @@ Show # Maps - Map Frag - Mortal Hope
 # Maps - Map Frag - Shaper Fragments
 Show # Maps - Map Frag - Shaper Fragments
     Class "Map Fragments"
-    BaseType "Fragment of the Phoenix" "Fragment of the Minotaur" "Fragment of the Chimera" "Fragment of the Hydra"
+    BaseType "Fragment of the Phoenix" "Fragment of the Minotaur" "Fragment of the Chimera" "Fragment of the Hydra" "The Shaper's Realm"
     SetBorderColor 74 0 160 200
     SetFontSize 40
     PlayAlertSound 4 200
@@ -468,7 +518,7 @@ Show
 
 Show # Amulets, Rings, Belts - Endgame (Implicit) - Norm
     Class "Rings" "Amulets" "Belts"
-    BaseType "Steel Ring" "Opal Ring" "Blue Pearl Amulet" "Marble Amulet" "Vanguard Belt" "Crystal Belt"
+    BaseType "Steel Ring" "Opal Ring" "Blue Pearl Amulet" "Marble Amulet" "Vanguard Belt" "Crystal Belt" "Stygian Vise"
     Rarity = Normal
     SetTextColor 240 240 240
     SetBackgroundColor 70 70 70
@@ -478,7 +528,7 @@ Show # Amulets, Rings, Belts - Endgame (Implicit) - Norm
 
 Show # Amulets, Rings, Belts - Endgame (Implicit) - Magic
     Class "Rings" "Amulets" "Belts"
-    BaseType "Steel Ring" "Opal Ring" "Blue Pearl Amulet" "Marble Amulet" "Vanguard Belt" "Crystal Belt"
+    BaseType "Steel Ring" "Opal Ring" "Blue Pearl Amulet" "Marble Amulet" "Vanguard Belt" "Crystal Belt" "Stygian Vise"
     Rarity = Magic
     SetTextColor 140 190 255
     SetBackgroundColor 70 70 70
@@ -487,7 +537,7 @@ Show # Amulets, Rings, Belts - Endgame (Implicit) - Magic
 
 Show # Amulets, Rings, Belts - Endgame (Implicit) - Rare
     Class "Rings" "Amulets" "Belts"
-    BaseType "Steel Ring" "Opal Ring" "Blue Pearl Amulet" "Marble Amulet" "Vanguard Belt" "Crystal Belt"
+    BaseType "Steel Ring" "Opal Ring" "Blue Pearl Amulet" "Marble Amulet" "Vanguard Belt" "Crystal Belt" "Stygian Vise"
     Rarity = Rare
     SetTextColor 255 255 119
     SetBackgroundColor 70 70 70
@@ -614,8 +664,8 @@ Hide # Amulets, Rings, Belts - 68+ - Norm
     Class "Rings" "Amulets" "Belts"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -825,8 +875,8 @@ Show # Gear - Endgame STR - Armour - Norm
     BaseType "Glorious Plate" "Astral Plate" "Titan Greaves" "Titan Gauntlets" "Eternal Burgonet" "Royal Burgonet" "Pinnacle Tower Shield"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -840,8 +890,8 @@ Show # Gear - Endgame DEX - Armour - Norm
     BaseType "Assassin's Garb" "Slink Boots" "Slink Gloves" "Lion Pelt" "Imperial Buckler"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -855,8 +905,8 @@ Show # Gear - Endgame INT - Armour - Norm
     BaseType "Vaal Regalia" "Sorcerer Boots" "Sorcerer Gloves" "Hubris Circlet" "Titanium Spirit Shield" "Fossilised Spirit Shield"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -870,8 +920,8 @@ Show # Gear - Endgame DEX/INT - Armour - Norm
     BaseType "Carnal Armour" "Murder Boots" "Murder Mitts" "Deicide Mask" "Supreme Spiked Shield"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -885,8 +935,8 @@ Show # Gear - Endgame STR/INT - Armour - Norm
     BaseType "Saintly Chainmail" "Crusader Boots" "Crusader Gloves" "Praetor Crown" "Archon Kite Shield"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -900,8 +950,8 @@ Hide # Gear - Endgame DEX/STR - Armour - Norm
     BaseType "Triumphant Lamellar" "Dragonscale Boots" "Dragonscale Gauntlets" "Nightmare Bascinet" "Elegant Round Shield"
     Rarity = Normal
     ItemLevel >= 68
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -915,8 +965,8 @@ Hide # Gear - Endgame DEX/STR - Armour - Magic
 Show # Gear - Endgame - Weap - One Hand - Norm
     BaseType "Runic Hatchet" "Tiger Hook" "Corsair Sword" "Behemoth Mace" "Platinum Kris" "Ambusher" "Sai" "Jewelled Foil" "Vaal Rapier" "Dragoon Sword" "Sambar Sceptre" "Terror Claw" "Imperial Claw" "Great White Claw" "Gemini Claw" "Opal Wand" "Imbued Wand" "Profane Wand"
     Rarity = Normal
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -930,8 +980,8 @@ Hide # Gear - Endgame - Weap - One Hand - Magic
 Show # Gear - Endgame - Weap - Two Hand - Norm
     BaseType "Coronal Maul" "Piledriver" "Reaver Sword" "Exquisite Blade" "Vaal Axe" "Fleshripper" "Eclipse Staff"
     Rarity = Normal
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 25
 
@@ -945,8 +995,8 @@ Hide # Gear - Endgame - Weap - Two Hand - Magic
 Show # Gear - Endgame - Weap - Bows - Norm
     BaseType "Maraketh Bow" "Harbinger Bow" "Thicket Bow"
     Rarity = Normal
-    SetBackgroundColor 15 15 15 250
     SetTextColor 255 255 255
+    SetBackgroundColor 15 15 15 250
     SetBorderColor 0 0 0 0
     SetFontSize 26
 

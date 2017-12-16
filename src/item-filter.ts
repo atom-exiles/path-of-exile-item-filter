@@ -292,7 +292,7 @@ export class ItemFilter {
     });
 
     let result: Line[] = [];
-    if (upperPartition) result = result.concat(upperPartition, processedLines);
+    result = upperPartition ? result.concat(upperPartition, processedLines) : processedLines;
     if (lowerPartition) result = result.concat(lowerPartition);
     if (result.length !== editorLines.length) {
       throw new Error(`Update output has ${result.length} lines, yet the editor contains` +

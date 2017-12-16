@@ -2,7 +2,8 @@
   "Abyss Jewel": [
     "Searching Eye Jewel",
     "Hypnotic Eye Jewel",
-    "Ghastly Eye Jewel"
+    "Ghastly Eye Jewel",
+    "Murderous Eye Jewel"
   ],
   "Active Skill Gems": [
     "Abyssal Cry",
@@ -906,6 +907,7 @@
     "Fragment of the Hydra",
     "Fragment of the Minotaur",
     "Fragment of the Phoenix",
+    "The Shaper's Realm",
     "Inya's Key",
     "Mortal Grief",
     "Mortal Hope",
@@ -1149,8 +1151,35 @@
     "Variscite Blade",
     "War Sword"
   ],
-  "Pantheon Soul": [],
-  "Piece": [],
+  "Pantheon Soul": [
+    "Captured Soul of Arachnoxia",
+    "Captured Soul of Armala, the Widow",
+    "Captured Soul of Drek, Apex Hunter",
+    "Captured Soul of Erebix, Light's Bane",
+    "Captured Soul of Gorulis, Will-Thief",
+    "Captured Soul of Jorus, Sky's Edge",
+    "Captured Soul of Lycius, Midnight's Howl",
+    "Captured Soul of Mephod, the Earth Scorcher",
+    "Captured Soul of Nassar, Lion of the Seas",
+    "Captured Soul of Puruna, the Challenger",
+    "Captured Soul of Sebbert, Crescent's Point",
+    "Captured Soul of Shadow of the Vaal",
+    "Captured Soul of Shock and Horror",
+    "Captured Soul of Stalker of the Endless Dunes",
+    "Captured Soul of Suncaller Asha",
+    "Captured Soul of Terror of the Infinite Drifts",
+    "Captured Soul of The Forgotten Soldier",
+    "Captured Soul of Thraxia",
+    "Captured Soul of Varhesh, Shimmering Aberration"
+  ],
+  "Piece": [
+    "Archon Kite Shield Piece",
+    "Blunt Arrow Quiver Piece",
+    "Callous Mask Piece",
+    "Cloth Belt Piece",
+    "Imperial Staff Piece",
+    "Legion Sword Piece"
+  ],
   "Quest Items": [
     "Alira's Amulet",
     "Allflame",
@@ -1423,6 +1452,8 @@
     "Essence of Hysteria",
     "Essence of Insanity",
     "Eternal Orb",
+    "Event Coin",
+    "Event Shard",
     "Exalted Orb",
     "Exalted Shard",
     "Gemcutter's Prism",
