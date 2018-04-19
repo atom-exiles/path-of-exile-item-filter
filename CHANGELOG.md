@@ -1,3 +1,13 @@
+## Version 1.4.1
+* Added Necromancy Net
+* Added the item filter option ElderMap
+
+## Version 1.4.0
+* Implemented changes from Bestiary League.
+* New skill gems Spectral shield throw, Tectonic slam, and Summon phantasm on kill Support.
+* New divination cards The shaper's key, The world eater, The puzzle, The obscured, The iron bard, The insatiable, The dreamer, The deceiver, The breach, Forbidden power, and Blessing of god.
+* Bestiary orbs and nets.
+
 ## Version 1.2.0
 * Began transpiling the package source code on first run, rather than packaging the compiled source.
 * Use an activation trigger for package activation, instead of always activating.

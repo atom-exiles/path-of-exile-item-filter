@@ -221,6 +221,15 @@ export function isShapedMapRule(line: Filter.Line): line is Filter.ShapedMapRule
   }
 }
 
+/** Returns whether or not the given line is a Corrupted rule. */
+export function isElderMapRule(line: Filter.Line): line is Filter.ElderMapRule {
+  if (isFilterRule(line)) {
+    return (<Filter.ElderMapRule> line).filterName === "ElderMap";
+  } else {
+    return false;
+  }
+}
+
 /** Returns whether or not the given line is an action rule. */
 export function isActionRule(line: Filter.Line): line is Filter.ActionRule {
   if (isRule(line)) {

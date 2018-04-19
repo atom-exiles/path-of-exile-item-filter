@@ -61,6 +61,10 @@ export class CompletionProvider {
         if (prefix !== "ShapedMap" && this.isFirstValue(editor, bufferPosition, true)) {
           result = result.concat(this.suggestions.booleans);
         }
+      } else if (cursorScopes.includes("elder-map.filter")) {
+        if (prefix !== "ElderMap" && this.isFirstValue(editor, bufferPosition, true)) {
+          result = result.concat(this.suggestions.booleans);
+        }
       } else if (cursorScopes.includes("class.filter")) {
         if (prefix !== "Class") {
           result = result.concat(this.suggestions.classes, this.suggestions.classWhitelist,

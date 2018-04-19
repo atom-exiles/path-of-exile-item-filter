@@ -370,13 +370,13 @@ Show
 # Shaped Maps
 Show
     Class "Maps"
-	ShapedMap True
+	  ShapedMap True
     Rarity < Rare
     SetTextColor 0 0 0
     SetBackgroundColor 54 100 146
     SetBorderColor 0 0 0
     SetFontSize 40
-	
+
 # Maps - DropLevel 78+
 Show
     DropLevel >= 78
@@ -476,7 +476,7 @@ Show # Divination Cards - All
     SetFontSize 38
     PlayAlertSound 9 230
 
-# Chroma Orb Recipe 
+# Chroma Orb Recipe
 Show # Chromatic Orb Recipe - Norm
     SocketGroup "RGB"
     Rarity = Normal

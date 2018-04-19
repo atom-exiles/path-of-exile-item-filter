@@ -654,6 +654,16 @@ function processShapedMapRule(lineInfo: LineInfo) {
   return result;
 }
 
+function processElderMapRule(lineInfo: LineInfo) {
+  const { keyword, value, invalid, messages } = parseBooleanRule(lineInfo);
+
+  const result: Filter.ElderMapRule = {
+    type: "rule", ruleType: "filter", filterName: "ElderMap",
+    keyword, range: lineInfo.range, value, invalid, messages,
+  };
+  return result;
+}
+
 function processSetBorderColorRule(lineInfo: LineInfo) {
   const { red, green, blue, alpha, trailingComment } = parseColorRule(lineInfo);
 
@@ -914,6 +924,8 @@ function processLine({ line, row, file, data }: ProcessLine): Filter.Line {
       return processShaperItemRule(lineInfo);
     case "ShapedMap":
       return processShapedMapRule(lineInfo);
+    case "ElderMap":
+      return processElderMapRule(lineInfo);
     case "SetBorderColor":
       return processSetBorderColorRule(lineInfo);
     case "SetTextColor":

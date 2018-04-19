@@ -102,6 +102,17 @@
         ]
       }
       {
+        'name': 'elder-map.filter'
+        'begin': '^\\s*(ElderMap)\\s'
+        'beginCaptures':
+          '1':
+            'name': 'keyword.cond.elder-map.filter'
+        'end': '\\s*$'
+        'patterns': [
+          { 'include': '#boolean' }
+        ]
+      }
+      {
         'name': 'item-level.filter'
         'begin': '^\\s*(ItemLevel)\\s'
         'beginCaptures':

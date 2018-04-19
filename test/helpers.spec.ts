@@ -111,6 +111,10 @@ describe("Helpers", () => {
     type: "rule", ruleType: "filter", filterName: "ShapedMap",
   };
   // @ts-ignore
+  const elderMapRule: Filter.ElderMapRule = {
+    type: "rule", ruleType: "filter", filterName: "ElderMap",
+  };
+  // @ts-ignore
   const actionRule: Filter.ActionRule = {
     type: "rule", ruleType: "action",
   };
@@ -579,6 +583,29 @@ describe("Helpers", () => {
     it("return false when given any other filter element", () => {
       assert(!Helpers.isShapedMapRule(empty));
       assert(!Helpers.isShapedMapRule(setBorderColorRule));
+    });
+  });
+
+  describe("isElderMapRule()", () => {
+    it("returns true when given a ElderMap rule", () => {
+      assert(Helpers.isElderMapRule(elderMapRule));
+    });
+
+    it("returns false when given an ItemLevel rule", () => {
+      assert(!Helpers.isElderMapRule(itemLevelRule));
+    });
+
+    it("returns false when given a Rule", () => {
+      assert(!Helpers.isElderMapRule(rule));
+    });
+
+    it("returns false when given a Filter rule", () => {
+      assert(!Helpers.isElderMapRule(filterRule));
+    });
+
+    it("return false when given any other filter element", () => {
+      assert(!Helpers.isElderMapRule(empty));
+      assert(!Helpers.isElderMapRule(setBorderColorRule));
     });
   });
 

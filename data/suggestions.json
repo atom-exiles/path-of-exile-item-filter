@@ -30,6 +30,7 @@
     { "text": "ElderItem" },
     { "text": "ShaperItem" },
     { "text": "ShapedMap" },
+    { "text": "ElderMap" },
     { "text": "ItemLevel" },
     { "text": "DropLevel" },
     { "text": "Quality" },

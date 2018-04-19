@@ -181,6 +181,11 @@ export interface ShapedMapRule extends FilterRule {
   value?: Value<boolean>;
 }
 
+export interface ElderMapRule extends FilterRule {
+  filterName: "ElderMap";
+  value?: Value<boolean>;
+}
+
 export interface SetBorderColorRule extends ActionRule, Color {
   actionName: "SetBorderColor";
   trailingComment?: Comment;
