@@ -22,6 +22,8 @@ Height | All | 1-4 | No
 Width | All | 1-2 | No
 Identified | Equality | True, False | No
 Corrupted | Equality | True, False | No
+ShapedMap | Equality | True, False | No
+ElderMap | Equality | True, False | No
 
 ## Action Rules
 Keyword | Operator | Values | Trailing Comment | Theme Element | Case Sensitive
