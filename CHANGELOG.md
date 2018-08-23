@@ -1,3 +1,6 @@
+## Version 1.5.0
+This package is now deprecated and will no longer receive updates. Several final tweaks have been made to make the package more resilient to change.
+
 ## Version 1.4.1
 * Added Necromancy Net
 * Added the item filter option ElderMap

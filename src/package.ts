@@ -26,9 +26,9 @@ function adjustGrammarDefaults() {
 }
 
 export class AtomPackage {
-  private autocompleteProvider: AutocompleteProvider;
-  private linterProvider: LinterProvider;
-  private subscriptions: CompositeDisposable;
+  private readonly autocompleteProvider: AutocompleteProvider;
+  private linterProvider: LinterProvider | undefined;
+  private subscriptions: CompositeDisposable | undefined;
   private readonly autocompleteStubs = {
     onDidInsertSuggestion: () => undefined,
     getSuggestions: () => [],
@@ -84,8 +84,8 @@ export class AtomPackage {
   }
 
   deactivate() {
-    this.subscriptions.dispose();
-    this.linterProvider.dispose();
+    if (this.subscriptions) this.subscriptions.dispose();
+    if (this.linterProvider) this.linterProvider.dispose();
 
     this.autocompleteProvider.getSuggestions = this.autocompleteStubs.getSuggestions;
     this.autocompleteProvider.onDidInsertSuggestion = this.autocompleteStubs.onDidInsertSuggestion;
@@ -102,6 +102,6 @@ export class AtomPackage {
 
   consumeLinter: LinterConsumer = register => {
     const linterDelegate = register({ name: "path-of-exile-item-filter" });
-    this.linterProvider.setLinter(linterDelegate);
+    if (this.linterProvider) this.linterProvider.setLinter(linterDelegate);
   }
 }

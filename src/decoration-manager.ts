@@ -25,8 +25,8 @@ export class DecorationManager {
   private readonly soundPlayer: SoundPlayer;
   private readonly packageName: string;
   private readonly subscriptions: CompositeDisposable;
-  private decorations: Map<number, Decorations>;
-  private editorSub: Map<number, Disposable>;
+  private readonly decorations: Map<number, Decorations>;
+  private readonly editorSub: Map<number, Disposable>;
 
   constructor(filterManager: FilterManager) {
     this.filterManager = filterManager;

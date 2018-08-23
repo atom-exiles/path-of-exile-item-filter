@@ -120,7 +120,7 @@ export class FilterManager {
 
   /** Registers a new item filter with the manager. */
   private handleNewFilter(editor: TextEditor) {
-    const subscription = editor.buffer.onDidStopChanging(event => {
+    const subscription = editor.getBuffer().onDidStopChanging(event => {
       if (event.changes.length === 0) return;
       const filterData = this.filters.get(editor.id);
       if (filterData) {
