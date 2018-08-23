@@ -27,7 +27,8 @@ export class ValidationData {
     this.subscriptions = new CompositeDisposable();
 
     this.setupSubscriptions();
-    this.updateBaseData();
+
+    this.data = this.updateBaseData();
     this.updateBaseWhitelist();
     this.updateClassWhitelist();
     this.emitDataUpdate();
@@ -66,7 +67,7 @@ export class ValidationData {
   }
 
   /** Transforms the JSON data into the format expected by the parser. */
-  private updateBaseData() {
+  private updateBaseData(): ValidationDataFormat {
     const validBases = [];
     const validClasses = [];
     for (const c in itemsFileData) {
@@ -81,8 +82,8 @@ export class ValidationData {
       validSounds.push(s);
     }
 
-    this.data = {
-      validBases, validClasses, validSounds, classWhitelist: [], baseWhitelist: [],
+    return {
+      validBases, validClasses, validSounds, classWhitelist: [], baseWhitelist: []
     };
   }
 

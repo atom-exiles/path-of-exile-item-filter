@@ -42,7 +42,8 @@ export class SuggestionData {
     this.subscriptions = new CompositeDisposable();
 
     this.setupSubscriptions();
-    this.updateBaseData();
+
+    this.data = this.updateBaseData();
     this.updateBaseWhitelist();
     this.updateClassWhitelist();
     this.emitDataUpdate();
@@ -109,7 +110,7 @@ export class SuggestionData {
   }
 
   /** Performs a full refresh on the base suggestion data. */
-  private updateBaseData() {
+  private updateBaseData(): SuggestionDataFormat {
     const result: SuggestionDataFormat = {
       actions: suggestionFileData.actions,
       blocks: suggestionFileData.blocks,
@@ -165,6 +166,6 @@ export class SuggestionData {
     appendExtrasLabel(result.extraBlocks);
     appendExtrasLabel(result.extraClasses);
 
-    this.data = result;
+    return result;
   }
 }

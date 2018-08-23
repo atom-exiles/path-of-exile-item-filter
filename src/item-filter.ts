@@ -242,6 +242,7 @@ export class ItemFilter {
   constructor(validationData: ValidationData, editor: TextEditor) {
     this.validationData = validationData;
     this.editor = editor;
+    this.lines = [];
 
     this.processFilter();
   }

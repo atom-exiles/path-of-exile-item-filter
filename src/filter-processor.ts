@@ -1,5 +1,5 @@
 import * as Filter from "./item-filter";
-import { LineParser } from "./line-parser";
+import { TokenParser } from "./token-parser";
 import { ValidationDataFormat } from "./validation-data";
 
 /**
@@ -69,7 +69,7 @@ interface ProcessLines {
 }
 
 interface LineInfo extends ProcessLine {
-  parser: LineParser;
+  parser: TokenParser;
   messages: ValidationMessages;
   invalid: boolean;
   keyword: Filter.Keyword;
@@ -77,7 +77,7 @@ interface LineInfo extends ProcessLine {
 }
 
 function reportTrailingText(lineInfo: LineInfo, severity: "error"|"warning" = "error") {
-  if (lineInfo.parser.empty) return;
+  if (lineInfo.parser.isEmpty()) return;
 
   const range: Filter.Range = {
     start: { row: lineInfo.row, column: lineInfo.parser.currentIndex },
@@ -125,7 +125,7 @@ function expectMultipleStrings(lineInfo: LineInfo, validValues: string[], whitel
   while (true) {
     const valueResult = lineInfo.parser.nextString();
 
-    if (!valueResult.found) {
+    if (!valueResult) {
       if (values.length === 0 && !lineInfo.invalid) {
         lineInfo.invalid = true;
         lineInfo.messages.errors.push({
@@ -176,7 +176,7 @@ function parseBlock(lineInfo: LineInfo) {
   let trailingComment: Filter.Comment|undefined;
   if (lineInfo.parser.isCommented()) {
     const commentResult = lineInfo.parser.parseComment();
-    if (commentResult.found) {
+    if (commentResult) {
       trailingComment = { text: commentResult.value, range: commentResult.range };
     }
   }
@@ -196,7 +196,7 @@ function parseBlock(lineInfo: LineInfo) {
 
 function parseNumberInRange(lineInfo: LineInfo, min: number, max: number, required = true) {
   const numberResult = lineInfo.parser.nextNumber();
-  if (numberResult.found) {
+  if (numberResult) {
     if (numberResult.value >= min && numberResult.value <= max) {
       const result: Filter.Value<number> = {
         value: numberResult.value,
@@ -234,7 +234,7 @@ function parseOperator(lineInfo: LineInfo) {
   let result: Filter.Operator|undefined;
 
   const operatorResult = lineInfo.parser.nextOperator();
-  if (operatorResult.found) {
+  if (operatorResult) {
     result = {
       text: operatorResult.value,
       range: operatorResult.range,
@@ -264,7 +264,7 @@ function parseBooleanRule(lineInfo: LineInfo) {
 
   const booleanResult = lineInfo.parser.nextBoolean();
   let value: Filter.Value<boolean>|undefined;
-  if (booleanResult.found) {
+  if (booleanResult) {
     value = { value: booleanResult.value, range: booleanResult.range };
   } else {
     lineInfo.invalid = true;
@@ -302,7 +302,7 @@ function parseColorRule(lineInfo: LineInfo) {
   let trailingComment: Filter.Comment|undefined;
   if (!lineInfo.invalid) {
     const trailingCommentResult = lineInfo.parser.parseComment();
-    if (trailingCommentResult.found) {
+    if (trailingCommentResult) {
       trailingComment = {
         text: trailingCommentResult.value,
         range: trailingCommentResult.range,
@@ -319,7 +319,8 @@ function parseMultiStringRule(lineInfo: LineInfo, validValues: string[], whiteli
   expectEqualityOperator(lineInfo);
 
   let values: Array<Filter.Value<string>>|undefined;
-  if (!lineInfo.invalid) {
+  // RIP in pieces.
+  if (!lineInfo.invalid && 0) {
     values = expectMultipleStrings(lineInfo, validValues, whitelist);
   }
 
@@ -368,7 +369,7 @@ function processHideBlock(lineInfo: LineInfo) {
 }
 
 function processItemLevelRule(lineInfo: LineInfo) {
-  const { operator, value } = parseSingleNumberRule(lineInfo, 0, 100);
+  const { operator, value } = parseSingleNumberRule(lineInfo, 0, 200);
 
   const result: Filter.ItemLevelRule = {
     type: "rule", ruleType: "filter", filterName: "ItemLevel",
@@ -379,7 +380,7 @@ function processItemLevelRule(lineInfo: LineInfo) {
 }
 
 function processDropLevelRule(lineInfo: LineInfo) {
-  const { operator, value } = parseSingleNumberRule(lineInfo, 0, 100);
+  const { operator, value } = parseSingleNumberRule(lineInfo, 0, 200);
 
   const result: Filter.DropLevelRule = {
     type: "rule", ruleType: "filter", filterName: "DropLevel",
@@ -390,7 +391,7 @@ function processDropLevelRule(lineInfo: LineInfo) {
 }
 
 function processQualityRule(lineInfo: LineInfo) {
-  const { operator, value } = parseSingleNumberRule(lineInfo, 0, 20);
+  const { operator, value } = parseSingleNumberRule(lineInfo, 0, 100);
 
   const result: Filter.QualityRule = {
     type: "rule", ruleType: "filter", filterName: "Quality",
@@ -405,7 +406,7 @@ function processRarityRule(lineInfo: LineInfo) {
 
   const valueResult = lineInfo.parser.nextString();
   let value: Filter.Value<string>|undefined;
-  if (valueResult.found) {
+  if (valueResult) {
     const validValues = [ "Normal", "Magic", "Rare", "Unique" ];
     if (validValues.includes(valueResult.value)) {
       value = { value: valueResult.value, range: valueResult.range };
@@ -482,7 +483,7 @@ function processSocketsRule(lineInfo: LineInfo) {
 function processLinkedSocketsRule(lineInfo: LineInfo) {
   const operatorResult = lineInfo.parser.nextOperator();
   let operator: Filter.Operator|undefined;
-  if (operatorResult.found) {
+  if (operatorResult) {
     operator = {
       text: operatorResult.value,
       range: operatorResult.range,
@@ -491,7 +492,7 @@ function processLinkedSocketsRule(lineInfo: LineInfo) {
 
   const valueResult = lineInfo.parser.nextNumber();
   let value: Filter.Value<number>|undefined;
-  if (valueResult.found) {
+  if (valueResult) {
     if (valueResult.value === 0 || (valueResult.value >= 2 && valueResult.value <= 6)) {
       value = { value: valueResult.value, range: valueResult.range };
     } else {
@@ -538,7 +539,7 @@ function processSocketGroup(lineInfo: LineInfo) {
   let value: Filter.Value<string>|undefined;
   if (!lineInfo.invalid) {
     const valueResult = lineInfo.parser.nextString();
-    if (valueResult.found) {
+    if (valueResult) {
       const groupRegex = new RegExp("^[rgbw]{1,6}$", "i");
       if (groupRegex.test(valueResult.value)) {
         value = { range: valueResult.range, value: valueResult.value };
@@ -702,34 +703,17 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
 
   let id: Filter.Value<string>|undefined;
 
-  const orbResult = lineInfo.parser.nextWord();
-  if (orbResult.found) {
+  const orbResult = lineInfo.parser.nextString();
+  if (orbResult) {
     if (lineInfo.data.validSounds.includes(orbResult.value)) {
       id = { range: orbResult.range, value: orbResult.value };
     } else {
       lineInfo.invalid = true;
-      lineInfo.messages.errors.push({
-        excerpt: "Invalid value for the PlayAlertSound rule.",
-        description: "Supported values:\n\n" + lineInfo.data.validSounds.toString(),
-        file: lineInfo.file,
-        range: orbResult.range,
-        url: "https://pathofexile.gamepedia.com/Item_filter",
-      });
     }
   } else {
     const n = parseNumberInRange(lineInfo, 1, 16, false);
     if (!lineInfo.invalid && n === undefined) {
       lineInfo.invalid = true;
-      lineInfo.messages.errors.push({
-        excerpt: "Invalid format. Expected either a number or word to follow.",
-        description: "Supported values:\n\n" + lineInfo.data.validSounds.toString(),
-        file: lineInfo.file,
-        range: {
-          start: { row: lineInfo.row, column: lineInfo.keyword.range.end.column + 1 },
-          end: { row: lineInfo.row, column: lineInfo.parser.textEndIndex },
-        },
-        url: "https://pathofexile.gamepedia.com/Item_filter",
-      });
     } else if (n !== undefined) {
       id = { range: n.range, value: `${n.value}` };
     }
@@ -743,7 +727,7 @@ function processPlayAlertSoundRule(lineInfo: LineInfo) {
   let trailingComment: Filter.Comment|undefined;
   if (!lineInfo.invalid) {
     const trailingCommentResult = lineInfo.parser.parseComment();
-    if (trailingCommentResult.found) {
+    if (trailingCommentResult) {
       trailingComment = { text: trailingCommentResult.value, range: trailingCommentResult.range };
     }
   }
@@ -771,11 +755,11 @@ function processSetFontSizeRule(lineInfo: LineInfo) {
   return result;
 }
 
-function processLineComment(parser: LineParser) {
+function processLineComment(parser: TokenParser) {
   const commentResult = parser.parseComment();
   let text: string;
   let range: Filter.Range;
-  if (commentResult.found) {
+  if (commentResult) {
     text = commentResult.value;
     range = commentResult.range;
   } else {
@@ -797,7 +781,7 @@ function processLineComment(parser: LineParser) {
   return result;
 }
 
-function processEmptyLine(parser: LineParser, row: number) {
+function processEmptyLine(parser: TokenParser, row: number) {
   const result: Filter.EmptyLine = {
     type: "empty",
     invalid: false,
@@ -812,28 +796,22 @@ function processEmptyLine(parser: LineParser, row: number) {
 }
 
 function processUnknownKeyword(lineInfo: LineInfo) {
-  const message: ValidationMessage = {
-    excerpt: "Unknown filter keyword.",
-    url: "http://pathofexile.gamepedia.com/Item_filter_guide",
-    file: lineInfo.file,
-    range: lineInfo.keyword.range,
-  };
-
   const result: Filter.UnknownLine = {
     type: "unknown",
     range: lineInfo.range,
-    invalid: true,
+    invalid: false,
     text: lineInfo.line.substr(lineInfo.parser.textStartIndex, lineInfo.parser.textEndIndex),
     messages: {
-      errors: [message],
+      errors: [],
       warnings: [],
       info: [],
     },
   };
+
   return result;
 }
 
-function processUnparseableKeyword(parser: LineParser, line: string, range:
+function processUnparseableKeyword(parser: TokenParser, line: string, range:
     Filter.Range, file?: string) {
   const message: ValidationMessage = {
     excerpt: "Unreadable keyword, likely due to a stray character.",
@@ -858,9 +836,9 @@ function processUnparseableKeyword(parser: LineParser, line: string, range:
 
 /** Processes the given line, returning a single line item filter line. */
 function processLine({ line, row, file, data }: ProcessLine): Filter.Line {
-  const parser = new LineParser(line, row);
+  const parser = new TokenParser(line, row);
 
-  if (parser.empty) {
+  if (parser.isEmpty()) {
     return processEmptyLine(parser, row);
   }
 
@@ -875,7 +853,7 @@ function processLine({ line, row, file, data }: ProcessLine): Filter.Line {
 
   const keywordResult = parser.nextWord();
   let keyword: Filter.Keyword;
-  if (keywordResult.found) {
+  if (keywordResult) {
     keyword = { text: keywordResult.value, range: keywordResult.range };
   } else {
     return processUnparseableKeyword(parser, line, range, file);

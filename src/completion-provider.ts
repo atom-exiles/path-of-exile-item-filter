@@ -13,7 +13,7 @@ export class CompletionProvider {
     this.suggestions = suggestions;
   }
 
-  dispose() {}
+  dispose() { }
 
   /** The callback which Autocomplete+ calls into whenever it needs suggestions for the user. */
   getSuggestions(event: SuggestionsRequestedEvent) {
@@ -23,15 +23,27 @@ export class CompletionProvider {
     const cursorScopes = scopeDescriptor.getScopesArray();
     const lastScope = cursorScopes[cursorScopes.length - 1];
 
+    let previousLastScope: string | undefined;
+    if (bufferPosition.column > 0) {
+      const previousPosition = new Point(bufferPosition.row, bufferPosition.column - 1);
+      const previousPositionScopes = editor.scopeDescriptorForBufferPosition(previousPosition)
+        .getScopesArray();
+      previousLastScope = previousPositionScopes[previousPositionScopes.length - 1];
+    }
+
     let shouldPruneSuggestions = true;
-    if (lastScope === "source.filter") {
+
+    if (previousLastScope && previousLastScope === "keyword.action.unknown.filter") {
+      result = result.concat(this.suggestions.blocks, this.suggestions.actions,
+        this.suggestions.filters, this.suggestions.extraBlocks);
+    } else if (lastScope === "source.filter") {
       result = result.concat(this.suggestions.blocks, this.suggestions.extraBlocks);
     } else if (lastScope === "line.empty.filter" || lastScope === "line.unknown.filter") {
       if (cursorScopes.indexOf("block.filter") === -1) {
         result = result.concat(this.suggestions.blocks, this.suggestions.extraBlocks);
       } else {
         result = result.concat(this.suggestions.blocks, this.suggestions.actions,
-            this.suggestions.filters, this.suggestions.extraBlocks);
+          this.suggestions.filters, this.suggestions.extraBlocks);
       }
     } else {
       if (cursorScopes.includes("rarity.filter")) {
@@ -68,12 +80,12 @@ export class CompletionProvider {
       } else if (cursorScopes.includes("class.filter")) {
         if (prefix !== "Class") {
           result = result.concat(this.suggestions.classes, this.suggestions.classWhitelist,
-              this.suggestions.extraClasses);
+            this.suggestions.extraClasses);
         }
       } else if (cursorScopes.includes("base-type.filter")) {
         if (prefix !== "BaseType") {
           result = result.concat(this.suggestions.bases, this.suggestions.baseWhitelist,
-              this.suggestions.extraBases);
+            this.suggestions.extraBases);
         }
       } else if (cursorScopes.includes("socket-group.filter")) {
         // Not pruning the suggestions, so this is necessary.
@@ -90,12 +102,12 @@ export class CompletionProvider {
         }
       } else {
         const numberValueRule = cursorScopes.includes("item-level.filter") ||
-            cursorScopes.includes("drop-level.filter") ||
-            cursorScopes.includes("quality.filter") ||
-            cursorScopes.includes("sockets.filter") ||
-            cursorScopes.includes("linked-sockets.filter") ||
-            cursorScopes.includes("height.filter") ||
-            cursorScopes.includes("width.filter");
+          cursorScopes.includes("drop-level.filter") ||
+          cursorScopes.includes("quality.filter") ||
+          cursorScopes.includes("sockets.filter") ||
+          cursorScopes.includes("linked-sockets.filter") ||
+          cursorScopes.includes("height.filter") ||
+          cursorScopes.includes("width.filter");
         if (numberValueRule) {
           if (this.isPotentialOperator(editor, bufferPosition)) {
             result = result.concat(this.suggestions.operators);
@@ -171,22 +183,22 @@ export class CompletionProvider {
     // The previous position in the editor is often a lot more useful than the
     // current ones, as it will contain the scopes for the value which the user
     // may still be editing.
-    let previousPositionScopes: string[]|undefined;
+    let previousPositionScopes: ReadonlyArray<string> | undefined;
     if (position.column > 0) {
       const previousPosition = new Point(position.row, position.column - 1);
       previousPositionScopes = editor.scopeDescriptorForBufferPosition(
-          previousPosition).getScopesArray();
+        previousPosition).getScopesArray();
     }
 
     const previousText = editor.getTextInBufferRange([[position.row, 0], position]);
-    let prefix: string|undefined;
+    let prefix: string | undefined;
     if (previousPositionScopes && previousPositionScopes.indexOf(
-        "string.partial-quotation.filter") !== -1) {
+      "string.partial-quotation.filter") !== -1) {
       const prefixRegex = /(\"[^"]*)$/;
       const result = prefixRegex.exec(previousText);
       if (result) prefix = result[1];
     } else if (previousPositionScopes && previousPositionScopes.indexOf(
-        "string.quotation.filter") !== -1) {
+      "string.quotation.filter") !== -1) {
       // The closing quotation mark might be further in on the line, which
       // requires a different regex.
       const stringRange = editor.bufferRangeForScopeAtCursor("string.quotation.filter");
@@ -199,8 +211,8 @@ export class CompletionProvider {
         const result = prefixRegex.exec(previousText);
         if (result) prefix = result[1];
       }
-    // Default back to using the previous word value. If the previous character
-    // was a whitespace character, then use an empty prefix.
+      // Default back to using the previous word value. If the previous character
+      // was a whitespace character, then use an empty prefix.
     } else {
       const prefixRegex = /([\s]*([^\s]*))*$/;
       const result = prefixRegex.exec(previousText);
@@ -241,7 +253,7 @@ export class CompletionProvider {
    * so that they are left aligned on column #0 on text insertion.
    */
   private setReplacementPrefix(editor: TextEditor, position: Point, prefix: string,
-      suggestions: Suggestions) {
+    suggestions: Suggestions) {
     for (const suggestion of suggestions) {
       let blockElement = false;
       for (const block of this.suggestions.blocks) {
@@ -269,7 +281,7 @@ export class CompletionProvider {
    */
   private removeConsecutiveQuotes(editor: TextEditor, position: Point) {
     const leftCharLocation = new Range([position.row, position.column - 1],
-        position);
+      position);
     const rightCharLocation = new Range(position, [position.row, position.column + 1]);
     const leftChar = editor.getTextInBufferRange(leftCharLocation);
     const rightChar = editor.getTextInBufferRange(rightCharLocation);
